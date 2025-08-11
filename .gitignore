@@ -46,6 +46,7 @@ out/
 
 ## env
 *.env
+deployment.env
 *.html
 
 ## cursor rules

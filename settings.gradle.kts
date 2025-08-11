@@ -3,6 +3,8 @@ rootProject.name = "balance-eat"
 include(
     "application:balance-eat-api",
     "domain",
+    "supports:jackson",
+    "supports:monitoring",
 )
 
 pluginManagement {

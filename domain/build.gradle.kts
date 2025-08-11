@@ -4,18 +4,17 @@ plugins {
     id("java-test-fixtures")
 }
 
-//noArg {
+// noArg {
 //    annotation("jakarta.persistence.Entity")
 //    annotation("jakarta.persistence.Embeddable")
 //    annotation("jakarta.persistence.MappedSuperclass")
-//}
+// }
 //
-//allOpen {
+// allOpen {
 //    annotation("jakarta.persistence.Entity")
 //    annotation("jakarta.persistence.MappedSuperclass")
 //    annotation("jakarta.persistence.Embeddable")
-//}
-
+// }
 
 dependencies {
 //    val querydslVersion: String by project
@@ -29,12 +28,8 @@ dependencies {
 //    kapt("jakarta.annotation:jakarta.annotation-api")
 //    kapt("jakarta.persistence:jakarta.persistence-api")
 
-    runtimeOnly("com.mysql:mysql-connector-j")
-    runtimeOnly("com.h2database:h2")
-
+    runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-
-    testImplementation("com.h2database:h2")
 }
 
 tasks.getByName("bootJar") {

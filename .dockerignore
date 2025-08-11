@@ -1,0 +1,58 @@
+# Git 관련
+.git
+.gitignore
+.gitattributes
+
+# IDE 설정
+.idea/
+.vscode/
+*.iml
+
+# Gradle 빌드 캐시 (wrapper 제외)
+.gradle/
+build/
+**/build/
+!gradle/wrapper/
+
+# Environment files
+*.env
+local.env
+dev.env
+prod.env
+
+# Logs
+*.log
+logs/
+
+# OS 관련
+.DS_Store
+Thumbs.db
+
+# 임시 파일
+*.tmp
+*.temp
+
+# Docker 관련
+Dockerfile*
+.dockerignore
+docker-compose*.yml
+
+# 배포 스크립트
+deploy-to-ecr.sh
+*.sh
+
+# 문서
+README.md
+HELP.md
+*.md
+
+# Kotlin/Java 컴파일 결과물 (Gradle이 다시 빌드하므로)
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# Node.js (프론트엔드가 있는 경우)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log* 
