@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
 @EnableJpaAuditing
-@EntityScan("org.balanceeat.domain")
-@EnableJpaRepositories("org.balanceeat.domain")
+@EntityScan(basePackages = ["org.balanceeat.domain"])
+@EnableJpaRepositories(basePackages = ["org.balanceeat.domain"])
 class JpaConfig

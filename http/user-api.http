@@ -1,0 +1,147 @@
+### User 생성 API 테스트
+
+# 기본 사용자 생성 (필수 필드만)
+POST {{baseUrl}}/api/{{apiVersion}}/users
+Content-Type: application/json
+
+{
+  "uuid": "550e8400-e29b-41d4-a716-446655440000",
+  "name": "홍길동",
+  "gender": "MALE",
+  "age": 30,
+  "height": 175.5,
+  "weight": 70.2
+}
+
+###
+
+# 모든 필드를 포함한 사용자 생성
+POST {{baseUrl}}/api/{{apiVersion}}/users
+Content-Type: application/json
+
+{
+  "uuid": "550e8400-e29b-41d4-a716-446655440001",
+  "name": "김영희",
+  "gender": "FEMALE",
+  "age": 25,
+  "height": 162.0,
+  "weight": 55.0,
+  "email": "younghee.kim@example.com",
+  "activityLevel": "MODERATE",
+  "smi": 8.5,
+  "fatPercentage": 22.0,
+  "targetWeight": 52.0,
+  "targetCalorie": 1800,
+  "targetSmi": 9.0,
+  "targetFatPercentage": 20.0,
+  "providerId": "google_12345",
+  "providerType": "GOOGLE"
+}
+
+###
+
+# 여성 사용자 생성 (LIGHT 활동 수준)
+POST {{baseUrl}}/api/{{apiVersion}}/users
+Content-Type: application/json
+
+{
+  "uuid": "550e8400-e29b-41d4-a716-446655440002",
+  "name": "박민수",
+  "gender": "FEMALE",
+  "age": 28,
+  "height": 165.0,
+  "weight": 58.5,
+  "email": "minsu.park@example.com",
+  "activityLevel": "LIGHT",
+  "smi": 7.8,
+  "fatPercentage": 25.5,
+  "targetWeight": 55.0,
+  "targetCalorie": 1600,
+  "targetSmi": 8.5,
+  "targetFatPercentage": 23.0
+}
+
+###
+
+# 남성 사용자 생성 (ACTIVE 활동 수준)
+POST {{baseUrl}}/api/{{apiVersion}}/users
+Content-Type: application/json
+
+{
+  "uuid": "550e8400-e29b-41d4-a716-446655440003",
+  "name": "이철수",
+  "gender": "MALE",
+  "age": 32,
+  "height": 180.0,
+  "weight": 75.0,
+  "email": "cheolsu.lee@example.com",
+  "activityLevel": "ACTIVE",
+  "smi": 9.2,
+  "fatPercentage": 18.0,
+  "targetWeight": 72.0,
+  "targetCalorie": 2200,
+  "targetSmi": 9.5,
+  "targetFatPercentage": 16.0
+}
+
+###
+
+# 다른 성별 사용자 생성
+POST {{baseUrl}}/api/{{apiVersion}}/users
+Content-Type: application/json
+
+{
+  "uuid": "550e8400-e29b-41d4-a716-446655440004",
+  "name": "김다른",
+  "gender": "OTHER",
+  "age": 35,
+  "height": 170.0,
+  "weight": 65.0,
+  "email": "dareun.kim@example.com",
+  "activityLevel": "SEDENTARY"
+}
+
+###
+
+# 매우 활발한 활동 수준 사용자 생성
+POST {{baseUrl}}/api/{{apiVersion}}/users
+Content-Type: application/json
+
+{
+  "uuid": "550e8400-e29b-41d4-a716-446655440005",
+  "name": "최운동",
+  "gender": "MALE",
+  "age": 27,
+  "height": 178.0,
+  "weight": 80.0,
+  "email": "undong.choi@example.com",
+  "activityLevel": "VERY_ACTIVE",
+  "smi": 10.5,
+  "fatPercentage": 15.0,
+  "targetWeight": 78.0,
+  "targetCalorie": 2800,
+  "targetSmi": 11.0,
+  "targetFatPercentage": 14.0
+}
+
+###
+
+# 환경 변수 사용법
+# IntelliJ IDEA나 VS Code에서 우측 상단의 환경 선택 드롭다운에서 환경을 선택하세요
+# - development: 로컬 개발 환경 (http://localhost:8080)
+# - staging: 스테이징 환경
+# - production: 프로덕션 환경
+# - local-docker: 로컬 도커 환경 (http://localhost:8081)
+
+# 동적 값 생성 예시
+# POST {{baseUrl}}/api/{{apiVersion}}/users
+# Content-Type: application/json
+# 
+# {
+#   "uuid": "{{$uuid}}",
+#   "name": "테스트 사용자",
+#   "gender": "MALE",
+#   "age": 30,
+#   "height": 175.0,
+#   "weight": 70.0
+# } 

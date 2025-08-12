@@ -5,11 +5,9 @@ import java.time.LocalDateTime
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class ApiResponse<T>(
-    val success: Boolean,
     val data: T? = null,
     val message: String? = null,
-    val error: ErrorDetail? = null,
-    val timestamp: LocalDateTime = LocalDateTime.now(),
+    val serverDatetime: LocalDateTime = LocalDateTime.now(),
 ) {
     companion object {
         fun <T> success(
@@ -17,7 +15,6 @@ data class ApiResponse<T>(
             message: String? = null,
         ): ApiResponse<T> {
             return ApiResponse(
-                success = true,
                 data = data,
                 message = message,
             )
@@ -25,44 +22,19 @@ data class ApiResponse<T>(
 
         fun <T> success(message: String? = "Success"): ApiResponse<T> {
             return ApiResponse(
-                success = true,
                 message = message,
             )
         }
 
         fun <T> error(
-            message: String,
-            errorCode: String? = null,
-            details: String? = null,
+            message: String
         ): ApiResponse<T> {
             return ApiResponse(
-                success = false,
-                message = message,
-                error =
-                    ErrorDetail(
-                        code = errorCode,
-                        details = details,
-                    ),
-            )
-        }
-
-        fun <T> error(error: ErrorDetail): ApiResponse<T> {
-            return ApiResponse(
-                success = false,
-                error = error,
-                message = error.message,
+                message = message
             )
         }
     }
 }
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-data class ErrorDetail(
-    val code: String? = null,
-    val message: String? = null,
-    val details: String? = null,
-    val field: String? = null,
-)
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class PageResponse<T>(

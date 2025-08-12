@@ -18,28 +18,6 @@ private val logger = KotlinLogging.logger {}
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
-    @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleValidationExceptions(ex: MethodArgumentNotValidException): ResponseEntity<ApiResponse<Any>> {
-        val errors =
-            ex.bindingResult.fieldErrors.map { error ->
-                ErrorDetail(
-                    code = "VALIDATION_FAILED",
-                    field = error.field,
-                    message = error.defaultMessage,
-                    details = "Rejected value: ${error.rejectedValue}",
-                )
-            }
-
-        logger.warn { "Validation failed: ${errors.joinToString { "${it.field}: ${it.message}" }}" }
-
-        return ResponseEntity.badRequest().body(
-            ApiResponse.error<Any>(
-                message = "입력값 검증에 실패했습니다",
-                errorCode = "VALIDATION_FAILED",
-                details = errors.joinToString(", ") { "${it.field}: ${it.message}" },
-            ),
-        )
-    }
 
     @ExceptionHandler(BindException::class)
     fun handleBindException(ex: BindException): ResponseEntity<ApiResponse<Any>> {
@@ -52,9 +30,7 @@ class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(
             ApiResponse.error<Any>(
-                message = "요청 데이터 바인딩에 실패했습니다",
-                errorCode = "BIND_FAILED",
-                details = errors.joinToString(", "),
+                message = "요청 데이터 바인딩에 실패했습니다"
             ),
         )
     }
@@ -65,8 +41,7 @@ class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(
             ApiResponse.error<Any>(
-                message = "필수 파라미터가 누락되었습니다: ${ex.parameterName}",
-                errorCode = "MISSING_PARAMETER",
+                message = "필수 파라미터가 누락되었습니다: ${ex.parameterName}"
             ),
         )
     }
@@ -77,9 +52,7 @@ class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(
             ApiResponse.error<Any>(
-                message = "파라미터 타입이 올바르지 않습니다: ${ex.name}",
-                errorCode = "TYPE_MISMATCH",
-                details = "Expected: ${ex.requiredType?.simpleName}, Actual: ${ex.value}",
+                message = "파라미터 타입이 올바르지 않습니다: ${ex.name}"
             ),
         )
     }
@@ -90,8 +63,7 @@ class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(
             ApiResponse.error<Any>(
-                message = "요청 본문을 읽을 수 없습니다",
-                errorCode = "MESSAGE_NOT_READABLE",
+                message = "요청 본문을 읽을 수 없습니다"
             ),
         )
     }
@@ -102,9 +74,7 @@ class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(
             ApiResponse.error<Any>(
-                message = "날짜 형식이 올바르지 않습니다",
-                errorCode = "DATETIME_PARSE_ERROR",
-                details = ex.parsedString,
+                message = "날짜 형식이 올바르지 않습니다"
             ),
         )
     }
@@ -115,9 +85,7 @@ class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(
             ApiResponse.error<Any>(
-                message = "지원하지 않는 HTTP 메서드입니다: ${ex.method}",
-                errorCode = "METHOD_NOT_ALLOWED",
-                details = "Supported methods: ${ex.supportedMethods?.joinToString()}",
+                message = "지원하지 않는 HTTP 메서드입니다: ${ex.method}"
             ),
         )
     }
@@ -128,9 +96,7 @@ class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
             ApiResponse.error<Any>(
-                message = "요청한 리소스를 찾을 수 없습니다",
-                errorCode = "NOT_FOUND",
-                details = "${ex.httpMethod} ${ex.requestURL}",
+                message = "요청한 리소스를 찾을 수 없습니다"
             ),
         )
     }
@@ -141,9 +107,7 @@ class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(
             ApiResponse.error<Any>(
-                message = "잘못된 요청입니다",
-                errorCode = "ILLEGAL_ARGUMENT",
-                details = ex.message,
+                message = "잘못된 요청입니다"
             ),
         )
     }
@@ -154,9 +118,7 @@ class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
             ApiResponse.error<Any>(
-                message = "서버 내부 오류가 발생했습니다",
-                errorCode = "INTERNAL_SERVER_ERROR",
-                details = if (logger.isDebugEnabled) ex.message else null,
+                message = "서버 내부 오류가 발생했습니다"
             ),
         )
     }

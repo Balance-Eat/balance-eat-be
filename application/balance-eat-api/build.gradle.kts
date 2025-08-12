@@ -1,11 +1,24 @@
 plugins {
+    kotlin("plugin.spring")
+    kotlin("plugin.jpa")
+    kotlin("kapt")
     id("org.springframework.boot")
     id("io.spring.dependency-management")
-    kotlin("jvm")
-    kotlin("plugin.spring")
-    kotlin("kapt")
     id("org.jlleitschuh.gradle.ktlint")
     id("java-test-fixtures")
+}
+
+group = "org.balanceeat"
+version = "0.0.1-SNAPSHOT"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+}
+
+configurations {
+    compileOnly {
+        extendsFrom(configurations.annotationProcessor.get())
+    }
 }
 
 repositories {
@@ -13,31 +26,37 @@ repositories {
 }
 
 dependencies {
-    // Module dependencies
     implementation(project(":domain"))
     implementation(project(":supports:jackson"))
     implementation(project(":supports:monitoring"))
 
-    // Environment variables support (IntelliJ 호환)
-    implementation("io.github.cdimascio:dotenv-java:3.0.0")
+    // Spring Boot
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 
-    // Logging
-    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
+    // Swagger/OpenAPI
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${project.properties["springDocOpenApiVersion"]}")
+
+    // Jackson
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+
+    // Test
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:postgresql")
 }
 
-tasks.test {
+tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-kotlin {
-    jvmToolchain(21)
-}
-
-tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+tasks.getByName("bootJar") {
     enabled = true
-    mainClass.set("org.balanceeat.api.BalanceEatApiApplicationKt")
 }
 
-tasks.getByName<Jar>("jar") {
+tasks.getByName("jar") {
     enabled = false
 }

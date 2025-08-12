@@ -1,19 +1,22 @@
-# ==============================================
-# 🚀 Balance Eat API - IntelliJ 환경변수 방식
-# ==============================================
-
-# 기본 공통 설정
-server:
-  port: 8080
-  servlet:
-    context-path: /api
-
 spring:
   application:
     name: balance-eat-api
-  
+
   profiles:
     active: dev
+
+# Swagger/OpenAPI 설정
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    doc-expansion: none
+    disable-swagger-default-url: true
+  packages-to-scan: org.balanceeat.api
+  paths-to-match: /api/**, /health
 
 management:
   endpoints:
@@ -32,18 +35,18 @@ spring:
   config:
     activate:
       on-profile: local
-  
+
   datasource:
     url: ${DB_URL:jdbc:h2:mem:localdb;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH}
     driverClassName: org.h2.Driver
     username: ${DB_USERNAME:sa}
     password: ${DB_PASSWORD:password}
-  
+
   h2:
     console:
       enabled: true
       path: /h2-console
-    
+
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -69,7 +72,7 @@ spring:
   config:
     activate:
       on-profile: dev
-  
+
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/balance_eat}
     driverClassName: org.postgresql.Driver
@@ -81,7 +84,7 @@ spring:
       connection-timeout: 20000
       idle-timeout: 300000
       max-lifetime: 1200000
-  
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -109,7 +112,7 @@ spring:
   config:
     activate:
       on-profile: prod
-  
+
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/balance_eat}
     driverClassName: org.postgresql.Driver
@@ -121,7 +124,7 @@ spring:
       connection-timeout: 20000
       idle-timeout: 300000
       max-lifetime: 1200000
-  
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:

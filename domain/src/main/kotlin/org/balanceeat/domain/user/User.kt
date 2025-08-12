@@ -1,75 +1,67 @@
 package org.balanceeat.domain.user
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.EntityListeners
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Table
-import org.springframework.data.annotation.CreatedDate
-import org.springframework.data.annotation.LastModifiedDate
-import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import jakarta.persistence.*
+import org.balanceeat.domain.config.BaseEntity
+import org.balanceeat.domain.config.NEW_ID
 import java.math.BigDecimal
-import java.time.LocalDateTime
-import java.util.UUID
 
 @Entity
 @Table(name = "\"user\"")
-@EntityListeners(AuditingEntityListener::class)
-data class User(
+class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0L,
-    @Column(nullable = false, unique = true)
-    val uuid: UUID = UUID.randomUUID(),
-    @Column(nullable = false, length = 100)
-    val name: String,
-    @Column(nullable = false, unique = true, length = 255)
-    val email: String,
+    val id: Long = NEW_ID,
+    @Column(nullable = true, length = 100)
+    var name: String,
+    @Column(nullable = false, unique = true, length = 36)
+    val uuid: String,
+    @Column(nullable = true, unique = false, length = 255)
+    var email: String? = null,
     @Enumerated(EnumType.STRING)
     @Column(length = 10)
-    val gender: Gender? = null,
-    @Column
-    val age: Int? = null,
+    var gender: Gender,
+    @Column(nullable = false)
+    var age: Int,
+    @Column(precision = 5, scale = 2, nullable = false)
+    var weight: BigDecimal,
+    @Column(precision = 5, scale = 2, nullable = false)
+    var height: BigDecimal,
+    @Enumerated(EnumType.STRING)
+    @Column(name = "activity_level", length = 20)
+    var activityLevel: ActivityLevel? = null,
     @Column(precision = 5, scale = 2)
-    val weight: BigDecimal? = null,
-    @Column(precision = 5, scale = 2)
-    val height: BigDecimal? = null,
-    @Column(precision = 5, scale = 2)
-    val smi: BigDecimal? = null,
+    var smi: BigDecimal? = null,
     @Column(name = "fat_percentage", precision = 5, scale = 2)
-    val fatPercentage: BigDecimal? = null,
+    var fatPercentage: BigDecimal? = null,
     @Column(name = "target_weight", precision = 5, scale = 2)
-    val targetWeight: BigDecimal? = null,
+    var targetWeight: BigDecimal? = null,
     @Column(name = "target_calorie")
-    val targetCalorie: Int? = null,
+    var targetCalorie: Int? = null,
     @Column(name = "target_smi", precision = 5, scale = 2)
-    val targetSmi: BigDecimal? = null,
+    var targetSmi: BigDecimal? = null,
     @Column(name = "target_fat_percentage", precision = 5, scale = 2)
-    val targetFatPercentage: BigDecimal? = null,
+    var targetFatPercentage: BigDecimal? = null,
     @Column(name = "provider_id", length = 255)
-    val providerId: String? = null,
+    var providerId: String? = null,
     @Column(name = "provider_type", length = 50)
-    val providerType: String? = null,
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now(),
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
-    val updatedAt: LocalDateTime = LocalDateTime.now(),
-) {
-    // JPA를 위한 기본 생성자
-    constructor() : this(
-        name = "",
-        email = "",
-    )
-}
+    var providerType: String? = null,
+) : BaseEntity() {
+    enum class Gender {
+        MALE,
+        FEMALE,
+        OTHER,
+    }
 
-enum class Gender {
-    MALE,
-    FEMALE,
-    OTHER,
+    enum class ActivityLevel(val factor: BigDecimal) {
+        // 거의 활동 안 함
+        SEDENTARY(BigDecimal("1.2")),
+        // 가벼운 활동 (주 1~3회)
+        LIGHT(BigDecimal("1.375")),
+        // 보통 활동 (주 3~5회)
+        MODERATE(BigDecimal("1.55")),
+        // 활발한 활동 (매일 격렬)
+        ACTIVE(BigDecimal("1.725")),
+        // 매우 활발한 활동 (전문 선수 수준)
+        VERY_ACTIVE(BigDecimal("1.9")),
+    }
 }
