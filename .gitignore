@@ -54,3 +54,7 @@ deployment.env
 
 ## docker mount
 /data/
+
+## Claude
+.claude
+CLAUDE.md

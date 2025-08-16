@@ -79,6 +79,7 @@ subprojects {
         testImplementation("org.springframework.boot:spring-boot-testcontainers")
         testImplementation("org.testcontainers:testcontainers")
         testImplementation("org.testcontainers:junit-jupiter")
+        testImplementation("org.testcontainers:mysql")
         // validator
         implementation("commons-validator:commons-validator:1.7")
     }

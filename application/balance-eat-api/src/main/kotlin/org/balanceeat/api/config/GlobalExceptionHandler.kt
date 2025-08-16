@@ -1,125 +1,144 @@
 package org.balanceeat.api.config
 
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.validation.ConstraintViolationException
 import mu.KotlinLogging
+import org.balanceeat.domain.common.DomainException
+import org.balanceeat.domain.common.exceptions.BadRequestException
+import org.balanceeat.domain.common.exceptions.InternalErrorException
+import org.balanceeat.domain.common.exceptions.NotFoundException
+import org.balanceeat.domain.common.exceptions.UnauthorizedException
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.BindException
+import org.springframework.validation.ObjectError
 import org.springframework.web.HttpRequestMethodNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
-import org.springframework.web.servlet.NoHandlerFoundException
+import org.springframework.web.multipart.MultipartException
+import org.springframework.web.servlet.resource.NoResourceFoundException
 import java.time.format.DateTimeParseException
 
 private val logger = KotlinLogging.logger {}
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
+    companion object {
+        const val USER_4XX_MESSAGE = "잘못된 요청입니다."
+        const val USER_5XX_MESSAGE = "예상치 못한 오류가 발생하였습니다. 관리자에게 문의해주세요"
+    }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException::class)
-    fun handleBindException(ex: BindException): ResponseEntity<ApiResponse<Any>> {
-        val errors =
-            ex.fieldErrors.map { error ->
-                "${error.field}: ${error.defaultMessage}"
-            }
+    fun handleBindException(ex: BindException, request: HttpServletRequest): ApiResponse<Any> {
+        logger.warn { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
 
-        logger.warn { "Bind exception: ${errors.joinToString()}" }
-
-        return ResponseEntity.badRequest().body(
-            ApiResponse.error<Any>(
-                message = "요청 데이터 바인딩에 실패했습니다"
-            ),
+        return ApiResponse.fail(
+            ex.bindingResult.allErrors
+                .mapNotNull(ObjectError::getDefaultMessage)
+                .joinToString("\n")
         )
     }
 
-    @ExceptionHandler(MissingServletRequestParameterException::class)
-    fun handleMissingParams(ex: MissingServletRequestParameterException): ResponseEntity<ApiResponse<Any>> {
-        logger.warn { "Missing parameter: ${ex.parameterName}" }
-
-        return ResponseEntity.badRequest().body(
-            ApiResponse.error<Any>(
-                message = "필수 파라미터가 누락되었습니다: ${ex.parameterName}"
-            ),
-        )
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ConstraintViolationException::class)
+    fun handleConstraintViolationException(ex: ConstraintViolationException, request: HttpServletRequest): ApiResponse<Any> {
+        logger.warn { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
+        return ApiResponse.fail(ex.message ?: USER_4XX_MESSAGE)
     }
 
-    @ExceptionHandler(MethodArgumentTypeMismatchException::class)
-    fun handleTypeMismatch(ex: MethodArgumentTypeMismatchException): ResponseEntity<ApiResponse<Any>> {
-        logger.warn { "Type mismatch: ${ex.name} = ${ex.value}" }
-
-        return ResponseEntity.badRequest().body(
-            ApiResponse.error<Any>(
-                message = "파라미터 타입이 올바르지 않습니다: ${ex.name}"
-            ),
-        )
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(
+        IllegalArgumentException::class,
+        IllegalStateException::class,
+    )
+    fun handleIllegalException(ex: Exception, request: HttpServletRequest): ApiResponse<Any> {
+        logger.warn { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
+        return ApiResponse.fail(ex.message ?: USER_4XX_MESSAGE)
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException::class)
-    fun handleHttpMessageNotReadable(ex: HttpMessageNotReadableException): ResponseEntity<ApiResponse<Any>> {
-        logger.warn { "HTTP message not readable: ${ex.message}" }
-
-        return ResponseEntity.badRequest().body(
-            ApiResponse.error<Any>(
-                message = "요청 본문을 읽을 수 없습니다"
-            ),
-        )
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(
+        HttpRequestMethodNotSupportedException::class,
+        HttpMessageNotReadableException::class,
+        MethodArgumentTypeMismatchException::class,
+        MissingServletRequestParameterException::class,
+        MultipartException::class,
+        DateTimeParseException::class,
+    )
+    fun handle4xx(ex: Exception, request: HttpServletRequest): ApiResponse<Any> {
+        logger.warn { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
+        return ApiResponse.fail(USER_4XX_MESSAGE)
     }
 
-    @ExceptionHandler(DateTimeParseException::class)
-    fun handleDateTimeParseException(ex: DateTimeParseException): ResponseEntity<ApiResponse<Any>> {
-        logger.warn { "DateTime parse error: ${ex.message}" }
-
-        return ResponseEntity.badRequest().body(
-            ApiResponse.error<Any>(
-                message = "날짜 형식이 올바르지 않습니다"
-            ),
-        )
-    }
-
-    @ExceptionHandler(HttpRequestMethodNotSupportedException::class)
-    fun handleMethodNotSupported(ex: HttpRequestMethodNotSupportedException): ResponseEntity<ApiResponse<Any>> {
-        logger.warn { "Method not supported: ${ex.method}" }
-
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(
-            ApiResponse.error<Any>(
-                message = "지원하지 않는 HTTP 메서드입니다: ${ex.method}"
-            ),
-        )
-    }
-
-    @ExceptionHandler(NoHandlerFoundException::class)
-    fun handleNoHandlerFound(ex: NoHandlerFoundException): ResponseEntity<ApiResponse<Any>> {
-        logger.warn { "No handler found: ${ex.httpMethod} ${ex.requestURL}" }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-            ApiResponse.error<Any>(
-                message = "요청한 리소스를 찾을 수 없습니다"
-            ),
-        )
-    }
-
-    @ExceptionHandler(IllegalArgumentException::class)
-    fun handleIllegalArgument(ex: IllegalArgumentException): ResponseEntity<ApiResponse<Any>> {
-        logger.warn { "Illegal argument: ${ex.message}" }
-
-        return ResponseEntity.badRequest().body(
-            ApiResponse.error<Any>(
-                message = "잘못된 요청입니다"
-            ),
-        )
-    }
-
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception::class)
-    fun handleGenericException(ex: Exception): ResponseEntity<ApiResponse<Any>> {
-        logger.error(ex) { "Unexpected error occurred" }
+    fun handle5xx(ex: Exception, request: HttpServletRequest): ApiResponse<Any> {
+        logger.error(ex) { "[${request.requestURI}] 예상치 못한 오류가 발생하였습니다." }
+        return ApiResponse.error(USER_5XX_MESSAGE)
+    }
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-            ApiResponse.error<Any>(
-                message = "서버 내부 오류가 발생했습니다"
-            ),
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(BadRequestException::class)
+    fun handleBadRequestException(ex: BadRequestException, request: HttpServletRequest): ApiResponse<Any> {
+        logger.warn { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
+        return ApiResponse.fail(ex.status, ex.message)
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundException::class)
+    fun handleNotFoundException(ex: NotFoundException, request: HttpServletRequest): ApiResponse<Any> {
+        logger.error { "[${request.requestURI}] 해당 리소스는 존재하지 않습니다." }
+        return ApiResponse.notFound(ex.status, ex.message)
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NoResourceFoundException::class)
+    fun handleNoResourceFoundException(ex: NoResourceFoundException, request: HttpServletRequest): ApiResponse<Any> {
+        logger.error { "[${request.requestURI}] 해당 리소스는 존재하지 않습니다." }
+        return ApiResponse.notFound()
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(InternalErrorException::class)
+    fun handleInternalErrorException(ex: InternalErrorException, request: HttpServletRequest): ApiResponse<Any> {
+        logger.error { "[${request.requestURI}] 서버 오류가 발생하였습니다." }
+        return ApiResponse.error(ex.message ?: "서버 오류가 발생했습니다.")
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(DomainException::class)
+    fun handleDomainException(ex: DomainException, request: HttpServletRequest): ApiResponse<Any> {
+        if (ex.isCritical) {
+            logger.error { "[${request.requestURI}] 도메인 오류가 발생하였습니다." }
+        } else {
+            logger.warn { "[${request.requestURI}] 도메인 오류가 발생하였습니다." }
+        }
+        return ApiResponse.fail(ex.status, ex.message ?: "도메인 오류가 발생했습니다.")
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(UnauthorizedException::class)
+    fun handleUnauthorizedException(ex: UnauthorizedException, request: HttpServletRequest): ApiResponse<Any> {
+        logger.warn { "[${request.requestURI}] 인증 오류가 발생하였습니다." }
+        return ApiResponse.unauthorized(ex.status, ex.message)
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleMethodArgumentNotValid(ex: MethodArgumentNotValidException, request: HttpServletRequest): ApiResponse<Any> {
+        logger.warn { "[${request.requestURI}] 입력값 검증에 실패했습니다." }
+        
+        return ApiResponse.fail(
+            ex.bindingResult
+                .allErrors
+                .map(ObjectError::getDefaultMessage)
+                .filterNotNull()
+                .joinToString("\n")
         )
     }
 }

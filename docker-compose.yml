@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/balance_eat
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - balance-eat-network
+
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=balance_eat
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - balance-eat-network
+
+  redis:
+    image: redis:7.4-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - balance-eat-network
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  balance-eat-network:
+    driver: bridge
