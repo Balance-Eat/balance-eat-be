@@ -31,7 +31,7 @@ data class ApiResponse<T>(
         fun <T> fail(status: Status, message: String?, data: T? = null): ApiResponse<T> {
             return ApiResponse(
                 status = status,
-                message = message,
+                message = message ?: status.message,
                 data = data
             )
         }

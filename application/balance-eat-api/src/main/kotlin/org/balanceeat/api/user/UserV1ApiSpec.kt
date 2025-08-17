@@ -1,6 +1,7 @@
 package org.balanceeat.api.user
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.balanceeat.api.config.ApiResponse
 
@@ -8,4 +9,17 @@ import org.balanceeat.api.config.ApiResponse
 interface UserV1ApiSpec {
     @Operation(summary = "사용자 생성")
     fun create(request: UserV1Request.Create): ApiResponse<Void>
+    
+    @Operation(summary = "사용자 정보 조회")
+    fun getById(
+        @Parameter(description = "사용자 ID", required = true)
+        id: Long
+    ): ApiResponse<UserV1Response.Info>
+    
+    @Operation(summary = "사용자 정보 수정")
+    fun update(
+        @Parameter(description = "사용자 ID", required = true)
+        id: Long,
+        request: UserV1Request.Update
+    ): ApiResponse<Void>
 } 

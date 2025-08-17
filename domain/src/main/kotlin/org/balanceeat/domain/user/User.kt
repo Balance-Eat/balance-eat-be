@@ -46,6 +46,7 @@ class User(
     @Column(name = "provider_type", length = 50)
     var providerType: String? = null,
 ) : BaseEntity() {
+
     enum class Gender {
         MALE,
         FEMALE,

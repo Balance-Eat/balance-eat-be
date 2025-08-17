@@ -1,5 +1,7 @@
 package org.balanceeat.domain.user
 
+import org.balanceeat.domain.common.ErrorStatus
+import org.balanceeat.domain.common.exceptions.NotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -27,6 +29,39 @@ class UserDomainService(
             providerId = command.providerId,
             providerType = command.providerType
         )
+        userRepository.save(user)
+    }
+
+    @Transactional(readOnly = true)
+    fun findById(id: Long): User {
+        return userRepository.findById(id)
+            .orElseThrow { NotFoundException(ErrorStatus.USER_NOT_FOUND) }
+    }
+
+    @Transactional(readOnly = true)
+    fun findByUuid(uuid: String): User {
+        return userRepository.findByUuid(uuid)
+            ?: throw NotFoundException(ErrorStatus.USER_NOT_FOUND)
+    }
+
+    @Transactional
+    fun update(id: Long, command: UserCommand.Update) {
+        val user = findById(id)
+        user.apply {
+            command.name?.let { name = it }
+            command.email?.let { email = it }
+            command.gender?.let { gender = it }
+            command.age?.let { age = it }
+            command.weight?.let { weight = it }
+            command.height?.let { height = it }
+            command.activityLevel?.let { activityLevel = it }
+            command.smi?.let { smi = it }
+            command.fatPercentage?.let { fatPercentage = it }
+            command.targetWeight?.let { targetWeight = it }
+            command.targetCalorie?.let { targetCalorie = it }
+            command.targetSmi?.let { targetSmi = it }
+            command.targetFatPercentage?.let { targetFatPercentage = it }
+        }
         userRepository.save(user)
     }
 }

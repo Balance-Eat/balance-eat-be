@@ -126,6 +126,67 @@ Content-Type: application/json
 
 ###
 
+### User 조회 API 테스트
+
+# 사용자 정보 조회 (ID로)
+GET {{baseUrl}}/api/{{apiVersion}}/users/1
+Accept: application/json
+
+###
+
+# 존재하지 않는 사용자 조회 (404 예상)
+GET {{baseUrl}}/api/{{apiVersion}}/users/999
+Accept: application/json
+
+###
+
+### User 수정 API 테스트
+
+# 사용자 정보 부분 수정 (이름과 나이만)
+PATCH {{baseUrl}}/api/{{apiVersion}}/users/1
+Content-Type: application/json
+
+{
+  "name": "수정된 홍길동",
+  "age": 31
+}
+
+###
+
+# 사용자 신체 정보 수정
+PATCH {{baseUrl}}/api/{{apiVersion}}/users/1
+Content-Type: application/json
+
+{
+  "weight": 72.5,
+  "height": 176.0,
+  "activityLevel": "ACTIVE"
+}
+
+###
+
+# 사용자 목표 정보 수정
+PATCH {{baseUrl}}/api/{{apiVersion}}/users/1
+Content-Type: application/json
+
+{
+  "targetWeight": 68.0,
+  "targetCalorie": 2000,
+  "targetFatPercentage": 15.0
+}
+
+###
+
+# 존재하지 않는 사용자 수정 (404 예상)
+PATCH {{baseUrl}}/api/{{apiVersion}}/users/999
+Content-Type: application/json
+
+{
+  "name": "존재하지 않는 사용자"
+}
+
+###
+
 # 환경 변수 사용법
 # IntelliJ IDEA나 VS Code에서 우측 상단의 환경 선택 드롭다운에서 환경을 선택하세요
 # - development: 로컬 개발 환경 (http://localhost:8080)

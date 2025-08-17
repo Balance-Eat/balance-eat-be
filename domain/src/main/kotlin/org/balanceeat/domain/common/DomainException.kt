@@ -6,8 +6,4 @@ class DomainException(
     val isCritical: Boolean = false,
     cause: Throwable? = null
 ) : RuntimeException(message, cause) {
-    
-    fun status(): Status = status
-    fun message(): String = message ?: ""
-    fun isCritical(): Boolean = isCritical
 }

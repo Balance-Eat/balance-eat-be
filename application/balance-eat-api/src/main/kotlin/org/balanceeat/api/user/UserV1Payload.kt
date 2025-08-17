@@ -94,6 +94,74 @@ class UserV1Request {
         )
         val providerType: String? = null
     )
+
+    data class Update(
+        @Schema(
+            description = "사용자 이름 (선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val name: String? = null,
+        @Schema(
+            description = "사용자 이메일 (선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val email: String? = null,
+        @Schema(
+            description = "사용자 성별 (선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val gender: User.Gender? = null,
+        @Schema(
+            description = "사용자 나이 (선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val age: Int? = null,
+        @Schema(
+            description = "사용자 키 (cm 단위) (선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val height: BigDecimal? = null,
+        @Schema(
+            description = "사용자 몸무게 (kg 단위) (선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val weight: BigDecimal? = null,
+        @Schema(
+            description = "사용자 활동 수준 (선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val activityLevel: User.ActivityLevel? = null,
+        @Schema(
+            description = "사용자 SMI (선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val smi: BigDecimal? = null,
+        @Schema(
+            description = "사용자 체지방률 (선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val fatPercentage: BigDecimal? = null,
+        @Schema(
+            description = "사용자 목표 체중 (선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val targetWeight: BigDecimal? = null,
+        @Schema(
+            description = "사용자 목표 칼로리 (선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val targetCalorie: Int? = null,
+        @Schema(
+            description = "사용자 목표 SMI (선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val targetSmi: BigDecimal? = null,
+        @Schema(
+            description = "사용자 목표 체지방률 (선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val targetFatPercentage: BigDecimal? = null
+    )
 }
 
 class UserV1Response {
