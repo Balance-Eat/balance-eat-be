@@ -3,7 +3,6 @@ package org.balanceeat.domain.diet
 import jakarta.persistence.*
 import org.balanceeat.domain.config.BaseEntity
 import org.balanceeat.domain.config.NEW_ID
-import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -32,7 +31,7 @@ class Diet(
     @JoinColumn(name = "diet_id")
     val dietFoods: MutableList<DietFood> = mutableListOf()
     
-    fun addFood(foodId: Long, actualServingSize: BigDecimal, servingUnit: String, foodDomainService: org.balanceeat.domain.food.FoodDomainService): DietFood {
+    fun addFood(foodId: Long, actualServingSize: Double, servingUnit: String, foodDomainService: org.balanceeat.domain.food.FoodDomainService): DietFood {
         val food = foodDomainService.getFood(foodId)
         val nutritionInfo = food.calculateNutrition(actualServingSize)
         
@@ -58,50 +57,50 @@ class Diet(
         dietFoods.remove(dietFood)
     }
     
-    fun getTotalCalories(): BigDecimal {
+    fun getTotalCalories(): Double {
         return dietFoods.sumOf { it.calculatedCalories }
     }
     
-    fun getTotalCarbohydrates(): BigDecimal {
+    fun getTotalCarbohydrates(): Double {
         return dietFoods.mapNotNull { it.calculatedCarbohydrates }
             .takeIf { it.isNotEmpty() }
-            ?.reduce { acc, value -> acc.add(value) }
-            ?: BigDecimal.ZERO
+            ?.reduce { acc, value -> acc + value }
+            ?: 0.0
     }
     
-    fun getTotalProtein(): BigDecimal {
+    fun getTotalProtein(): Double {
         return dietFoods.mapNotNull { it.calculatedProtein }
             .takeIf { it.isNotEmpty() }
-            ?.reduce { acc, value -> acc.add(value) }
-            ?: BigDecimal.ZERO
+            ?.reduce { acc, value -> acc + value }
+            ?: 0.0
     }
     
-    fun getTotalFat(): BigDecimal {
+    fun getTotalFat(): Double {
         return dietFoods.mapNotNull { it.calculatedFat }
             .takeIf { it.isNotEmpty() }
-            ?.reduce { acc, value -> acc.add(value) }
-            ?: BigDecimal.ZERO
+            ?.reduce { acc, value -> acc + value }
+            ?: 0.0
     }
     
-    fun getTotalSugar(): BigDecimal {
+    fun getTotalSugar(): Double {
         return dietFoods.mapNotNull { it.calculatedSugar }
             .takeIf { it.isNotEmpty() }
-            ?.reduce { acc, value -> acc.add(value) }
-            ?: BigDecimal.ZERO
+            ?.reduce { acc, value -> acc + value }
+            ?: 0.0
     }
     
-    fun getTotalSodium(): BigDecimal {
+    fun getTotalSodium(): Double {
         return dietFoods.mapNotNull { it.calculatedSodium }
             .takeIf { it.isNotEmpty() }
-            ?.reduce { acc, value -> acc.add(value) }
-            ?: BigDecimal.ZERO
+            ?.reduce { acc, value -> acc + value }
+            ?: 0.0
     }
     
-    fun getTotalFiber(): BigDecimal {
+    fun getTotalFiber(): Double {
         return dietFoods.mapNotNull { it.calculatedFiber }
             .takeIf { it.isNotEmpty() }
-            ?.reduce { acc, value -> acc.add(value) }
-            ?: BigDecimal.ZERO
+            ?.reduce { acc, value -> acc + value }
+            ?: 0.0
     }
     
     enum class MealType(val displayName: String) {

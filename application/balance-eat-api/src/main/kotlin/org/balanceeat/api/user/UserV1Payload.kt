@@ -3,7 +3,6 @@ package org.balanceeat.api.user
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotNull
 import org.balanceeat.domain.user.User
-import java.math.BigDecimal
 
 class UserV1Request {
     data class Create(
@@ -36,13 +35,13 @@ class UserV1Request {
             description = "사용자 키 (cm 단위)",
             requiredMode = Schema.RequiredMode.REQUIRED,
         )
-        val height: BigDecimal,
+        val height: Double,
         @field:NotNull(message = "weight은 필수입니다")
         @Schema(
             description = "사용자 몸무게 (kg 단위)",
             requiredMode = Schema.RequiredMode.REQUIRED,
         )
-        val weight: BigDecimal,
+        val weight: Double,
         @Schema(
             description = "사용자 이메일 (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
@@ -57,17 +56,17 @@ class UserV1Request {
             description = "사용자 SMI (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
         )
-        val smi: BigDecimal? = null,
+        val smi: Double? = null,
         @Schema(
             description = "사용자 체지방률 (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
         )
-        val fatPercentage: BigDecimal? = null,
+        val fatPercentage: Double? = null,
         @Schema(
             description = "사용자 목표 체중 (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
         )
-        val targetWeight: BigDecimal? = null,
+        val targetWeight: Double? = null,
         @Schema(
             description = "사용자 목표 칼로리 (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
@@ -77,12 +76,12 @@ class UserV1Request {
             description = "사용자 목표 SMI (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
         )
-        val targetSmi: BigDecimal? = null,
+        val targetSmi: Double? = null,
         @Schema(
             description = "사용자 목표 체지방률 (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
         )
-        val targetFatPercentage: BigDecimal? = null,
+        val targetFatPercentage: Double? = null,
         @Schema(
             description = "제공자 ID (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
@@ -120,12 +119,12 @@ class UserV1Request {
             description = "사용자 키 (cm 단위) (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
         )
-        val height: BigDecimal? = null,
+        val height: Double? = null,
         @Schema(
             description = "사용자 몸무게 (kg 단위) (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
         )
-        val weight: BigDecimal? = null,
+        val weight: Double? = null,
         @Schema(
             description = "사용자 활동 수준 (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
@@ -135,17 +134,17 @@ class UserV1Request {
             description = "사용자 SMI (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
         )
-        val smi: BigDecimal? = null,
+        val smi: Double? = null,
         @Schema(
             description = "사용자 체지방률 (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
         )
-        val fatPercentage: BigDecimal? = null,
+        val fatPercentage: Double? = null,
         @Schema(
             description = "사용자 목표 체중 (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
         )
-        val targetWeight: BigDecimal? = null,
+        val targetWeight: Double? = null,
         @Schema(
             description = "사용자 목표 칼로리 (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
@@ -155,12 +154,12 @@ class UserV1Request {
             description = "사용자 목표 SMI (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
         )
-        val targetSmi: BigDecimal? = null,
+        val targetSmi: Double? = null,
         @Schema(
             description = "사용자 목표 체지방률 (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
         )
-        val targetFatPercentage: BigDecimal? = null
+        val targetFatPercentage: Double? = null
     )
 }
 
@@ -172,15 +171,15 @@ class UserV1Response {
         val email: String?,
         val gender: User.Gender,
         val age: Int,
-        val weight: BigDecimal,
-        val height: BigDecimal,
+        val weight: Double,
+        val height: Double,
         val activityLevel: User.ActivityLevel?,
-        val smi: BigDecimal?,
-        val fatPercentage: BigDecimal?,
-        val targetWeight: BigDecimal?,
+        val smi: Double?,
+        val fatPercentage: Double?,
+        val targetWeight: Double?,
         val targetCalorie: Int?,
-        val targetSmi: BigDecimal?,
-        val targetFatPercentage: BigDecimal?,
+        val targetSmi: Double?,
+        val targetFatPercentage: Double?,
         val providerId: String?,
         val providerType: String?
     )

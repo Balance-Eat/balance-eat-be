@@ -1,10 +1,8 @@
 package org.balanceeat.domain.food
 
 import org.balanceeat.domain.config.TestFixture
-import org.balanceeat.domain.config.NEW_ID
 
-class FoodFixture(
-    var id: Long = NEW_ID,
+class FoodCommandFixture(
     var name: String = "테스트 음식",
     var brand: String? = "테스트 브랜드",
     var servingSize: Double = 1.0,
@@ -19,10 +17,9 @@ class FoodFixture(
     var description: String? = "테스트용 음식입니다",
     var category: String = "테스트",
     var isVerified: Boolean = true
-) : TestFixture<Food> {
-    override fun create(): Food {
-        return Food(
-            id = id,
+) : TestFixture<FoodCommand.Create> {
+    override fun create(): FoodCommand.Create {
+        return FoodCommand.Create(
             name = name,
             brand = brand,
             servingSize = servingSize,

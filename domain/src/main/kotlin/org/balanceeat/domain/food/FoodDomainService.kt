@@ -1,6 +1,6 @@
 package org.balanceeat.domain.food
 
-import org.balanceeat.domain.common.ErrorStatus
+import org.balanceeat.domain.common.DomainStatus
 import org.balanceeat.domain.common.exceptions.NotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -13,7 +13,7 @@ class FoodDomainService(
     
     fun getFood(foodId: Long): Food {
         return foodRepository.findById(foodId)
-            .orElseThrow { NotFoundException(ErrorStatus.FOOD_NOT_FOUND) }
+            .orElseThrow { NotFoundException(DomainStatus.FOOD_NOT_FOUND) }
     }
     
     fun searchFoods(keyword: String): List<Food> {

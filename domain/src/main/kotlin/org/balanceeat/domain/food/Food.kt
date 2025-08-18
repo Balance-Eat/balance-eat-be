@@ -3,7 +3,6 @@ package org.balanceeat.domain.food
 import jakarta.persistence.*
 import org.balanceeat.domain.config.BaseEntity
 import org.balanceeat.domain.config.NEW_ID
-import java.math.BigDecimal
 
 @Entity
 @Table(name = "food")
@@ -18,32 +17,32 @@ class Food(
     @Column(name = "brand", length = 100)
     val brand: String? = null,
     
-    @Column(name = "serving_size", precision = 8, scale = 2, nullable = false)
-    val servingSize: BigDecimal,
+    @Column(name = "serving_size", nullable = false)
+    val servingSize: Double,
     
     @Column(name = "serving_unit", length = 20, nullable = false)
     val servingUnit: String,
     
-    @Column(name = "calories_per_serving", precision = 8, scale = 2, nullable = false)
-    val caloriesPerServing: BigDecimal,
+    @Column(name = "calories_per_serving", nullable = false)
+    val caloriesPerServing: Double,
     
-    @Column(name = "carbohydrates_per_serving", precision = 8, scale = 2)
-    val carbohydratesPerServing: BigDecimal? = null,
+    @Column(name = "carbohydrates_per_serving")
+    val carbohydratesPerServing: Double? = null,
     
-    @Column(name = "protein_per_serving", precision = 8, scale = 2)
-    val proteinPerServing: BigDecimal? = null,
+    @Column(name = "protein_per_serving")
+    val proteinPerServing: Double? = null,
     
-    @Column(name = "fat_per_serving", precision = 8, scale = 2)
-    val fatPerServing: BigDecimal? = null,
+    @Column(name = "fat_per_serving")
+    val fatPerServing: Double? = null,
     
-    @Column(name = "sugar_per_serving", precision = 8, scale = 2)
-    val sugarPerServing: BigDecimal? = null,
+    @Column(name = "sugar_per_serving")
+    val sugarPerServing: Double? = null,
     
-    @Column(name = "sodium_per_serving", precision = 8, scale = 2)
-    val sodiumPerServing: BigDecimal? = null,
+    @Column(name = "sodium_per_serving")
+    val sodiumPerServing: Double? = null,
     
-    @Column(name = "fiber_per_serving", precision = 8, scale = 2)
-    val fiberPerServing: BigDecimal? = null,
+    @Column(name = "fiber_per_serving")
+    val fiberPerServing: Double? = null,
     
     @Column(name = "description", length = 500)
     val description: String? = null,
@@ -58,26 +57,26 @@ class Food(
     val isVerified: Boolean = false
 ) : BaseEntity() {
 
-    fun calculateNutrition(actualServingSize: BigDecimal): NutritionInfo {
-        val ratio = actualServingSize.divide(servingSize)
+    fun calculateNutrition(actualServingSize: Double): NutritionInfo {
+        val ratio = actualServingSize / servingSize
         return NutritionInfo(
-            calories = caloriesPerServing.multiply(ratio),
-            carbohydrates = carbohydratesPerServing?.multiply(ratio),
-            protein = proteinPerServing?.multiply(ratio),
-            fat = fatPerServing?.multiply(ratio),
-            sugar = sugarPerServing?.multiply(ratio),
-            sodium = sodiumPerServing?.multiply(ratio),
-            fiber = fiberPerServing?.multiply(ratio)
+            calories = caloriesPerServing * ratio,
+            carbohydrates = carbohydratesPerServing?.let { it * ratio },
+            protein = proteinPerServing?.let { it * ratio },
+            fat = fatPerServing?.let { it * ratio },
+            sugar = sugarPerServing?.let { it * ratio },
+            sodium = sodiumPerServing?.let { it * ratio },
+            fiber = fiberPerServing?.let { it * ratio }
         )
     }
     
     data class NutritionInfo(
-        val calories: BigDecimal,
-        val carbohydrates: BigDecimal?,
-        val protein: BigDecimal?,
-        val fat: BigDecimal?,
-        val sugar: BigDecimal?,
-        val sodium: BigDecimal?,
-        val fiber: BigDecimal?
+        val calories: Double,
+        val carbohydrates: Double?,
+        val protein: Double?,
+        val fat: Double?,
+        val sugar: Double?,
+        val sodium: Double?,
+        val fiber: Double?
     )
 }

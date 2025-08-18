@@ -5,7 +5,6 @@ import org.balanceeat.domain.diet.DietCommand
 import org.balanceeat.domain.diet.DietDomainService
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.web.bind.annotation.*
-import java.math.BigDecimal
 import java.time.LocalDate
 
 @RestController
@@ -41,7 +40,7 @@ class DietV1Controller(
                 mealTypeName = diet.mealType.displayName,
                 foodName = "Multiple Foods", // TODO: Aggregate food names
                 foodBrand = null,
-                servingSize = BigDecimal.ZERO, // TODO: Aggregate serving sizes
+                servingSize = 0.0, // TODO: Aggregate serving sizes
                 servingUnit = "mixed",
                 calories = totalNutrition.calories,
                 carbohydrates = totalNutrition.carbohydrates,

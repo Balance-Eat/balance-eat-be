@@ -1,12 +1,11 @@
 package org.balanceeat.domain.diet
 
-import org.balanceeat.domain.common.ErrorStatus
+import org.balanceeat.domain.common.DomainStatus
 import org.balanceeat.domain.common.exceptions.NotFoundException
 import org.balanceeat.domain.food.FoodDomainService
 import org.balanceeat.domain.user.UserDomainService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
 import java.time.LocalDate
 
 @Service
@@ -90,13 +89,13 @@ class DietDomainService(
     @Transactional(readOnly = true)
     fun getDiet(dietId: Long): Diet {
         return dietRepository.findById(dietId)
-            .orElseThrow { NotFoundException(ErrorStatus.DIET_NOT_FOUND) }
+            .orElseThrow { NotFoundException(DomainStatus.DIET_NOT_FOUND) }
     }
     
     @Transactional(readOnly = true)
     fun getDietFood(dietFoodId: Long): DietFood {
         return dietFoodRepository.findById(dietFoodId)
-            .orElseThrow { NotFoundException(ErrorStatus.DIET_FOOD_NOT_FOUND) }
+            .orElseThrow { NotFoundException(DomainStatus.DIET_FOOD_NOT_FOUND) }
     }
     
     @Transactional(readOnly = true)
@@ -130,7 +129,7 @@ class DietDomainService(
     }
     
     @Transactional(readOnly = true)
-    fun getDietTotalCalories(dietId: Long): BigDecimal {
+    fun getDietTotalCalories(dietId: Long): Double {
         val diet = getDiet(dietId)
         return diet.getTotalCalories()
     }
@@ -151,12 +150,12 @@ class DietDomainService(
     }
     
     data class NutritionSummary(
-        val calories: BigDecimal,
-        val carbohydrates: BigDecimal,
-        val protein: BigDecimal,
-        val fat: BigDecimal,
-        val sugar: BigDecimal,
-        val sodium: BigDecimal,
-        val fiber: BigDecimal
+        val calories: Double,
+        val carbohydrates: Double,
+        val protein: Double,
+        val fat: Double,
+        val sugar: Double,
+        val sodium: Double,
+        val fiber: Double
     )
 }

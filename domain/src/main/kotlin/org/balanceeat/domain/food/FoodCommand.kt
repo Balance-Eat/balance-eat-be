@@ -1,21 +1,20 @@
 package org.balanceeat.domain.food
 
-import java.math.BigDecimal
 
 sealed class FoodCommand {
     
     data class Create(
         val name: String,
         val brand: String? = null,
-        val servingSize: BigDecimal,
+        val servingSize: Double,
         val servingUnit: String,
-        val caloriesPerServing: BigDecimal,
-        val carbohydratesPerServing: BigDecimal? = null,
-        val proteinPerServing: BigDecimal? = null,
-        val fatPerServing: BigDecimal? = null,
-        val sugarPerServing: BigDecimal? = null,
-        val sodiumPerServing: BigDecimal? = null,
-        val fiberPerServing: BigDecimal? = null,
+        val caloriesPerServing: Double,
+        val carbohydratesPerServing: Double? = null,
+        val proteinPerServing: Double? = null,
+        val fatPerServing: Double? = null,
+        val sugarPerServing: Double? = null,
+        val sodiumPerServing: Double? = null,
+        val fiberPerServing: Double? = null,
         val description: String? = null,
         val barcode: String? = null,
         val category: String? = null,
@@ -25,15 +24,15 @@ sealed class FoodCommand {
     data class Update(
         val name: String? = null,
         val brand: String? = null,
-        val servingSize: BigDecimal? = null,
+        val servingSize: Double? = null,
         val servingUnit: String? = null,
-        val caloriesPerServing: BigDecimal? = null,
-        val carbohydratesPerServing: BigDecimal? = null,
-        val proteinPerServing: BigDecimal? = null,
-        val fatPerServing: BigDecimal? = null,
-        val sugarPerServing: BigDecimal? = null,
-        val sodiumPerServing: BigDecimal? = null,
-        val fiberPerServing: BigDecimal? = null,
+        val caloriesPerServing: Double? = null,
+        val carbohydratesPerServing: Double? = null,
+        val proteinPerServing: Double? = null,
+        val fatPerServing: Double? = null,
+        val sugarPerServing: Double? = null,
+        val sodiumPerServing: Double? = null,
+        val fiberPerServing: Double? = null,
         val description: String? = null,
         val barcode: String? = null,
         val category: String? = null,

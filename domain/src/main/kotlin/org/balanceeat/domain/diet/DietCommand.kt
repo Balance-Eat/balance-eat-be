@@ -1,6 +1,5 @@
 package org.balanceeat.domain.diet
 
-import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -16,7 +15,7 @@ sealed class DietCommand {
     
     data class AddFood(
         val foodId: Long,
-        val actualServingSize: BigDecimal,
+        val actualServingSize: Double,
         val servingUnit: String
     )
     
@@ -27,7 +26,7 @@ sealed class DietCommand {
     
     data class UpdateFood(
         val dietFoodId: Long,
-        val actualServingSize: BigDecimal,
+        val actualServingSize: Double,
         val servingUnit: String
     )
     

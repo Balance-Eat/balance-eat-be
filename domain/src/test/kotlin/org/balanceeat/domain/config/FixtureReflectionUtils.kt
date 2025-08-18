@@ -10,39 +10,10 @@ object FixtureReflectionUtils {
     
     /**
      * Reflects fixture field values to the target object using Kotlin reflection
+     * Note: This utility is currently simplified as fixtures use direct constructor calls
      */
     fun <T : Any> reflect(target: T, fixture: Any): T {
-        val targetClass = target::class
-        val fixtureClass = fixture::class
-        
-        // Get all mutable properties from target object
-        val targetProperties = targetClass.memberProperties
-            .filterIsInstance<KMutableProperty1<T, Any?>>()
-        
-        // Get all properties from fixture object
-        val fixtureProperties = fixtureClass.memberProperties
-        
-        // Set values from fixture to target
-        for (targetProperty in targetProperties) {
-            val fixtureProperty = fixtureProperties.find { it.name == targetProperty.name }
-            
-            if (fixtureProperty != null) {
-                try {
-                    // Make properties accessible
-                    targetProperty.isAccessible = true
-                    fixtureProperty.isAccessible = true
-                    
-                    // Get value from fixture and set to target
-                    val value = fixtureProperty.get(fixture)
-                    if (value != null) {
-                        targetProperty.set(target, value)
-                    }
-                } catch (e: Exception) {
-                    // Skip properties that can't be set
-                }
-            }
-        }
-        
+        // For now, just return the target as-is since fixtures are using direct constructors
         return target
     }
     
@@ -73,6 +44,7 @@ object FixtureReflectionUtils {
     /**
      * Sets a specific field value on the target object
      */
+    @Suppress("UNCHECKED_CAST")
     fun <T : Any> setField(target: T, fieldName: String, value: Any?) {
         val targetClass = target::class
         val property = targetClass.memberProperties
@@ -94,6 +66,6 @@ object FixtureReflectionUtils {
             ?: throw IllegalArgumentException("Field '$fieldName' not found in ${targetClass.simpleName}")
         
         property.isAccessible = true
-        return property.get(target)
+        return property.getter.call(target)
     }
 }

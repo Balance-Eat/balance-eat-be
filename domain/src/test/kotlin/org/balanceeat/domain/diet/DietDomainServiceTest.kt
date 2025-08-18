@@ -10,10 +10,9 @@ import org.balanceeat.domain.user.UserRepository
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
 import java.time.LocalDate
 
-class DietIntegrationTest : IntegrationTestContext() {
+class DietDomainServiceTest : IntegrationTestContext() {
 
     @Autowired
     private lateinit var dietDomainService: DietDomainService
@@ -34,9 +33,18 @@ class DietIntegrationTest : IntegrationTestContext() {
     @Transactional
     fun `식사 기록을 생성할 수 있다`() {
         // given
-        val user = userRepository.save(UserFixture.createUser())
-        val food = foodRepository.save(FoodFixture.createFood())
-        val command = DietFixture.createDietCommand(userId = user.id, foodIds = listOf(food.id))
+        val user = userRepository.save(UserFixture().create())
+        val food = foodRepository.save(FoodFixture().create())
+        val command = DietCommandFixture(
+            userId = user.id,
+            foods = mutableListOf(
+                DietCommand.AddFood(
+                    foodId = food.id,
+                    actualServingSize = 1.0,
+                    servingUnit = "개"
+                )
+            )
+        ).create()
 
         // when
         val savedDiet = dietDomainService.create(command)
@@ -46,33 +54,51 @@ class DietIntegrationTest : IntegrationTestContext() {
         assertThat(savedDiet.userId).isEqualTo(user.id)
         assertThat(savedDiet.mealType).isEqualTo(Diet.MealType.BREAKFAST)
         assertThat(savedDiet.dietFoods).hasSize(1)
-        assertThat(savedDiet.getTotalCalories()).isEqualByComparingTo(BigDecimal("100.0"))
+        assertThat(savedDiet.getTotalCalories()).isEqualTo(100.0)
     }
 
     @Test
     fun `사용자 ID와 날짜로 식사 기록을 조회할 수 있다`() {
         // given
-        val user = userRepository.save(UserFixture.createUser())
-        val food1 = foodRepository.save(FoodFixture.createFood(name = "아침 음식"))
-        val food2 = foodRepository.save(FoodFixture.createFood(name = "점심 음식"))
+        val user = userRepository.save(UserFixture(
+            name = "테스트 사용자",
+            email = "testuser@example.com"
+        ).create())
+        
+        val food1 = foodRepository.save(FoodFixture(name = "아침 음식").create())
+        val food2 = foodRepository.save(FoodFixture(name = "점심 음식").create())
         val mealDate = LocalDate.of(2024, 1, 15)
         
         // 아침 식사
-        val breakfastCommand = DietFixture.createDietCommand(
+        val breakfastCommand = DietCommandFixture(
             userId = user.id,
             mealType = Diet.MealType.BREAKFAST,
             mealDate = mealDate,
-            foodIds = listOf(food1.id)
-        )
+            consumedAt = mealDate.atTime(8, 0),
+            foods = mutableListOf(
+                DietCommand.AddFood(
+                    foodId = food1.id,
+                    actualServingSize = 1.0,
+                    servingUnit = "개"
+                )
+            )
+        ).create()
         dietDomainService.create(breakfastCommand)
         
         // 점심 식사
-        val lunchCommand = DietFixture.createDietCommand(
+        val lunchCommand = DietCommandFixture(
             userId = user.id,
             mealType = Diet.MealType.LUNCH,
             mealDate = mealDate,
-            foodIds = listOf(food2.id)
-        )
+            consumedAt = mealDate.atTime(12, 0),
+            foods = mutableListOf(
+                DietCommand.AddFood(
+                    foodId = food2.id,
+                    actualServingSize = 1.0,
+                    servingUnit = "개"
+                )
+            )
+        ).create()
         dietDomainService.create(lunchCommand)
 
         // when
@@ -88,15 +114,22 @@ class DietIntegrationTest : IntegrationTestContext() {
     @Transactional
     fun `사용자 UUID와 날짜로 식사 기록을 조회할 수 있다`() {
         // given
-        val user = userRepository.save(UserFixture.createUser())
-        val food = foodRepository.save(FoodFixture.createFood(name = "UUID 조회 테스트"))
+        val user = userRepository.save(UserFixture().create())
+        val food = foodRepository.save(FoodFixture(name = "UUID 조회 테스트").create())
         val mealDate = LocalDate.of(2024, 2, 15) // 다른 날짜 사용
         
-        val command = DietFixture.createDietCommand(
+        val command = DietCommandFixture(
             userId = user.id,
             mealDate = mealDate,
-            foodIds = listOf(food.id)
-        )
+            consumedAt = mealDate.atTime(8, 0),
+            foods = mutableListOf(
+                DietCommand.AddFood(
+                    foodId = food.id,
+                    actualServingSize = 1.0,
+                    servingUnit = "개"
+                )
+            )
+        ).create()
         dietDomainService.create(command)
 
         // when
@@ -111,15 +144,22 @@ class DietIntegrationTest : IntegrationTestContext() {
     @Test
     fun `검색 명령으로 식사 기록을 조회할 수 있다`() {
         // given
-        val user = userRepository.save(UserFixture.createUser())
-        val food = foodRepository.save(FoodFixture.createFood(name = "검색 테스트"))
+        val user = userRepository.save(UserFixture().create())
+        val food = foodRepository.save(FoodFixture(name = "검색 테스트").create())
         val mealDate = LocalDate.of(2024, 3, 15) // 다른 날짜 사용
         
-        val command = DietFixture.createDietCommand(
+        val command = DietCommandFixture(
             userId = user.id,
             mealDate = mealDate,
-            foodIds = listOf(food.id)
-        )
+            consumedAt = mealDate.atTime(8, 0),
+            foods = mutableListOf(
+                DietCommand.AddFood(
+                    foodId = food.id,
+                    actualServingSize = 1.0,
+                    servingUnit = "개"
+                )
+            )
+        ).create()
         dietDomainService.create(command)
 
         // when - userId로 검색
@@ -141,7 +181,7 @@ class DietIntegrationTest : IntegrationTestContext() {
     @Test
     fun `존재하지 않는 날짜로 조회하면 빈 리스트를 반환한다`() {
         // given
-        val user = userRepository.save(UserFixture.createUser())
+        val user = userRepository.save(UserFixture().create())
         val nonExistentDate = LocalDate.of(2099, 12, 31)
 
         // when

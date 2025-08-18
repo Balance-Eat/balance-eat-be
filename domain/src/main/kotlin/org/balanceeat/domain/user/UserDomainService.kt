@@ -1,6 +1,8 @@
 package org.balanceeat.domain.user
 
-import org.balanceeat.domain.common.ErrorStatus
+import org.balanceeat.domain.common.DomainStatus
+import org.balanceeat.domain.common.DomainStatus.USER_ALREADY_EXISTS
+import org.balanceeat.domain.common.exceptions.BadRequestException
 import org.balanceeat.domain.common.exceptions.NotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -11,6 +13,10 @@ class UserDomainService(
 ) {
     @Transactional
     fun create(command: UserCommand.Create) {
+        if (userRepository.existsByUuid(command.uuid)) {
+            throw BadRequestException(USER_ALREADY_EXISTS)
+        }
+
         val user = User(
             name = command.name,
             uuid = command.uuid,
@@ -35,13 +41,13 @@ class UserDomainService(
     @Transactional(readOnly = true)
     fun findById(id: Long): User {
         return userRepository.findById(id)
-            .orElseThrow { NotFoundException(ErrorStatus.USER_NOT_FOUND) }
+            .orElseThrow { NotFoundException(DomainStatus.USER_NOT_FOUND) }
     }
 
     @Transactional(readOnly = true)
     fun findByUuid(uuid: String): User {
         return userRepository.findByUuid(uuid)
-            ?: throw NotFoundException(ErrorStatus.USER_NOT_FOUND)
+            ?: throw NotFoundException(DomainStatus.USER_NOT_FOUND)
     }
 
     @Transactional
