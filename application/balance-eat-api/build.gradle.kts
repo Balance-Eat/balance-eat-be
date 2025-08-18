@@ -4,12 +4,9 @@ plugins {
     kotlin("kapt")
     id("org.springframework.boot")
     id("io.spring.dependency-management")
-    id("org.jlleitschuh.gradle.ktlint")
+//    id("org.jlleitschuh.gradle.ktlint")
     id("java-test-fixtures")
 }
-
-group = "org.balanceeat"
-version = "0.0.1-SNAPSHOT"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21

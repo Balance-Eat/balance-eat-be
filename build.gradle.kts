@@ -52,7 +52,7 @@ subprojects {
         plugin("kotlin")
         plugin("kotlin-spring")
         plugin("kotlin-kapt")
-        plugin("org.jlleitschuh.gradle.ktlint")
+//        plugin("org.jlleitschuh.gradle.ktlint")
         plugin("java-test-fixtures")
     }
 
