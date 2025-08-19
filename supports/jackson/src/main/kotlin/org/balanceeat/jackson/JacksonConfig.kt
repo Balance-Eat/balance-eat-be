@@ -39,7 +39,7 @@ class JacksonConfig {
                 configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
 
                 // 프로퍼티 네이밍 전략
-                propertyNamingStrategy = PropertyNamingStrategies.SNAKE_CASE
+                propertyNamingStrategy = PropertyNamingStrategies.LOWER_CAMEL_CASE
 
                 // null 값 제외
                 setSerializationInclusion(JsonInclude.Include.NON_NULL)

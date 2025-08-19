@@ -11,9 +11,9 @@ interface UserV1ApiSpec {
     fun create(request: UserV1Request.Create): ApiResponse<Void>
     
     @Operation(summary = "사용자 정보 조회")
-    fun getById(
-        @Parameter(description = "사용자 ID", required = true)
-        id: Long
+    fun getMe(
+        @Parameter(description = "사용자 UUID", required = false)
+        uuid: String
     ): ApiResponse<UserV1Response.Info>
     
     @Operation(summary = "사용자 정보 수정")

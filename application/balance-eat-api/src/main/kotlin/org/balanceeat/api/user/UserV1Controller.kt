@@ -8,13 +8,13 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/v1/users")
 class UserV1Controller(
     private val userDomainService: UserDomainService,
 ) : UserV1ApiSpec {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    override fun create(@RequestBody @Valid request: UserV1Request.Create): ApiResponse<Void> {
+    override fun create(@RequestBody request: UserV1Request.Create): ApiResponse<Void> {
         val command = UserCommand.Create(
             uuid = request.uuid,
             name = request.name,
@@ -37,9 +37,9 @@ class UserV1Controller(
         return ApiResponse.success()
     }
 
-    @GetMapping("/{id}")
-    override fun getById(@PathVariable id: Long): ApiResponse<UserV1Response.Info> {
-        val user = userDomainService.findById(id)
+    @GetMapping("/me")
+    override fun getMe(@RequestParam(required = false) uuid: String): ApiResponse<UserV1Response.Info> {
+        val user = userDomainService.findByUuid(uuid)
         val response = UserV1Response.Info(
             id = user.id,
             uuid = user.uuid,
@@ -62,7 +62,7 @@ class UserV1Controller(
         return ApiResponse.success(response)
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     override fun update(
         @PathVariable id: Long,
         @RequestBody @Valid request: UserV1Request.Update

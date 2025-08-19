@@ -51,7 +51,7 @@ class UserV1ControllerTest {
 
             // when & then
             mockMvc.perform(
-                post("/api/v1/users")
+                post("/v1/users")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(request)
             )

@@ -16,7 +16,7 @@ springdoc:
     doc-expansion: none
     disable-swagger-default-url: true
   packages-to-scan: org.balanceeat.api
-  paths-to-match: /api/**, /health
+  paths-to-match: /v1/**, /health
 
 management:
   endpoints:

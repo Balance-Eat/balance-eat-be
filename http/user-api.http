@@ -1,7 +1,7 @@
 ### User 생성 API 테스트
 
 # 기본 사용자 생성 (필수 필드만)
-POST {{baseUrl}}/api/{{apiVersion}}/users
+POST {{baseUrl}}/{{apiVersion}}/users
 Content-Type: application/json
 
 {
@@ -16,7 +16,7 @@ Content-Type: application/json
 ###
 
 # 모든 필드를 포함한 사용자 생성
-POST {{baseUrl}}/api/{{apiVersion}}/users
+POST {{baseUrl}}/{{apiVersion}}/users
 Content-Type: application/json
 
 {
@@ -38,10 +38,36 @@ Content-Type: application/json
   "providerType": "GOOGLE"
 }
 
+# 예상 응답 (camelCase):
+# {
+#   "status": "SUCCESS", 
+#   "message": "성공적으로 생성되었습니다.",
+#   "data": {
+#     "id": 2,
+#     "uuid": "550e8400-e29b-41d4-a716-446655440001",
+#     "name": "김영희",
+#     "email": "younghee.kim@example.com",
+#     "gender": "FEMALE",
+#     "age": 25,
+#     "weight": 55.0,
+#     "height": 162.0,
+#     "activityLevel": "MODERATE",
+#     "smi": 8.5,
+#     "fatPercentage": 22.0,
+#     "targetWeight": 52.0,
+#     "targetCalorie": 1800,
+#     "targetSmi": 9.0,
+#     "targetFatPercentage": 20.0,
+#     "providerId": "google_12345",
+#     "providerType": "GOOGLE"
+#   },
+#   "serverDatetime": "2025-08-19T20:30:00"
+# }
+
 ###
 
 # 여성 사용자 생성 (LIGHT 활동 수준)
-POST {{baseUrl}}/api/{{apiVersion}}/users
+POST {{baseUrl}}/{{apiVersion}}/users
 Content-Type: application/json
 
 {
@@ -64,7 +90,7 @@ Content-Type: application/json
 ###
 
 # 남성 사용자 생성 (ACTIVE 활동 수준)
-POST {{baseUrl}}/api/{{apiVersion}}/users
+POST {{baseUrl}}/{{apiVersion}}/users
 Content-Type: application/json
 
 {
@@ -87,7 +113,7 @@ Content-Type: application/json
 ###
 
 # 다른 성별 사용자 생성
-POST {{baseUrl}}/api/{{apiVersion}}/users
+POST {{baseUrl}}/{{apiVersion}}/users
 Content-Type: application/json
 
 {
@@ -104,7 +130,7 @@ Content-Type: application/json
 ###
 
 # 매우 활발한 활동 수준 사용자 생성
-POST {{baseUrl}}/api/{{apiVersion}}/users
+POST {{baseUrl}}/{{apiVersion}}/users
 Content-Type: application/json
 
 {
@@ -128,14 +154,8 @@ Content-Type: application/json
 
 ### User 조회 API 테스트
 
-# 사용자 정보 조회 (ID로)
-GET {{baseUrl}}/api/{{apiVersion}}/users/1
-Accept: application/json
-
-###
-
-# 존재하지 않는 사용자 조회 (404 예상)
-GET {{baseUrl}}/api/{{apiVersion}}/users/999
+# 사용자 정보 조회
+GET {{baseUrl}}/{{apiVersion}}/users/me?uuid=0198c22c-e8e1-7c75-88f9-fb9f286e73a0
 Accept: application/json
 
 ###
@@ -143,7 +163,7 @@ Accept: application/json
 ### User 수정 API 테스트
 
 # 사용자 정보 부분 수정 (이름과 나이만)
-PATCH {{baseUrl}}/api/{{apiVersion}}/users/1
+PUT {{baseUrl}}/{{apiVersion}}/users/1
 Content-Type: application/json
 
 {
@@ -154,7 +174,7 @@ Content-Type: application/json
 ###
 
 # 사용자 신체 정보 수정
-PATCH {{baseUrl}}/api/{{apiVersion}}/users/1
+PUT {{baseUrl}}/{{apiVersion}}/users/1
 Content-Type: application/json
 
 {
@@ -166,7 +186,7 @@ Content-Type: application/json
 ###
 
 # 사용자 목표 정보 수정
-PATCH {{baseUrl}}/api/{{apiVersion}}/users/1
+PUT {{baseUrl}}/{{apiVersion}}/users/1
 Content-Type: application/json
 
 {
@@ -178,7 +198,7 @@ Content-Type: application/json
 ###
 
 # 존재하지 않는 사용자 수정 (404 예상)
-PATCH {{baseUrl}}/api/{{apiVersion}}/users/999
+PUT {{baseUrl}}/{{apiVersion}}/users/999
 Content-Type: application/json
 
 {
@@ -195,7 +215,7 @@ Content-Type: application/json
 # - local-docker: 로컬 도커 환경 (http://localhost:8081)
 
 # 동적 값 생성 예시
-# POST {{baseUrl}}/api/{{apiVersion}}/users
+# POST {{baseUrl}}/{{apiVersion}}/users
 # Content-Type: application/json
 # 
 # {
