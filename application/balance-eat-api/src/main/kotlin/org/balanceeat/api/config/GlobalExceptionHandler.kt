@@ -35,7 +35,7 @@ class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException::class)
     fun handleBindException(ex: BindException, request: HttpServletRequest): ApiResponse<Any> {
-        logger.warn { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
+        logger.warn(ex) { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
 
         return ApiResponse.fail(
             ex.bindingResult.allErrors
@@ -47,7 +47,7 @@ class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException::class)
     fun handleConstraintViolationException(ex: ConstraintViolationException, request: HttpServletRequest): ApiResponse<Any> {
-        logger.warn { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
+        logger.warn(ex) { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
         return ApiResponse.fail(ex.message ?: USER_4XX_MESSAGE)
     }
 
@@ -57,7 +57,7 @@ class GlobalExceptionHandler {
         IllegalStateException::class,
     )
     fun handleIllegalException(ex: Exception, request: HttpServletRequest): ApiResponse<Any> {
-        logger.warn { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
+        logger.warn(ex) { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
         return ApiResponse.fail(ex.message ?: USER_4XX_MESSAGE)
     }
 
@@ -71,7 +71,7 @@ class GlobalExceptionHandler {
         DateTimeParseException::class,
     )
     fun handle4xx(ex: Exception, request: HttpServletRequest): ApiResponse<Any> {
-        logger.warn { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
+        logger.warn(ex) { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
         return ApiResponse.fail(USER_4XX_MESSAGE)
     }
 
@@ -85,28 +85,21 @@ class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BadRequestException::class)
     fun handleBadRequestException(ex: BadRequestException, request: HttpServletRequest): ApiResponse<Any> {
-        logger.warn { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
+        logger.warn(ex) { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
         return ApiResponse.fail(ex.status, ex.message)
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(NotFoundException::class)
-    fun handleNotFoundException(ex: NotFoundException, request: HttpServletRequest): ApiResponse<Any> {
-        logger.error { "[${request.requestURI}] 해당 리소스는 존재하지 않습니다." }
-        return ApiResponse.notFound(ex.status, ex.message)
-    }
-
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(NoResourceFoundException::class)
-    fun handleNoResourceFoundException(ex: NoResourceFoundException, request: HttpServletRequest): ApiResponse<Any> {
-        logger.error { "[${request.requestURI}] 해당 리소스는 존재하지 않습니다." }
+    @ExceptionHandler(NoResourceFoundException::class, NotFoundException::class)
+    fun handleNoResourceFoundException(ex: Exception, request: HttpServletRequest): ApiResponse<Any> {
+        logger.warn { "[${request.requestURI}] 해당 리소스는 존재하지 않습니다." }
         return ApiResponse.notFound()
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(InternalErrorException::class)
     fun handleInternalErrorException(ex: InternalErrorException, request: HttpServletRequest): ApiResponse<Any> {
-        logger.error { "[${request.requestURI}] 서버 오류가 발생하였습니다." }
+        logger.error(ex) { "[${request.requestURI}] 서버 오류가 발생하였습니다." }
         return ApiResponse.error(ex.message ?: "서버 오류가 발생했습니다.")
     }
 
@@ -114,9 +107,9 @@ class GlobalExceptionHandler {
     @ExceptionHandler(DomainException::class)
     fun handleDomainException(ex: DomainException, request: HttpServletRequest): ApiResponse<Any> {
         if (ex.isCritical) {
-            logger.error { "[${request.requestURI}] 도메인 오류가 발생하였습니다." }
+            logger.error(ex) { "[${request.requestURI}] 도메인 오류가 발생하였습니다." }
         } else {
-            logger.warn { "[${request.requestURI}] 도메인 오류가 발생하였습니다." }
+            logger.warn(ex) { "[${request.requestURI}] 도메인 오류가 발생하였습니다." }
         }
         return ApiResponse.fail(ex.status, ex.message ?: "도메인 오류가 발생했습니다.")
     }
@@ -124,20 +117,19 @@ class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(UnauthorizedException::class)
     fun handleUnauthorizedException(ex: UnauthorizedException, request: HttpServletRequest): ApiResponse<Any> {
-        logger.warn { "[${request.requestURI}] 인증 오류가 발생하였습니다." }
+        logger.warn(ex) { "[${request.requestURI}] 인증 오류가 발생하였습니다." }
         return ApiResponse.unauthorized(ex.status, ex.message)
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValid(ex: MethodArgumentNotValidException, request: HttpServletRequest): ApiResponse<Any> {
-        logger.warn { "[${request.requestURI}] 입력값 검증에 실패했습니다." }
+        logger.warn(ex) { "[${request.requestURI}] 입력값 검증에 실패했습니다." }
         
         return ApiResponse.fail(
             ex.bindingResult
                 .allErrors
-                .map(ObjectError::getDefaultMessage)
-                .filterNotNull()
+                .mapNotNull(ObjectError::getDefaultMessage)
                 .joinToString("\n")
         )
     }
