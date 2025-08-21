@@ -16,32 +16,16 @@ class FoodDomainService(
             .orElseThrow { NotFoundException(DomainStatus.FOOD_NOT_FOUND) }
     }
     
-    fun searchFoods(keyword: String): List<Food> {
-        return foodRepository.findByNameContainingIgnoreCase(keyword)
-    }
-    
     @Transactional
-    fun createFood(command: FoodCommand.Create): Food {
-        val food = if (command.uuid != null) {
-            Food(
-                name = command.name,
-                uuid = command.uuid,
-                perCapitaIntake = command.perCapitaIntake,
-                unit = command.unit,
-                carbohydrates = command.carbohydrates,
-                protein = command.protein,
-                fat = command.fat
-            )
-        } else {
-            Food(
-                name = command.name,
-                perCapitaIntake = command.perCapitaIntake,
-                unit = command.unit,
-                carbohydrates = command.carbohydrates,
-                protein = command.protein,
-                fat = command.fat
-            )
-        }
+    fun create(command: FoodCommand.Create): Food {
+        val food = Food(
+            name = command.name,
+            perCapitaIntake = command.perCapitaIntake,
+            unit = command.unit,
+            carbohydrates = command.carbohydrates,
+            protein = command.protein,
+            fat = command.fat
+        )
         
         return foodRepository.save(food)
     }

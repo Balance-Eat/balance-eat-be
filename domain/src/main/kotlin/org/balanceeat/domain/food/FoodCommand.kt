@@ -9,8 +9,7 @@ sealed class FoodCommand {
         val unit: String,
         val carbohydrates: Double = 0.0,
         val protein: Double = 0.0,
-        val fat: Double = 0.0,
-        val uuid: String? = null // null이면 자동 생성
+        val fat: Double = 0.0
     )
     
     data class Update(
