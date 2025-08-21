@@ -3,9 +3,7 @@ package org.balanceeat.domain.diet
 import org.assertj.core.api.Assertions.assertThat
 import org.balanceeat.domain.config.supports.IntegrationTestContext
 import org.balanceeat.domain.food.FoodDomainService
-import org.balanceeat.domain.food.FoodFixture
 import org.balanceeat.domain.food.FoodRepository
-import org.balanceeat.domain.user.UserFixture
 import org.balanceeat.domain.user.UserRepository
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

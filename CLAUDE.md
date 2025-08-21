@@ -6,6 +6,7 @@ This document contains project-specific guidelines and conventions for the Balan
 
 ### Project Guidelines
 - **[Project Structure Guidelines](claude/project-structure.md)** - Project architecture, module structure, and development standards
+- **[Entity Guidelines](claude/entity-guidelines.md)** - JPA entity design patterns and validation standards
 
 ### Testing Guidelines
 - **[Test Fixture Guidelines](claude/fixture-guidelines.md)** - Standardized fixture patterns and best practices

@@ -49,27 +49,39 @@ val savedUser = userRepository.save(
 
 ## File Organization Rules
 
+### TestFixtures Directory Structure
+- All fixtures are located in `src/testFixtures/kotlin` directory
+- This uses Gradle's `java-test-fixtures` plugin for sharing fixtures across modules
+- Fixtures can be used as dependencies in other modules
+
 ### One Fixture Per File
 - Each fixture class should be in its own separate file
 - File naming convention: `{Entity}Fixture.kt`
-- Located in the same package as the entity being tested
+- Located in the same package structure as the entity being tested
 
 ### File Structure Example
 ```
-domain/src/test/kotlin/org/balanceeat/domain/
-├── user/
-│   ├── UserFixture.kt           # User entity fixture
-│   ├── UserCommandFixture.kt    # UserCommand.Create fixture
-│   └── UserIntegrationTest.kt   # User integration tests
-├── food/
-│   ├── FoodFixture.kt           # Food entity fixture
-│   ├── FoodCommandFixture.kt    # FoodCommand.Create fixture
-│   └── FoodIntegrationTest.kt   # Food integration tests
-└── diet/
-    ├── DietFixture.kt           # Diet entity fixture
-    ├── DietCommandFixture.kt    # DietCommand.Create fixture
-    ├── DietFoodFixture.kt       # DietFood entity fixture
-    └── DietIntegrationTest.kt   # Diet integration tests
+domain/src/
+├── testFixtures/kotlin/org/balanceeat/domain/  # Test fixtures (shared across modules)
+│   ├── config/
+│   │   └── TestFixture.kt                      # Base test fixture interface
+│   ├── user/
+│   │   ├── UserFixture.kt                      # User entity fixture
+│   │   └── UserCommandFixture.kt               # UserCommand.Create fixture
+│   ├── food/
+│   │   ├── FoodFixture.kt                      # Food entity fixture
+│   │   └── FoodCommandFixture.kt               # FoodCommand.Create fixture
+│   └── diet/
+│       ├── DietFixture.kt                      # Diet entity fixture
+│       ├── DietCommandFixture.kt               # DietCommand.Create fixture
+│       └── DietFoodFixture.kt                  # DietFood entity fixture
+└── test/kotlin/org/balanceeat/domain/          # Test files
+    ├── user/
+    │   └── UserDomainServiceTest.kt            # User integration tests
+    ├── food/
+    │   └── FoodTest.kt                         # Food tests
+    └── diet/
+        └── DietDomainServiceTest.kt            # Diet integration tests
 ```
 
 ## Fixture Types
@@ -153,6 +165,7 @@ fun `사용자를 생성할 수 있다`() {
 
 ## File Naming Conventions
 - Fixtures: `{Entity}Fixture.kt`
+- Location: `src/testFixtures/kotlin/org/balanceeat/domain/{domain}/`
 
 ## Quality Standards
 
