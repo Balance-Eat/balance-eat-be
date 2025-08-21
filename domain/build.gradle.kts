@@ -22,7 +22,7 @@ dependencies {
 //    implementation(project(":core"))
     api("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("com.github.f4b6a3:uuid-creator:5.3.3")
+    implementation("com.github.f4b6a3:uuid-creator:6.1.0")
 
 //    implementation("com.querydsl:querydsl-jpa:$querydslVersion:jakarta")
 //    kapt("com.querydsl:querydsl-apt:$querydslVersion:jakarta")

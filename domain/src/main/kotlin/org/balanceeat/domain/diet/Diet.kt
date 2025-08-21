@@ -44,9 +44,9 @@ class Diet(
             calculatedCarbohydrates = nutritionInfo.carbohydrates,
             calculatedProtein = nutritionInfo.protein,
             calculatedFat = nutritionInfo.fat,
-            calculatedSugar = nutritionInfo.sugar,
-            calculatedSodium = nutritionInfo.sodium,
-            calculatedFiber = nutritionInfo.fiber
+            calculatedSugar = null,
+            calculatedSodium = null,
+            calculatedFiber = null
         )
         
         dietFoods.add(dietFood)
