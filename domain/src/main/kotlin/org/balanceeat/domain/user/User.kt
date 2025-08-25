@@ -40,6 +40,12 @@ class User(
     var targetSmi: Double? = null,
     @Column(name = "target_fat_percentage")
     var targetFatPercentage: Double? = null,
+    @Column(name = "target_carbohydrates")
+    var targetCarbohydrates: Double? = null,
+    @Column(name = "target_protein")
+    var targetProtein: Double? = null,
+    @Column(name = "target_fat")
+    var targetFat: Double? = null,
     @Column(name = "provider_id", length = 255)
     var providerId: String? = null,
     @Column(name = "provider_type", length = 50)
@@ -104,6 +110,24 @@ class User(
         targetFatPercentage?.let {
             require(it in 0.0..100.0) { "목표 체지방률은 0% 이상 100% 이하여야 합니다" }
             require(it.toString().substringAfter(".").length <= 2) { "목표 체지방률은 소수점 2자리까지만 입력 가능합니다" }
+        }
+
+        // 목표 탄수화물 검증
+        targetCarbohydrates?.let {
+            require(it in 0.0..1000.0) { "목표 탄수화물은 0g 이상 1000g 이하여야 합니다" }
+            require(it.toString().substringAfter(".").length <= 2) { "목표 탄수화물은 소수점 2자리까지만 입력 가능합니다" }
+        }
+
+        // 목표 단백질 검증
+        targetProtein?.let {
+            require(it in 0.0..1000.0) { "목표 단백질은 0g 이상 1000g 이하여야 합니다" }
+            require(it.toString().substringAfter(".").length <= 2) { "목표 단백질은 소수점 2자리까지만 입력 가능합니다" }
+        }
+
+        // 목표 지방 검증
+        targetFat?.let {
+            require(it in 0.0..1000.0) { "목표 지방은 0g 이상 1000g 이하여야 합니다" }
+            require(it.toString().substringAfter(".").length <= 2) { "목표 지방은 소수점 2자리까지만 입력 가능합니다" }
         }
         
         // Provider 필드 검증

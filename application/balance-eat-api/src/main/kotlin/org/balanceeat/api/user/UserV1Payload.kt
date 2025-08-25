@@ -83,6 +83,21 @@ class UserV1Request {
         )
         val targetFatPercentage: Double? = null,
         @Schema(
+            description = "사용자 목표 탄수화물 (g, 선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val targetCarbohydrates: Double? = null,
+        @Schema(
+            description = "사용자 목표 단백질 (g, 선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val targetProtein: Double? = null,
+        @Schema(
+            description = "사용자 목표 지방 (g, 선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val targetFat: Double? = null,
+        @Schema(
             description = "제공자 ID (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
         )
@@ -159,7 +174,22 @@ class UserV1Request {
             description = "사용자 목표 체지방률 (선택)",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED,
         )
-        val targetFatPercentage: Double? = null
+        val targetFatPercentage: Double? = null,
+        @Schema(
+            description = "사용자 목표 탄수화물 (g, 선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val targetCarbohydrates: Double? = null,
+        @Schema(
+            description = "사용자 목표 단백질 (g, 선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val targetProtein: Double? = null,
+        @Schema(
+            description = "사용자 목표 지방 (g, 선택)",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+        )
+        val targetFat: Double? = null
     )
 }
 
@@ -180,6 +210,9 @@ class UserV1Response {
         val targetCalorie: Int?,
         val targetSmi: Double?,
         val targetFatPercentage: Double?,
+        val targetCarbohydrates: Double?,
+        val targetProtein: Double?,
+        val targetFat: Double?,
         val providerId: String?,
         val providerType: String?
     )

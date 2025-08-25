@@ -18,6 +18,9 @@ class UserCommandFixture(
     var targetCalorie: Int? = 2200,
     var targetSmi: Double? = 23.0,
     var targetFatPercentage: Double? = 12.0,
+    var targetCarbohydrates: Double? = 300.0,
+    var targetProtein: Double? = 120.0,
+    var targetFat: Double? = 80.0,
     var providerId: String? = "google123",
     var providerType: String? = "GOOGLE"
 ) : TestFixture<UserCommand.Create> {
@@ -37,6 +40,9 @@ class UserCommandFixture(
             targetCalorie = targetCalorie,
             targetSmi = targetSmi,
             targetFatPercentage = targetFatPercentage,
+            targetCarbohydrates = targetCarbohydrates,
+            targetProtein = targetProtein,
+            targetFat = targetFat,
             providerId = providerId,
             providerType = providerType
         )

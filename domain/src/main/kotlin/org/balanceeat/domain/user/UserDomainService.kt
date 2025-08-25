@@ -32,6 +32,9 @@ class UserDomainService(
             targetCalorie = command.targetCalorie,
             targetSmi = command.targetSmi,
             targetFatPercentage = command.targetFatPercentage,
+            targetCarbohydrates = command.targetCarbohydrates,
+            targetProtein = command.targetProtein,
+            targetFat = command.targetFat,
             providerId = command.providerId,
             providerType = command.providerType
         )
@@ -67,6 +70,9 @@ class UserDomainService(
             command.targetCalorie?.let { targetCalorie = it }
             command.targetSmi?.let { targetSmi = it }
             command.targetFatPercentage?.let { targetFatPercentage = it }
+            command.targetCarbohydrates?.let { targetCarbohydrates = it }
+            command.targetProtein?.let { targetProtein = it }
+            command.targetFat?.let { targetFat = it }
         }
         userRepository.save(user)
     }

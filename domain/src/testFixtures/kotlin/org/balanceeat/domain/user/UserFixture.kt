@@ -20,6 +20,9 @@ class UserFixture(
     var targetCalorie: Int? = null,
     var targetSmi: Double? = null,
     var targetFatPercentage: Double? = null,
+    var targetCarbohydrates: Double? = null,
+    var targetProtein: Double? = null,
+    var targetFat: Double? = null,
     var providerId: String? = null,
     var providerType: String? = null
 ) : TestFixture<User> {
@@ -40,6 +43,9 @@ class UserFixture(
             targetCalorie = targetCalorie,
             targetSmi = targetSmi,
             targetFatPercentage = targetFatPercentage,
+            targetCarbohydrates = targetCarbohydrates,
+            targetProtein = targetProtein,
+            targetFat = targetFat,
             providerId = providerId,
             providerType = providerType
         )

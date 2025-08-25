@@ -18,6 +18,9 @@ class UserCommand {
         val targetCalorie: Int? = null,
         val targetSmi: Double? = null,
         val targetFatPercentage: Double? = null,
+        val targetCarbohydrates: Double? = null,
+        val targetProtein: Double? = null,
+        val targetFat: Double? = null,
         val providerId: String? = null,
         val providerType: String? = null
     )
@@ -35,6 +38,9 @@ class UserCommand {
         val targetWeight: Double? = null,
         val targetCalorie: Int? = null,
         val targetSmi: Double? = null,
-        val targetFatPercentage: Double? = null
+        val targetFatPercentage: Double? = null,
+        val targetCarbohydrates: Double? = null,
+        val targetProtein: Double? = null,
+        val targetFat: Double? = null
     )
 }

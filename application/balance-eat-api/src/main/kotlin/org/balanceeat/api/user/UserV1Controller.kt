@@ -30,6 +30,9 @@ class UserV1Controller(
             targetCalorie = request.targetCalorie,
             targetSmi = request.targetSmi,
             targetFatPercentage = request.targetFatPercentage,
+            targetCarbohydrates = request.targetCarbohydrates,
+            targetProtein = request.targetProtein,
+            targetFat = request.targetFat,
             providerId = request.providerId,
             providerType = request.providerType
         )
@@ -56,6 +59,9 @@ class UserV1Controller(
             targetCalorie = user.targetCalorie,
             targetSmi = user.targetSmi,
             targetFatPercentage = user.targetFatPercentage,
+            targetCarbohydrates = user.targetCarbohydrates,
+            targetProtein = user.targetProtein,
+            targetFat = user.targetFat,
             providerId = user.providerId,
             providerType = user.providerType
         )
@@ -80,7 +86,10 @@ class UserV1Controller(
             targetWeight = request.targetWeight,
             targetCalorie = request.targetCalorie,
             targetSmi = request.targetSmi,
-            targetFatPercentage = request.targetFatPercentage
+            targetFatPercentage = request.targetFatPercentage,
+            targetCarbohydrates = request.targetCarbohydrates,
+            targetProtein = request.targetProtein,
+            targetFat = request.targetFat
         )
         userDomainService.update(id, command)
         return ApiResponse.success()
