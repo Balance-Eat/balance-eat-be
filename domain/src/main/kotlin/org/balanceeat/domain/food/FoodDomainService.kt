@@ -6,19 +6,20 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-@Transactional(readOnly = true)
 class FoodDomainService(
     private val foodRepository: FoodRepository
 ) {
-    
-    fun getFood(foodId: Long): Food {
-        return foodRepository.findById(foodId)
+    @Transactional(readOnly = true)
+    fun getFood(foodId: Long): FoodDto {
+        val food = foodRepository.findById(foodId)
             .orElseThrow { NotFoundException(DomainStatus.FOOD_NOT_FOUND) }
+        return FoodDto.from(food)
     }
     
     @Transactional
-    fun create(command: FoodCommand.Create): Food {
+    fun create(command: FoodCommand.Create): FoodDto {
         val food = Food(
+            uuid = command.uuid,
             name = command.name,
             perCapitaIntake = command.perCapitaIntake,
             unit = command.unit,
@@ -27,6 +28,7 @@ class FoodDomainService(
             fat = command.fat
         )
         
-        return foodRepository.save(food)
+        val savedFood = foodRepository.save(food)
+        return FoodDto.from(savedFood)
     }
 }

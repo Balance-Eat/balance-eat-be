@@ -3,7 +3,6 @@ package org.balanceeat.domain.food
 import jakarta.persistence.*
 import org.balanceeat.domain.config.BaseEntity
 import org.balanceeat.domain.config.NEW_ID
-import org.balanceeat.domain.config.UuidGenerator
 
 @Entity
 @Table(name = "food")
@@ -16,7 +15,7 @@ class Food(
     val name: String,
 
     @Column(name = "uuid", nullable = false, unique = true, length = 36)
-    val uuid: String = UuidGenerator.generateUuidV7(),
+    val uuid: String,
 
     // 1회 기준 섭취량
     @Column(name = "per_capita_intake", nullable = false)

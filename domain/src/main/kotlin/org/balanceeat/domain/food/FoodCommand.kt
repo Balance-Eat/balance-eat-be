@@ -4,6 +4,7 @@ package org.balanceeat.domain.food
 sealed class FoodCommand {
     
     data class Create(
+        val uuid: String,
         val name: String,
         val perCapitaIntake: Double,
         val unit: String,

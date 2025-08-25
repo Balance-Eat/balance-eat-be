@@ -6,7 +6,7 @@ import org.balanceeat.domain.config.UuidGenerator
 
 class FoodFixture(
     var id: Long = NEW_ID,
-    var uuid: String = UuidGenerator.generateUuidV7(),
+    var uuid: String = UuidGenerator.generateUuidV7().toString(),
     var name: String = "테스트 음식",
     var perCapitaIntake: Double = 1.0,
     var unit: String = "g",

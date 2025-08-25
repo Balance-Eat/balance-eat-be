@@ -13,19 +13,9 @@ class UuidGeneratorTest {
         
         // then
         assertNotNull(uuidV7)
-        assertTrue(UuidGenerator.isValidUuid(uuidV7))
-        assertEquals(36, uuidV7.length) // UUID 표준 길이
-        assertTrue(uuidV7.contains("-")) // UUID 형식
-    }
-
-    @Test
-    fun `UUID v7 객체 생성 테스트`() {
-        // given & when
-        val uuidV7Object = UuidGenerator.generateUuidV7AsUuid()
-        
-        // then
-        assertNotNull(uuidV7Object)
-        assertTrue(uuidV7Object is UUID)
+        assertTrue(UuidGenerator.isValidUuid(uuidV7.toString()))
+        assertEquals(36, uuidV7.toString().length) // UUID 표준 길이
+        assertTrue(uuidV7.toString().contains("-")) // UUID 형식
     }
 
     @Test
@@ -36,7 +26,7 @@ class UuidGeneratorTest {
         val uuid2 = UuidGenerator.generateUuidV7()
         
         // then
-        assertTrue(uuid1 < uuid2) // UUID v7은 시간 기반으로 정렬 가능
+        assertTrue(uuid1.toString() < uuid2.toString()) // UUID v7은 시간 기반으로 정렬 가능
     }
 
     @Test
@@ -46,7 +36,7 @@ class UuidGeneratorTest {
         
         // then
         assertNotNull(uuidV4)
-        assertTrue(UuidGenerator.isValidUuid(uuidV4))
+        assertTrue(UuidGenerator.isValidUuid(uuidV4.toString()))
     }
 
     @Test

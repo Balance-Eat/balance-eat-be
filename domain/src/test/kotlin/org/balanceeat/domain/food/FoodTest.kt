@@ -14,6 +14,7 @@ class FoodTest {
         fun success() {
             // given
             val food = Food(
+                uuid = "test-food-uuid",
                 name = "테스트 음식",
                 perCapitaIntake = 100.0,
                 unit = "g",
