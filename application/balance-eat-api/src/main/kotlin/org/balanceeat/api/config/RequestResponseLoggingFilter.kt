@@ -1,27 +1,21 @@
 package org.balanceeat.api.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import jakarta.servlet.FilterChain
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import mu.KotlinLogging
 import org.slf4j.MDC
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.web.util.ContentCachingRequestWrapper
 import org.springframework.web.util.ContentCachingResponseWrapper
-import java.io.IOException
 import java.nio.charset.Charset
-import java.util.*
-import jakarta.servlet.FilterChain
-import jakarta.servlet.ServletException
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
-import com.fasterxml.jackson.databind.ObjectMapper
 
-/**
- * Logs request and response for every HTTP call.
- * - Adds/propagates correlation id (X-Request-Id) via MDC
- * - Logs method, path, query, status, duration
- * - Logs request/response bodies for JSON/text (with size limits)
- */
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @Component
 class RequestResponseLoggingFilter(
     private val objectMapper: ObjectMapper
@@ -55,8 +49,13 @@ class RequestResponseLoggingFilter(
         }
 
         // Wrap to enable body caching
-        val wrappedRequest = if (request is ContentCachingRequestWrapper) request else ContentCachingRequestWrapper(request)
-        val wrappedResponse = if (response is ContentCachingResponseWrapper) response else ContentCachingResponseWrapper(response)
+        val wrappedRequest = request as? ContentCachingRequestWrapper ?: ContentCachingRequestWrapper(request)
+        val wrappedResponse = response as? ContentCachingResponseWrapper ?: ContentCachingResponseWrapper(response)
+
+        val reqPayload = buildRequestPayload(wrappedRequest)
+        val queryForField = queryForField(request)
+        MDC.put("requestBody", reqPayload)
+        MDC.put("queryParams", queryForField)
 
         try {
             filterChain.doFilter(wrappedRequest, wrappedResponse)
@@ -65,12 +64,12 @@ class RequestResponseLoggingFilter(
                 val durationMs = System.currentTimeMillis() - startTime
                 val status = wrappedResponse.status
 
-                val reqPayload = buildRequestPayload(wrappedRequest)
+
                 val resPayload = buildResponsePayload(wrappedResponse)
 
                 // Emit one consolidated log block without extra indentation
                 val pathQuerySuffix = querySuffixForPath(request)
-                val queryForField = queryForField(request)
+
                 val logMsg = StringBuilder()
                     .append("[").append(request.method).append("] ")
                     .append(request.requestURI).append(pathQuerySuffix)
@@ -86,6 +85,8 @@ class RequestResponseLoggingFilter(
             } catch (logEx: Exception) {
                 // Do not break the response on logging failures
                 logger.warn(logEx) { "Failed to log request/response" }
+            } finally {
+                MDC.clear()
             }
         }
     }
