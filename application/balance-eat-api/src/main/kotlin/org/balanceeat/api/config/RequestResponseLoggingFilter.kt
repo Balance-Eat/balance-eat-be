@@ -52,9 +52,7 @@ class RequestResponseLoggingFilter(
         val wrappedRequest = request as? ContentCachingRequestWrapper ?: ContentCachingRequestWrapper(request)
         val wrappedResponse = response as? ContentCachingResponseWrapper ?: ContentCachingResponseWrapper(response)
 
-        val reqPayload = buildRequestPayload(wrappedRequest)
         val queryForField = queryForField(request)
-        MDC.put("requestBody", reqPayload)
         MDC.put("queryParams", queryForField)
 
         try {
@@ -64,7 +62,8 @@ class RequestResponseLoggingFilter(
                 val durationMs = System.currentTimeMillis() - startTime
                 val status = wrappedResponse.status
 
-
+                // Read request and response payloads after filter chain execution
+                val reqPayload = buildRequestPayload(wrappedRequest)
                 val resPayload = buildResponsePayload(wrappedResponse)
 
                 // Emit one consolidated log block without extra indentation
@@ -158,7 +157,8 @@ class RequestResponseLoggingFilter(
             val compact = minifyIfJsonOrTrim(text, contentType)
             abbreviate(compact)
         } catch (e: Exception) {
-            "<failed to read: ${e.message}>"
+            logger.error(e) { "Failed to read request payload" }
+            return "[None]"
         }
     }
 

@@ -10,7 +10,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 class ApplicationBeanConfig {
     @Bean
-    fun restClient(): RestClient {
+    open fun restClient(): RestClient {
         return RestClient.builder().build()
     }
 }
