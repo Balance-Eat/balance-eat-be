@@ -29,7 +29,7 @@ class UserDomainServiceTest : IntegrationTestContext() {
         fun `사용자를 생성할 수 있다`() {
             // given
             val uuid = UUID.randomUUID().toString()
-            val createCommand = UserCommandFixture(
+            val createCommand = UserCommandFixture.Create(
                 uuid = uuid,
                 name = "테스트 사용자",
                 email = "test@example.com"
@@ -66,7 +66,7 @@ class UserDomainServiceTest : IntegrationTestContext() {
             val uuid = UUID.randomUUID().toString()
             val alreadySavedUser = userRepository.save(UserFixture(uuid=uuid).create())
 
-            val duplicateCommand = UserCommandFixture(
+            val duplicateCommand = UserCommandFixture.Create(
                 uuid = uuid,
                 name = "중복 사용자",
                 email = "duplicate@example.com"
