@@ -95,13 +95,49 @@ class DietFixture(...) : TestFixture<Diet>
 ```
 
 ### 2. Command Fixtures
-For command objects (non-TestFixture):
+Command fixtures use nested class structure to group related commands:
 ```kotlin
-class UserCommandFixture(...) : TestFixture<UserCommand.Create>
-class DietCommandFixture(...) {
-    fun create(): DietCommand.Create { ... }
+class FoodCommandFixture {
+    class Create(
+        var uuid: String = UuidGenerator.generateUuidV7().toString(),
+        var name: String = "테스트 음식",
+        var perCapitaIntake: Double = 1.0,
+        var unit: String = "g",
+        var carbohydrates: Double = 20.0,
+        var protein: Double = 5.0,
+        var fat: Double = 2.0,
+        var isVerified: Boolean = false
+    ) : TestFixture<FoodCommand.Create> {
+        override fun create(): FoodCommand.Create {
+            return FoodCommand.Create(
+                uuid = uuid,
+                name = name,
+                perCapitaIntake = perCapitaIntake,
+                unit = unit,
+                carbohydrates = carbohydrates,
+                protein = protein,
+                fat = fat,
+                isVerified = isVerified
+            )
+        }
+    }
 }
-class FoodCommandFixture(...) : TestFixture<FoodCommand.Create>
+
+class DietCommandFixture {
+    class Create(
+        var foods: MutableList<DietCommand.AddFood> = mutableListOf(
+            DietCommand.AddFood(
+                foodId = 1L,
+                actualServingSize = 1.0,
+                servingUnit = "개"
+            )
+        )
+    ) : TestFixture<DietCommand.Create> {
+        override fun create(): DietCommand.Create {
+            return DietCommand.Create(foods = foods)
+        }
+    }
+}
 ```
 
 ## Best Practices
@@ -117,35 +153,63 @@ class FoodCommandFixture(...) : TestFixture<FoodCommand.Create>
 - Use the same order as the entity constructor when possible
 - Include all entity fields, even optional ones
 
-### 3. Mutable Collections
+### 3. Command Fixture Usage
+Command fixtures are used with the nested class pattern:
+
+```kotlin
+// Create with default values
+val command = FoodCommandFixture.Create().create()
+
+// Create with specific values
+val command = FoodCommandFixture.Create(
+    name = "김치찌개",
+    isVerified = true
+).create()
+
+// Usage in service tests
+val result = foodDomainService.create(
+    FoodCommandFixture.Create(
+        name = "특별한 음식",
+        isVerified = true
+    ).create()
+)
+```
+
+### 4. Mutable Collections
 - Use `MutableList<T>` instead of `List<T>` for collection fields
 - Use `mutableListOf()`, `mutableSetOf()`, `mutableMapOf()` for default values
 - This allows tests to modify collections after fixture creation
 
-Example:
 ```kotlin
-class DietCommandFixture(
-    var foods: MutableList<DietCommand.AddFood> = mutableListOf(
-        DietCommand.AddFood(
-            foodId = 1L,
-            actualServingSize = 1.0,
-            servingUnit = "개"
+class DietCommandFixture {
+    class Create(
+        var foods: MutableList<DietCommand.AddFood> = mutableListOf(
+            DietCommand.AddFood(
+                foodId = 1L,
+                actualServingSize = 1.0,
+                servingUnit = "개"
+            )
         )
-    )
-) {
-    // Usage in tests:
-    // val fixture = DietCommandFixture()
-    // fixture.foods.add(DietCommand.AddFood(...)) // This is now possible
-    // fixture.foods.clear() // This is also possible
+    ) : TestFixture<DietCommand.Create> {
+        override fun create(): DietCommand.Create {
+            return DietCommand.Create(foods = foods)
+        }
+    }
 }
+
+// Usage in tests:
+val fixture = DietCommandFixture.Create()
+fixture.foods.add(DietCommand.AddFood(...)) // This is now possible
+fixture.foods.clear() // This is also possible
+val command = fixture.create()
 ```
 
-### 4. Naming Conventions
+### 5. Naming Conventions
 - Fixture class: `{Entity}Fixture`
 - File name: `{Entity}Fixture.kt`
 - Test method names: Korean backtick format (`` `테스트 내용` ``)
 
-### 5. Integration with Tests
+### 6. Integration with Tests
 ```kotlin
 @Test
 fun `사용자를 생성할 수 있다`() {

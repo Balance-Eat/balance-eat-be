@@ -22,26 +22,28 @@ class FoodDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `음식을 생성할 수 있다`() {
             // given
-            val createCommand = FoodCommandFixture(
+            val command = FoodCommandFixture.Create(
                 name = "테스트 음식",
                 perCapitaIntake = 100.0,
                 unit = "g",
                 carbohydrates = 25.0,
                 protein = 8.0,
-                fat = 3.0
+                fat = 3.0,
+                isVerified = true
             ).create()
 
             // when
-            val createdFood = foodDomainService.create(createCommand)
+            val createdFood = foodDomainService.create(command)
 
             // then
             assertThat(createdFood.id).isNotNull()
-            assertThat(createdFood.name).isEqualTo(createCommand.name)
-            assertThat(createdFood.perCapitaIntake).isEqualTo(createCommand.perCapitaIntake)
-            assertThat(createdFood.unit).isEqualTo(createCommand.unit)
-            assertThat(createdFood.carbohydrates).isEqualTo(createCommand.carbohydrates)
-            assertThat(createdFood.protein).isEqualTo(createCommand.protein)
-            assertThat(createdFood.fat).isEqualTo(createCommand.fat)
+            assertThat(createdFood.name).isEqualTo(command.name)
+            assertThat(createdFood.perCapitaIntake).isEqualTo(command.perCapitaIntake)
+            assertThat(createdFood.unit).isEqualTo(command.unit)
+            assertThat(createdFood.carbohydrates).isEqualTo(command.carbohydrates)
+            assertThat(createdFood.protein).isEqualTo(command.protein)
+            assertThat(createdFood.fat).isEqualTo(command.fat)
+            assertThat(createdFood.isVerified).isEqualTo(command.isVerified)
             assertThat(createdFood.uuid).isNotBlank()
         }
     }

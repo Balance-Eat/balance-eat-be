@@ -25,7 +25,8 @@ class FoodDomainService(
             unit = command.unit,
             carbohydrates = command.carbohydrates,
             protein = command.protein,
-            fat = command.fat
+            fat = command.fat,
+            isVerified = command.isVerified
         )
         
         val savedFood = foodRepository.save(food)

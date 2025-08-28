@@ -32,7 +32,11 @@ class Food(
     val protein: Double = 0.0,
 
     @Column(name = "fat", nullable = false)
-    val fat: Double = 0.0
+    val fat: Double = 0.0,
+
+    // 관리자 검수 여부
+    @Column(name = "is_verified", nullable = false)
+    val isVerified: Boolean = false
 ) : BaseEntity() {
     override fun guard() {
         require(name.isNotBlank()) { "음식명은 필수값입니다" }
