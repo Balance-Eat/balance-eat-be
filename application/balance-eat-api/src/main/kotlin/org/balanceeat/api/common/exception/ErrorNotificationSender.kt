@@ -2,6 +2,7 @@ package org.balanceeat.api.common.exception
 
 import org.balanceeat.api.common.client.DiscordClient
 import org.springframework.core.env.Environment
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 
 @Component
@@ -9,6 +10,7 @@ class ErrorNotificationSender(
     private val discordClient: DiscordClient,
     private val environment: Environment
 ) {
+    @Async
     fun send(message: String, e: Throwable) {
         val errorMessage = """
             message: %s
@@ -20,6 +22,7 @@ class ErrorNotificationSender(
         send(errorMessage)
     }
 
+    @Async
     fun send(e: Throwable) {
         val errorMessage = """
             message: %s
@@ -31,6 +34,7 @@ class ErrorNotificationSender(
         send(errorMessage)
     }
 
+    @Async
     fun send(message: String) {
         val sendableProfiles = setOf("dev", "prod")
         val activeProfiles = environment.activeProfiles.toSet()

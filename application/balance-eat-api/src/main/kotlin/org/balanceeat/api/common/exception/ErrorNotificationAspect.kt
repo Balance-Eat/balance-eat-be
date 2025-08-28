@@ -22,12 +22,8 @@ class ErrorNotificationAspect(
         val className = joinPoint.target.javaClass.simpleName
         val methodName = joinPoint.signature.name
         val argsString = joinPoint.args.contentToString()
+        val errorMessage = "${className}.${methodName} Failure - Args: $argsString"
 
-        val errorMessage = """
-            ${className}.${methodName} Failure - Args: $argsString
-            queryParams: ${MDC.get("queryParams")}
-            requestBody: ${MDC.get("requestBody")}
-        """.trimIndent()
         errorNotificationSender.send(errorMessage, exception)
         log.warn(errorMessage)
     }

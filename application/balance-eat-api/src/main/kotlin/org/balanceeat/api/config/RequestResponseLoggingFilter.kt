@@ -5,9 +5,11 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import mu.KotlinLogging
+import org.balanceeat.api.common.exception.ErrorNotificationSender
 import org.slf4j.MDC
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
@@ -18,7 +20,8 @@ import java.nio.charset.Charset
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Component
 class RequestResponseLoggingFilter(
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val errorNotificationSender: ErrorNotificationSender
 ) : OncePerRequestFilter() {
     private val logger = KotlinLogging.logger {}
 
@@ -52,9 +55,6 @@ class RequestResponseLoggingFilter(
         val wrappedRequest = request as? ContentCachingRequestWrapper ?: ContentCachingRequestWrapper(request)
         val wrappedResponse = response as? ContentCachingResponseWrapper ?: ContentCachingResponseWrapper(response)
 
-        val queryForField = queryForField(request)
-        MDC.put("queryParams", queryForField)
-
         try {
             filterChain.doFilter(wrappedRequest, wrappedResponse)
         } finally {
@@ -65,6 +65,7 @@ class RequestResponseLoggingFilter(
                 // Read request and response payloads after filter chain execution
                 val reqPayload = buildRequestPayload(wrappedRequest)
                 val resPayload = buildResponsePayload(wrappedResponse)
+                val queryForField = queryForField(request)
 
                 // Emit one consolidated log block without extra indentation
                 val pathQuerySuffix = querySuffixForPath(request)
@@ -79,6 +80,15 @@ class RequestResponseLoggingFilter(
                     .append("ResponseBody=").append(resPayload)
                     .toString()
                 logger.info { logMsg }
+
+                if (HttpStatus.resolve(status)?.isError == true) {
+                    val sendingMessage = "--------------------------------".plus("\n")
+                        .plus(logMsg).plus("\n")
+                        .plus("--------------------------------");
+
+                    errorNotificationSender.send(sendingMessage)
+                }
+
                 // Ensure body is written back to client
                 wrappedResponse.copyBodyToResponse()
             } catch (logEx: Exception) {
