@@ -6,6 +6,7 @@ sealed class FoodCommand {
     data class Create(
         val uuid: String,
         val name: String,
+        val userId: Long,
         val perCapitaIntake: Double,
         val unit: String,
         val carbohydrates: Double = 0.0,
@@ -15,6 +16,8 @@ sealed class FoodCommand {
     )
     
     data class Update(
+        val foodId: Long,
+        val userId: Long,
         val name: String? = null,
         val perCapitaIntake: Double? = null,
         val unit: String? = null,

@@ -17,6 +17,9 @@ class Food(
     @Column(name = "uuid", nullable = false, unique = true, length = 36)
     val uuid: String,
 
+    @Column(name = "user_id", nullable = false)
+    val userId: Long,
+
     // 1회 기준 섭취량
     @Column(name = "per_capita_intake", nullable = false)
     val perCapitaIntake: Double,

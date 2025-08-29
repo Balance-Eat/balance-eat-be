@@ -8,6 +8,7 @@ class FoodFixture(
     var id: Long = NEW_ID,
     var uuid: String = UuidGenerator.generateUuidV7().toString(),
     var name: String = "테스트 음식",
+    var userId: Long = 1L,
     var perCapitaIntake: Double = 1.0,
     var unit: String = "g",
     var carbohydrates: Double = 20.0,
@@ -18,8 +19,9 @@ class FoodFixture(
     override fun create(): Food {
         return Food(
             id = id,
-            uuid = uuid,
             name = name,
+            uuid = uuid,
+            userId = userId,
             perCapitaIntake = perCapitaIntake,
             unit = unit,
             carbohydrates = carbohydrates,

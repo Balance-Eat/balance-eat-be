@@ -19,8 +19,9 @@ class FoodDomainService(
     @Transactional
     fun create(command: FoodCommand.Create): FoodDto {
         val food = Food(
-            uuid = command.uuid,
             name = command.name,
+            uuid = command.uuid,
+            userId = command.userId,
             perCapitaIntake = command.perCapitaIntake,
             unit = command.unit,
             carbohydrates = command.carbohydrates,
@@ -30,6 +31,33 @@ class FoodDomainService(
         )
         
         val savedFood = foodRepository.save(food)
+        return FoodDto.from(savedFood)
+    }
+    
+    @Transactional
+    fun update(command: FoodCommand.Update): FoodDto {
+        val food = foodRepository.findById(command.foodId)
+            .orElseThrow { NotFoundException(DomainStatus.FOOD_NOT_FOUND) }
+            
+        // 작성자만 수정할 수 있음
+        if (food.userId != command.userId) {
+            throw IllegalArgumentException("음식을 수정할 권한이 없습니다")
+        }
+        
+        val updatedFood = Food(
+            id = food.id,
+            name = command.name ?: food.name,
+            uuid = food.uuid,
+            userId = food.userId,
+            perCapitaIntake = command.perCapitaIntake ?: food.perCapitaIntake,
+            unit = command.unit ?: food.unit,
+            carbohydrates = command.carbohydrates ?: food.carbohydrates,
+            protein = command.protein ?: food.protein,
+            fat = command.fat ?: food.fat,
+            isVerified = command.isVerified ?: food.isVerified
+        )
+        
+        val savedFood = foodRepository.save(updatedFood)
         return FoodDto.from(savedFood)
     }
 }
