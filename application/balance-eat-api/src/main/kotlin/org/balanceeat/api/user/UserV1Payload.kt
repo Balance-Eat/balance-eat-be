@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull
 import org.balanceeat.domain.user.User
 
 class UserV1Request {
+    @Schema(name = "UserCreateRequest", description = "사용자 생성 요청")
     data class Create(
         @field:NotNull(message = "UUID는 필수입니다")
         @Schema(
@@ -109,6 +110,7 @@ class UserV1Request {
         val providerType: String? = null
     )
 
+    @Schema(name = "UserUpdateRequest", description = "사용자 수정 요청")
     data class Update(
         @Schema(
             description = "사용자 이름 (선택)",
@@ -194,6 +196,7 @@ class UserV1Request {
 }
 
 class UserV1Response {
+    @Schema(name = "UserDetailsResponse", description = "사용자 상세정보 응답")
     data class Info(
         val id: Long,
         val uuid: String,

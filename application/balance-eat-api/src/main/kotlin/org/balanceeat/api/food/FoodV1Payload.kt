@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size
 import org.balanceeat.domain.food.FoodDto
 
 class FoodV1Request {
+    @Schema(name = "FoodCreateRequest", description = "음식 생성 요청")
     data class Create(
         @field:NotNull(message = "UUID는 필수입니다")
         @Schema(
@@ -67,6 +68,7 @@ class FoodV1Request {
         val fat: Double = 0.0
     )
 
+    @Schema(name = "FoodUpdateRequest", description = "음식 수정 요청")
     data class Update(
         @field:NotNull(message = "음식명은 필수입니다")
         @Schema(
@@ -113,6 +115,7 @@ class FoodV1Request {
 }
 
 class FoodV1Response {
+    @Schema(name = "FoodDetailsResponse", description = "음식 상세정보 응답")
     data class Info(
         val id: Long,
         val uuid: String,
