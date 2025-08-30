@@ -12,7 +12,7 @@ class Food(
     val id: Long = NEW_ID,
 
     @Column(name = "name", nullable = false, length = 100)
-    val name: String,
+    var name: String,
 
     @Column(name = "uuid", nullable = false, unique = true, length = 36)
     val uuid: String,
@@ -22,24 +22,24 @@ class Food(
 
     // 1회 기준 섭취량
     @Column(name = "per_capita_intake", nullable = false)
-    val perCapitaIntake: Double,
+    var perCapitaIntake: Double,
 
     // 단위 (예: mg, ml, g 등)
     @Column(name = "unit", length = 20, nullable = false)
-    val unit: String,
+    var unit: String,
 
     @Column(name = "carbohydrates", nullable = false)
-    val carbohydrates: Double = 0.0,
+    var carbohydrates: Double = 0.0,
 
     @Column(name = "protein", nullable = false)
-    val protein: Double = 0.0,
+    var protein: Double = 0.0,
 
     @Column(name = "fat", nullable = false)
-    val fat: Double = 0.0,
+    var fat: Double = 0.0,
 
     // 관리자 검수 여부
     @Column(name = "is_verified", nullable = false)
-    val isVerified: Boolean = false
+    var isAdminApproved: Boolean = false
 ) : BaseEntity() {
     override fun guard() {
         require(name.isNotBlank()) { "음식명은 필수값입니다" }
@@ -62,6 +62,24 @@ class Food(
 
         require(fat >= 0.0) { "지방 함량은 0 이상이어야 합니다" }
         require(fat <= 1000.0) { "지방 함량은 1000g을 초과할 수 없습니다" }
+    }
+    
+    fun update(name: String,
+                    perCapitaIntake: Double,
+                    unit: String,
+                    carbohydrates: Double,
+                    protein: Double,
+                    fat: Double) {
+        this.name = name
+        this.perCapitaIntake = perCapitaIntake
+        this.unit = unit
+        this.carbohydrates = carbohydrates
+        this.protein = protein
+        this.fat = fat
+    }
+
+    fun approve() {
+        isAdminApproved = true
     }
 
     fun calculateNutrition(actualServingSize: Double): NutritionInfo {

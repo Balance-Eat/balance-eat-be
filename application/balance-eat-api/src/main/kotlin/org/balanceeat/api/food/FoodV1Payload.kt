@@ -66,6 +66,50 @@ class FoodV1Request {
         )
         val fat: Double = 0.0
     )
+
+    data class Update(
+        @field:NotNull(message = "음식명은 필수입니다")
+        @Schema(
+            description = "음식명",
+            requiredMode = Schema.RequiredMode.REQUIRED,
+        )
+        val name: String,
+
+        @field:NotNull(message = "1회 기준 섭취량은 필수입니다")
+        @Schema(
+            description = "1회 기준 섭취량",
+            requiredMode = Schema.RequiredMode.REQUIRED,
+        )
+        val perCapitaIntake: Double,
+
+        @field:NotNull(message = "단위는 필수입니다")
+        @Schema(
+            description = "단위 (예: g, ml 등)",
+            requiredMode = Schema.RequiredMode.REQUIRED,
+        )
+        val unit: String,
+
+        @field:NotNull(message = "탄수화물 함량은 필수입니다")
+        @Schema(
+            description = "탄수화물 함량 (g, 선택)",
+            requiredMode = Schema.RequiredMode.REQUIRED,
+        )
+        val carbohydrates: Double = 0.0,
+
+        @field:NotNull(message = "단백질 함량은 필수입니다")
+        @Schema(
+            description = "단백질 함량 (g, 선택)",
+            requiredMode = Schema.RequiredMode.REQUIRED,
+        )
+        val protein: Double = 0.0,
+
+        @field:NotNull(message = "지방 함량은 필수입니다")
+        @Schema(
+            description = "지방 함량 (g, 선택)",
+            requiredMode = Schema.RequiredMode.REQUIRED,
+        )
+        val fat: Double = 0.0
+    )
 }
 
 class FoodV1Response {

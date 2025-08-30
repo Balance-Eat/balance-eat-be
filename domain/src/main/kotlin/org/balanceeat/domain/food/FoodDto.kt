@@ -12,7 +12,7 @@ data class FoodDto(
     val carbohydrates: Double,
     val protein: Double,
     val fat: Double,
-    val isVerified: Boolean,
+    val isAdminApproved: Boolean,
     val createdAt: LocalDateTime
 ) {
     fun calculateNutrition(actualServingSize: Double): NutritionInfo {
@@ -50,7 +50,7 @@ data class FoodDto(
                 carbohydrates = food.carbohydrates,
                 protein = food.protein,
                 fat = food.fat,
-                isVerified = food.isVerified,
+                isAdminApproved = food.isAdminApproved,
                 createdAt = food.createdAt
             )
         }

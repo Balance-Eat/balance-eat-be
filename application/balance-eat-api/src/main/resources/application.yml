@@ -8,7 +8,12 @@ spring:
     name: balance-eat-api
 
   profiles:
-    active: dev
+    active: local
+    
+  config:
+    import:
+      - classpath:application-domain.yml
+      - classpath:application-monitoring.yml
 
 # Swagger/OpenAPI 설정
 springdoc:
@@ -23,15 +28,6 @@ springdoc:
   packages-to-scan: org.balanceeat.api
   paths-to-match: /v1/**, /health
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus
-  endpoint:
-    health:
-      show-details: always
-
 ---
 # ==============================================
 # 🔧 LOCAL 환경 설정
@@ -41,125 +37,35 @@ spring:
     activate:
       on-profile: local
 
-  datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/balance_eat}
-    driverClassName: com.mysql.cj.jdbc.Driver
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:password}
-    hikari:
-      maximum-pool-size: 3
-      minimum-idle: 1
-      connection-timeout: 20000
-      idle-timeout: 300000
-      max-lifetime: 1200000
-
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      timeout: 2000ms
-      lettuce:
-        pool:
-          max-active: 10
-          max-idle: 10
-          min-idle: 2
-
-  jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        use_sql_comments: true
-        default_batch_fetch_size: 100
-        jdbc:
-          time_zone: Asia/Seoul
-
 logging:
   level:
     org.springframework.web: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.balanceeat: DEBUG
 
 ---
 # ==============================================
-# 🚧 DEV 환경 설정 (Supabase PostgreSQL)  
+# 🚧 DEV 환경 설정
 # ==============================================
 spring:
   config:
     activate:
       on-profile: dev
 
-  datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/balance_eat}
-    driverClassName: org.postgresql.Driver
-    username: ${DB_USERNAME:balance_eat}
-    password: ${DB_PASSWORD:password}
-    hikari:
-      maximum-pool-size: 3
-      minimum-idle: 1
-      connection-timeout: 20000
-      idle-timeout: 300000
-      max-lifetime: 1200000
-
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: none
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        use_sql_comments: true
-        default_batch_fetch_size: 100
-        jdbc:
-          time_zone: Asia/Seoul
-
 logging:
   level:
     org.springframework.web: INFO
-    org.hibernate.SQL: INFO
     org.balanceeat: INFO
 
 ---
 # ==============================================
-# 🚀 PROD 환경 설정 (Supabase PostgreSQL - 운영)
+# 🚀 PROD 환경 설정
 # ==============================================
 spring:
   config:
     activate:
       on-profile: prod
 
-  datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/balance_eat}
-    driverClassName: org.postgresql.Driver
-    username: ${DB_USERNAME:balance_eat}  
-    password: ${DB_PASSWORD:password}
-    hikari:
-      maximum-pool-size: 3
-      minimum-idle: 1
-      connection-timeout: 20000
-      idle-timeout: 300000
-      max-lifetime: 1200000
-
-  jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: validate
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: false
-        use_sql_comments: false
-        default_batch_fetch_size: 100
-        jdbc:
-          time_zone: Asia/Seoul
-
 logging:
   level:
     org.springframework.web: WARN
-    org.hibernate.SQL: WARN
-    org.balanceeat: INFO 
+    org.balanceeat: INFO

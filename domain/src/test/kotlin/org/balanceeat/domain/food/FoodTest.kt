@@ -1,6 +1,7 @@
 package org.balanceeat.domain.food
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -16,6 +17,7 @@ class FoodTest {
             val food = Food(
                 uuid = "test-food-uuid",
                 name = "테스트 음식",
+                userId = 1L,
                 perCapitaIntake = 100.0,
                 unit = "g",
                 carbohydrates = 20.0,
@@ -31,6 +33,71 @@ class FoodTest {
             assertEquals(10.0, nutrition.protein) // 5 * 2
             assertEquals(4.0, nutrition.fat) // 2 * 2
             assertEquals(236.0, nutrition.calories) // (20*4 + 5*4 + 2*9) * 2 = 118 * 2
+        }
+    }
+
+    @Nested
+    @DisplayName("Food 엔티티의 업데이트 테스트")
+    inner class UpdateTest {
+        @Test
+        fun `작성자는 음식을 업데이트할 수 있다`() {
+            // given
+            val originalUserId = 1L
+            val food = FoodFixture(
+                name = "수정 전 음식",
+                userId = originalUserId,
+                perCapitaIntake = 100.0,
+                unit = "g",
+                carbohydrates = 20.0,
+                protein = 5.0,
+                fat = 2.0,
+                isAdminApproved = false
+            ).create()
+
+            // when
+            food.update(
+                name = "수정 후 음식",
+                perCapitaIntake = 150.0,
+                unit = "ml",
+                carbohydrates = 30.0,
+                protein = 7.0,
+                fat = 3.0
+            )
+
+            // then
+            assertEquals("수정 후 음식", food.name)
+            assertEquals(150.0, food.perCapitaIntake)
+            assertEquals("ml", food.unit)
+            assertEquals(30.0, food.carbohydrates)
+            assertEquals(7.0, food.protein)
+            assertEquals(3.0, food.fat)
+            assertEquals(false, food.isAdminApproved) // update 메서드로는 관리자 승인 변경 불가
+            // 변경되지 않아야 하는 값
+            assertEquals(originalUserId, food.userId)
+        }
+
+        @Test
+        fun `엔티티 업데이트는 비즈니스 규칙을 검증한다`() {
+            // given
+            val food = FoodFixture(
+                name = "기존 음식",
+                perCapitaIntake = 100.0
+            ).create()
+
+            // when & then - 잘못된 값으로 업데이트 시도
+            val ex = assertThrows(IllegalArgumentException::class.java) {
+                food.update(
+                    name = "", // 빈 이름
+                    perCapitaIntake = food.perCapitaIntake,
+                    unit = food.unit,
+                    carbohydrates = food.carbohydrates,
+                    protein = food.protein,
+                    fat = food.fat
+                )
+                food.guard() // 엔티티 검증 호출
+            }
+
+            assertEquals("음식명은 필수값입니다", ex.message)
         }
     }
 }

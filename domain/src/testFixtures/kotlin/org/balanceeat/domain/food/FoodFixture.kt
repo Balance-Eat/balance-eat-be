@@ -14,7 +14,7 @@ class FoodFixture(
     var carbohydrates: Double = 20.0,
     var protein: Double = 5.0,
     var fat: Double = 2.0,
-    var isVerified: Boolean = false
+    var isAdminApproved: Boolean = false
 ) : TestFixture<Food> {
     override fun create(): Food {
         return Food(
@@ -27,7 +27,7 @@ class FoodFixture(
             carbohydrates = carbohydrates,
             protein = protein,
             fat = fat,
-            isVerified = isVerified
+            isAdminApproved = isAdminApproved
         )
     }
 }

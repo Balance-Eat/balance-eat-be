@@ -12,18 +12,29 @@ sealed class FoodCommand {
         val carbohydrates: Double = 0.0,
         val protein: Double = 0.0,
         val fat: Double = 0.0,
-        val isVerified: Boolean = false
+        val isAdminApproved: Boolean = false
     )
     
     data class Update(
-        val foodId: Long,
-        val userId: Long,
-        val name: String? = null,
-        val perCapitaIntake: Double? = null,
-        val unit: String? = null,
-        val carbohydrates: Double? = null,
-        val protein: Double? = null,
-        val fat: Double? = null,
-        val isVerified: Boolean? = null
+        val id: Long,
+        val modifierId: Long,
+        val name: String,
+        val perCapitaIntake: Double,
+        val unit: String,
+        val carbohydrates: Double,
+        val protein: Double,
+        val fat: Double
+    )
+
+    data class UpdateByAdmin(
+        val id: Long,
+        val adminId: Long,
+        val name: String,
+        val perCapitaIntake: Double,
+        val unit: String,
+        val carbohydrates: Double,
+        val protein: Double,
+        val fat: Double,
+        val isAdminApproved: Boolean
     )
 }

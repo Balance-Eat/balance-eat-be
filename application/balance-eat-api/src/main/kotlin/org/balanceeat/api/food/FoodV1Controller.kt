@@ -18,6 +18,7 @@ class FoodV1Controller(
     override fun create(@RequestBody @Valid request: FoodV1Request.Create): ApiResponse<FoodV1Response.Info> {
         val command = FoodCommand.Create(
             uuid = request.uuid,
+            userId = 1L, // TODO: 인증 연동 후 수정
             name = request.name,
             perCapitaIntake = request.perCapitaIntake,
             unit = request.unit,
@@ -27,6 +28,26 @@ class FoodV1Controller(
         )
         
         val result = foodDomainService.create(command)
+        return ApiResponse.success(
+            FoodV1Response.Info.from(result)
+        )
+    }
+
+    @PutMapping("/{id}")
+    override fun update(@PathVariable id: Long,
+                        @RequestBody @Valid request: FoodV1Request.Update): ApiResponse<FoodV1Response.Info> {
+        val command = FoodCommand.Update(
+            id = id,
+            modifierId = 1L, // TODO: 인증 연동 후 수정
+            name = request.name,
+            perCapitaIntake = request.perCapitaIntake,
+            unit = request.unit,
+            carbohydrates = request.carbohydrates,
+            protein = request.protein,
+            fat = request.fat
+        )
+
+        val result = foodDomainService.update(command)
         return ApiResponse.success(
             FoodV1Response.Info.from(result)
         )

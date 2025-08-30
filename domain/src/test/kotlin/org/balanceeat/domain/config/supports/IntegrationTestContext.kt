@@ -24,7 +24,7 @@ import java.util.function.Consumer
 
 @Tag("integration")
 @SpringBootTest
-@ActiveProfiles("integration-test")
+@ActiveProfiles("test")
 @Import(PostgreSQLTestContainerConfig::class, CleanUp::class)
 @Testcontainers
 abstract class IntegrationTestContext {

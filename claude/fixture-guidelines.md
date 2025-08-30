@@ -106,7 +106,7 @@ class FoodCommandFixture {
         var carbohydrates: Double = 20.0,
         var protein: Double = 5.0,
         var fat: Double = 2.0,
-        var isVerified: Boolean = false
+        var isAdminApproved: Boolean = false
     ) : TestFixture<FoodCommand.Create> {
         override fun create(): FoodCommand.Create {
             return FoodCommand.Create(
@@ -117,7 +117,7 @@ class FoodCommandFixture {
                 carbohydrates = carbohydrates,
                 protein = protein,
                 fat = fat,
-                isVerified = isVerified
+                isAdminApproved = isAdminApproved
             )
         }
     }
@@ -163,14 +163,14 @@ val command = FoodCommandFixture.Create().create()
 // Create with specific values
 val command = FoodCommandFixture.Create(
     name = "김치찌개",
-    isVerified = true
+    isAdminApproved = true
 ).create()
 
 // Usage in service tests
 val result = foodDomainService.create(
     FoodCommandFixture.Create(
         name = "특별한 음식",
-        isVerified = true
+        isAdminApproved = true
     ).create()
 )
 ```

@@ -9,6 +9,9 @@ import org.balanceeat.api.config.ApiResponse
 interface FoodV1ApiSpec {
     @Operation(summary = "음식 생성")
     fun create(request: FoodV1Request.Create): ApiResponse<FoodV1Response.Info>
+
+    @Operation(summary = "음식 수정")
+    fun update(id: Long, request: FoodV1Request.Update): ApiResponse<FoodV1Response.Info>
     
     @Operation(summary = "음식 정보 조회")
     fun getFood(

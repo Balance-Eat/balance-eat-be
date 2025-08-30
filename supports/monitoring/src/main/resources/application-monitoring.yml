@@ -1,0 +1,93 @@
+# ==============================================
+# 📊 MONITORING MODULE - ACTUATOR/MANAGEMENT CONFIGURATION  
+# ==============================================
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    web:
+      server:
+        request:
+          autotime:
+            enabled: true
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.95, 0.99
+      slo:
+        http.server.requests: 100ms,200ms,300ms,500ms,1s
+
+---
+# ==============================================
+# 🔧 LOCAL 환경 - 모니터링 설정
+# ==============================================
+spring:
+  config:
+    activate:
+      on-profile: local
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"  # 로컬에서는 모든 엔드포인트 노출
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+
+logging:
+  level:
+    org.springframework.boot.actuate: DEBUG
+
+---
+# ==============================================
+# 🚧 DEV 환경 - 모니터링 설정
+# ==============================================
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,configprops
+  endpoint:
+    configprops:
+      show-values: when-authorized
+
+---
+# ==============================================
+# 🚀 PROD 환경 - 모니터링 설정  
+# ==============================================
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus  # 프로덕션에서는 최소한의 엔드포인트만
+  endpoint:
+    health:
+      show-details: when-authorized  # 인증된 경우에만 세부 정보 노출
+  server:
+    port: 9090  # 프로덕션에서는 별도 포트 사용
