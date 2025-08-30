@@ -3,8 +3,8 @@ package org.balanceeat.domain.food
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.balanceeat.domain.common.DomainStatus
-import org.balanceeat.domain.common.exceptions.BadRequestException
-import org.balanceeat.domain.common.exceptions.NotFoundException
+import org.balanceeat.domain.common.exception.BadCommandException
+import org.balanceeat.domain.common.exception.EntityNotFoundException
 import org.balanceeat.domain.config.supports.IntegrationTestContext
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -153,7 +153,7 @@ class FoodDomainServiceTest : IntegrationTestContext() {
             assertThatThrownBy {
                 foodDomainService.update(updateCommand)
             }
-                .isInstanceOf(BadRequestException::class.java)
+                .isInstanceOf(BadCommandException::class.java)
                 .hasFieldOrPropertyWithValue("status", DomainStatus.CANNOT_MODIFY_FOOD)
         }
 
@@ -258,7 +258,7 @@ class FoodDomainServiceTest : IntegrationTestContext() {
             assertThatThrownBy {
                 foodDomainService.updateByAdmin(updateByAdminCommand)
             }
-                .isInstanceOf(NotFoundException::class.java)
+                .isInstanceOf(EntityNotFoundException::class.java)
                 .hasFieldOrPropertyWithValue("status", DomainStatus.FOOD_NOT_FOUND)
         }
 

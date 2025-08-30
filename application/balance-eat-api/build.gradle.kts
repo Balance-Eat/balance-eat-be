@@ -23,6 +23,7 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":common"))
     implementation(project(":domain"))
     implementation(project(":supports:jackson"))
     implementation(project(":supports:monitoring"))
@@ -34,10 +35,6 @@ dependencies {
 
     // Swagger/OpenAPI
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${project.properties["springDocOpenApiVersion"]}")
-
-    // Jackson
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")

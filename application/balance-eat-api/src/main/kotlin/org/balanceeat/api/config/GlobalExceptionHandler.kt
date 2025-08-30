@@ -3,11 +3,11 @@ package org.balanceeat.api.config
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.ConstraintViolationException
 import mu.KotlinLogging
-import org.balanceeat.domain.common.DomainException
-import org.balanceeat.domain.common.exceptions.BadRequestException
-import org.balanceeat.domain.common.exceptions.InternalErrorException
-import org.balanceeat.domain.common.exceptions.NotFoundException
-import org.balanceeat.domain.common.exceptions.UnauthorizedException
+import org.balanceeat.domain.common.exception.DomainException
+import org.balanceeat.api.common.exception.BadRequestException
+import org.balanceeat.api.common.exception.InternalErrorException
+import org.balanceeat.api.common.exception.NotFoundException
+import org.balanceeat.api.common.exception.UnauthorizedException
 import org.springframework.http.HttpStatus
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.BindException
@@ -103,7 +103,6 @@ class GlobalExceptionHandler {
         return ApiResponse.error(ex.message ?: "서버 오류가 발생했습니다.")
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DomainException::class)
     fun handleDomainException(ex: DomainException, request: HttpServletRequest): ApiResponse<Any> {
         if (ex.isCritical) {

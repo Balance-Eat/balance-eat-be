@@ -44,6 +44,11 @@ allprojects {
 }
 
 subprojects {
+    if (project.path == ":common") {
+        // Skip applying shared subproject configuration to the common module
+        return@subprojects
+    }
+
     apply {
         plugin("java")
         plugin("io.spring.dependency-management")
@@ -63,9 +68,6 @@ subprojects {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         // Spring
         implementation("org.springframework.boot:spring-boot-starter")
-        // Serialize
-        implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-        implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
         // Test
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
         testRuntimeOnly("org.postgresql:postgresql")
@@ -75,11 +77,6 @@ subprojects {
         testImplementation("org.mockito:mockito-core:${project.properties["mockitoVersion"]}")
         testImplementation("org.mockito.kotlin:mockito-kotlin:${project.properties["mockitoKotlinVersion"]}")
         testImplementation("org.instancio:instancio-junit:${project.properties["instancioJUnitVersion"]}")
-        // Testcontainers
-        testImplementation("org.springframework.boot:spring-boot-testcontainers")
-        testImplementation("org.testcontainers:testcontainers")
-        testImplementation("org.testcontainers:junit-jupiter")
-        testImplementation("org.testcontainers:mysql")
         // validator
         implementation("commons-validator:commons-validator:1.7")
     }

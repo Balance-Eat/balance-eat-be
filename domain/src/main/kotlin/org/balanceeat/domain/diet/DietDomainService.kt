@@ -1,9 +1,7 @@
 package org.balanceeat.domain.diet
 
 import org.balanceeat.domain.common.DomainStatus
-import org.balanceeat.domain.common.exceptions.NotFoundException
-import org.balanceeat.domain.food.FoodDomainService
-import org.balanceeat.domain.user.UserDomainService
+import org.balanceeat.domain.common.exception.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -16,13 +14,13 @@ class DietDomainService(
     @Transactional(readOnly = true)
     fun getDiet(dietId: Long): Diet {
         return dietRepository.findById(dietId)
-            .orElseThrow { NotFoundException(DomainStatus.DIET_NOT_FOUND) }
+            .orElseThrow { EntityNotFoundException(DomainStatus.DIET_NOT_FOUND) }
     }
     
     @Transactional(readOnly = true)
     fun getDietFood(dietFoodId: Long): DietFood {
         return dietFoodRepository.findById(dietFoodId)
-            .orElseThrow { NotFoundException(DomainStatus.DIET_FOOD_NOT_FOUND) }
+            .orElseThrow { EntityNotFoundException(DomainStatus.DIET_FOOD_NOT_FOUND) }
     }
     
     @Transactional(readOnly = true)

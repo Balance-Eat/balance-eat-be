@@ -1,7 +1,7 @@
-package org.balanceeat.domain.common.exceptions
+package org.balanceeat.api.common.exception
 
-import org.balanceeat.domain.common.ApplicationException
-import org.balanceeat.domain.common.Status
+import org.balanceeat.api.common.exception.ApplicationException
+import org.balanceeat.common.Status
 
 class NotFoundException(
     status: Status,

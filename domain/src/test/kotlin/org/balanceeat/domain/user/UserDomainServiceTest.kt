@@ -3,9 +3,7 @@ package org.balanceeat.domain.user
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.balanceeat.domain.common.DomainStatus
-import org.balanceeat.domain.common.exceptions.BadRequestException
-import org.balanceeat.domain.common.exceptions.NotFoundException
-import org.balanceeat.domain.config.NEW_ID
+import org.balanceeat.domain.common.exception.BadCommandException
 import org.balanceeat.domain.config.supports.IntegrationTestContext
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -74,7 +72,7 @@ class UserDomainServiceTest : IntegrationTestContext() {
 
             // when & then
             assertThatThrownBy { userDomainService.create(duplicateCommand) }
-                .isInstanceOf(BadRequestException::class.java)
+                .isInstanceOf(BadCommandException::class.java)
                 .hasFieldOrPropertyWithValue("status", DomainStatus.USER_ALREADY_EXISTS)
         }
     }

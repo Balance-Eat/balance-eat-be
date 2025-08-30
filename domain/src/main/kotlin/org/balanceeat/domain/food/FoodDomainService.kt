@@ -1,8 +1,8 @@
 package org.balanceeat.domain.food
 
 import org.balanceeat.domain.common.DomainStatus
-import org.balanceeat.domain.common.exceptions.BadRequestException
-import org.balanceeat.domain.common.exceptions.NotFoundException
+import org.balanceeat.domain.common.exception.BadCommandException
+import org.balanceeat.domain.common.exception.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -13,7 +13,7 @@ class FoodDomainService(
     @Transactional(readOnly = true)
     fun getFood(foodId: Long): FoodDto {
         val food = foodRepository.findById(foodId)
-            .orElseThrow { NotFoundException(DomainStatus.FOOD_NOT_FOUND) }
+            .orElseThrow { EntityNotFoundException(DomainStatus.FOOD_NOT_FOUND) }
         return FoodDto.from(food)
     }
     
@@ -38,10 +38,10 @@ class FoodDomainService(
     @Transactional
     fun update(command: FoodCommand.Update): FoodDto {
         val food = foodRepository.findById(command.id)
-            .orElseThrow { NotFoundException(DomainStatus.FOOD_NOT_FOUND) }
+            .orElseThrow { EntityNotFoundException(DomainStatus.FOOD_NOT_FOUND) }
 
         if (food.userId != command.modifierId) {
-            throw BadRequestException(DomainStatus.CANNOT_MODIFY_FOOD)
+            throw BadCommandException(DomainStatus.CANNOT_MODIFY_FOOD)
         }
 
         food.update(
@@ -60,7 +60,7 @@ class FoodDomainService(
     @Transactional
     fun updateByAdmin(command: FoodCommand.UpdateByAdmin): FoodDto {
         val food = foodRepository.findById(command.id)
-            .orElseThrow { NotFoundException(DomainStatus.FOOD_NOT_FOUND) }
+            .orElseThrow { EntityNotFoundException(DomainStatus.FOOD_NOT_FOUND) }
 
         food.update(
             name = command.name,

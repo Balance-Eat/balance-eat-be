@@ -1,4 +1,4 @@
-package org.balanceeat.domain.common
+package org.balanceeat.common
 
 interface Status {
     val name: String

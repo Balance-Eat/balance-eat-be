@@ -1,7 +1,7 @@
 package org.balanceeat.api.config
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import org.balanceeat.domain.common.Status
+import org.balanceeat.common.Status
 import java.time.LocalDateTime
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

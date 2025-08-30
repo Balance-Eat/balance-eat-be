@@ -1,5 +1,7 @@
 package org.balanceeat.domain.common
 
+import org.balanceeat.common.Status
+
 enum class DomainStatus(
     override val message: String
 ) : Status {
