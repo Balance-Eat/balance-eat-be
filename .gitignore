@@ -6,6 +6,7 @@ ranchat-logs/
 !**/src/main/**/build/
 !**/src/test/**/build/
 generated
+.kotlin/
 
 ### STS ###
 .apt_generated

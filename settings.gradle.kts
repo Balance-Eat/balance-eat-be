@@ -2,6 +2,8 @@ rootProject.name = "balance-eat"
 
 include(
     "application:balance-eat-api",
+    "application:balance-eat-admin-api",
+    "application:api-base",
     "common",
     "domain",
     "supports:jackson",

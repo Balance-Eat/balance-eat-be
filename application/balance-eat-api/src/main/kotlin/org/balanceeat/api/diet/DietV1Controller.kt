@@ -1,6 +1,6 @@
 package org.balanceeat.api.diet
 
-import org.balanceeat.api.config.ApiResponse
+import org.balanceeat.apibase.response.ApiResponse
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate

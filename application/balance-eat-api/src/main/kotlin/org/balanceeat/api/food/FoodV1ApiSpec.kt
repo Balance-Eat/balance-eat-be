@@ -3,7 +3,7 @@ package org.balanceeat.api.food
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.balanceeat.api.config.ApiResponse
+import org.balanceeat.apibase.response.ApiResponse
 
 @Tag(name = "음식 API V1")
 interface FoodV1ApiSpec {

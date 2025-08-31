@@ -1,7 +1,7 @@
 package org.balanceeat.api.food
 
 import jakarta.validation.Valid
-import org.balanceeat.api.config.ApiResponse
+import org.balanceeat.apibase.response.ApiResponse
 import org.balanceeat.domain.food.FoodCommand
 import org.balanceeat.domain.food.FoodDomainService
 import org.springframework.http.HttpStatus

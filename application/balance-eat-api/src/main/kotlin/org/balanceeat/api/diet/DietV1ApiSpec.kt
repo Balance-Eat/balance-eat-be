@@ -3,7 +3,7 @@ package org.balanceeat.api.diet
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.balanceeat.api.config.ApiResponse
+import org.balanceeat.apibase.response.ApiResponse
 import org.springframework.format.annotation.DateTimeFormat
 import java.time.LocalDate
 
