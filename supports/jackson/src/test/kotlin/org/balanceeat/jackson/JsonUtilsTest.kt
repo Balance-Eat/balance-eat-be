@@ -24,14 +24,6 @@ class JsonUtilsTest {
     }
 
     @Test
-    fun `stringify - null 값 제외하여 직렬화`() {
-        val data = TestData("이영희", 25)
-        val result = JsonUtils.stringify(data)
-        
-        assertEquals("""{"name":"이영희","age":25}""", result)
-    }
-
-    @Test
     fun `stringify - null 입력 시 null 문자열 반환`() {
         val result = JsonUtils.stringify(null)
         assertEquals("null", result)

@@ -27,7 +27,7 @@ object ObjectMapperFactory {
                 // 직렬화 설정
                 configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
                 configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false)
-                configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+                configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, true)
                 configure(SerializationFeature.INDENT_OUTPUT, false)
 
                 // 역직렬화 설정
@@ -39,7 +39,7 @@ object ObjectMapperFactory {
                 propertyNamingStrategy = PropertyNamingStrategies.LOWER_CAMEL_CASE
 
                 // null 값 제외
-                setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                setSerializationInclusion(JsonInclude.Include.ALWAYS)
 
                 // 필드 접근 설정
                 setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
