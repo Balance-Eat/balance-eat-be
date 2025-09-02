@@ -2,7 +2,7 @@ package org.balanceeat.domain.config.supports
 
 import jakarta.persistence.EntityManager
 import jakarta.persistence.EntityManagerFactory
-import org.balanceeat.domain.config.supports.CleanUp
+import org.balanceeat.domain.config.DatabaseCleanUp
 import org.balanceeat.domain.config.PostgreSQLTestContainerConfig
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Tag
@@ -25,30 +25,18 @@ import java.util.function.Consumer
 @Tag("integration")
 @SpringBootTest
 @ActiveProfiles("test")
-@Import(PostgreSQLTestContainerConfig::class, CleanUp::class)
+@Import(PostgreSQLTestContainerConfig::class, DatabaseCleanUp::class)
 @Testcontainers
 abstract class IntegrationTestContext {
     @Autowired
-    private lateinit var cleanUp: CleanUp
+    private lateinit var databaseCleanUp: DatabaseCleanUp
 
     @Autowired
     private lateinit var entityManagerFactory: EntityManagerFactory
 
     @AfterEach
     fun tearDown() {
-        cleanUp.all()
-    }
-
-    companion object {
-        private val PostgreContainer: JdbcDatabaseContainer<*> = PostgreSQLTestContainerConfig.getContainer()
-
-        @JvmStatic
-        @DynamicPropertySource
-        fun setDatasourceProperties(registry: DynamicPropertyRegistry) {
-            registry.add("spring.datasource.url") { PostgreContainer.jdbcUrl }
-            registry.add("spring.datasource.username") { PostgreContainer.username }
-            registry.add("spring.datasource.password") { PostgreContainer.password }
-        }
+        databaseCleanUp.all()
     }
 
     protected fun runConcurrent(threadCount: Int, task: Runnable) {

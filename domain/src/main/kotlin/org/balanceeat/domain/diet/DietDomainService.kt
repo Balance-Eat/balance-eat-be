@@ -1,12 +1,13 @@
 package org.balanceeat.domain.diet
 
+import org.balanceeat.domain.common.DomainService
 import org.balanceeat.domain.common.DomainStatus
 import org.balanceeat.domain.common.exception.EntityNotFoundException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 
-@Service
+@DomainService
 class DietDomainService(
     private val dietRepository: DietRepository,
     private val dietFoodRepository: DietFoodRepository

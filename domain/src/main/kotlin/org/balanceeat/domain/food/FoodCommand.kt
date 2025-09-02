@@ -17,13 +17,13 @@ sealed class FoodCommand {
     
     data class Update(
         val id: Long,
-        val modifierId: Long,
         val name: String,
         val perCapitaIntake: Double,
         val unit: String,
         val carbohydrates: Double,
         val protein: Double,
-        val fat: Double
+        val fat: Double,
+        val isAdminApproved: Boolean
     )
 
     data class UpdateByAdmin(

@@ -13,8 +13,8 @@ interface FoodV1ApiSpec {
     @Operation(summary = "음식 수정")
     fun update(id: Long, request: FoodV1Request.Update): ApiResponse<FoodV1Response.Info>
     
-    @Operation(summary = "음식 정보 조회")
-    fun getFood(
+    @Operation(summary = "음식 상세 조회")
+    fun getDetails(
         @Parameter(description = "음식 ID", required = true)
         id: Long
     ): ApiResponse<FoodV1Response.Info>

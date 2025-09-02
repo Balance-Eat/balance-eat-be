@@ -89,7 +89,7 @@ src/main/kotlin/org/balanceeat/domain/
 **도메인 모델 컨벤션**:
 - **Entity**: `{Domain}.kt` - JPA 엔터티 (@Entity)
 - **Command**: `{Domain}Command.kt` - 명령 객체 (Create, Update 등)
-- **Service**: `{Domain}DomainService.kt` - 도메인 비즈니스 로직
+- **Service**: `{Domain}DomainService.kt` - 도메인 비즈니스 로직 (@DomainService)
 - **Repository**: `{Domain}Repository.kt` - 데이터 접근 인터페이스
 
 ### 3. Test Structure
@@ -143,7 +143,7 @@ src/test/kotlin/org/balanceeat/domain/
 ### Source Files
 - **Entity**: `{Domain}.kt` (예: `User.kt`, `Food.kt`)
 - **Command**: `{Domain}Command.kt` (예: `UserCommand.kt`)
-- **Service**: `{Domain}DomainService.kt` (예: `UserDomainService.kt`)
+- **Service**: `{Domain}DomainService.kt` (예: `UserDomainService.kt`) - @DomainService 어노테이션 필수
 - **Repository**: `{Domain}Repository.kt` (예: `UserRepository.kt`)
 - **Controller**: `{Domain}V1Controller.kt` (예: `UserV1Controller.kt`)
 - **Payload**: `{Domain}V1Payload.kt` (예: `UserV1Payload.kt`)

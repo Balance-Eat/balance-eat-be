@@ -1,13 +1,13 @@
 package org.balanceeat.domain.user
 
+import org.balanceeat.domain.common.DomainService
 import org.balanceeat.domain.common.DomainStatus
 import org.balanceeat.domain.common.DomainStatus.USER_ALREADY_EXISTS
 import org.balanceeat.domain.common.exception.BadCommandException
 import org.balanceeat.domain.common.exception.EntityNotFoundException
-import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-@Service
+@DomainService
 class UserDomainService(
     private val userRepository: UserRepository
 ) {

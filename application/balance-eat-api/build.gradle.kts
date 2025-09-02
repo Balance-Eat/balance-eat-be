@@ -21,6 +21,12 @@ repositories {
 dependencies {
     implementation(project(":application:api-base"))
     implementation(project(":supports:monitoring"))
+
+    // Test
+    testImplementation(project(":application:api-base"))
+    testImplementation(testFixtures(project(":domain")))
+    testImplementation(sourceSets.main.get().output)
+    testFixturesImplementation(sourceSets.main.get().output)
 }
 
 tasks.getByName("bootJar") {

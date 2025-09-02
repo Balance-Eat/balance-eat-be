@@ -17,7 +17,6 @@ allOpen {
 }
 
 dependencies {
-    implementation(project(":common"))
     implementation(project(":supports:jackson"))
     api("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -33,6 +32,9 @@ dependencies {
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:junit-jupiter:1.19.1")
     testImplementation("io.mockk:mockk:1.13.7")
+    testFixturesApi("org.testcontainers:postgresql")
+    testFixturesApi("org.testcontainers:junit-jupiter:1.19.1")
+    testFixturesApi("io.mockk:mockk:1.13.7")
 }
 
 tasks.getByName("bootJar") {

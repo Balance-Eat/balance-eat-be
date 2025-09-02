@@ -349,7 +349,7 @@ data class EntityDto(
 
 #### 도메인 서비스에서 DTO 반환
 ```kotlin
-@Service
+@DomainService
 class EntityDomainService(
     private val entityRepository: EntityRepository
 ) {

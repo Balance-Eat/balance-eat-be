@@ -1,12 +1,12 @@
 package org.balanceeat.domain.food
 
+import org.balanceeat.domain.common.DomainService
 import org.balanceeat.domain.common.DomainStatus
 import org.balanceeat.domain.common.exception.BadCommandException
 import org.balanceeat.domain.common.exception.EntityNotFoundException
-import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-@Service
+@DomainService
 class FoodDomainService(
     private val foodRepository: FoodRepository
 ) {
@@ -39,10 +39,6 @@ class FoodDomainService(
     fun update(command: FoodCommand.Update): FoodDto {
         val food = foodRepository.findById(command.id)
             .orElseThrow { EntityNotFoundException(DomainStatus.FOOD_NOT_FOUND) }
-
-        if (food.userId != command.modifierId) {
-            throw BadCommandException(DomainStatus.CANNOT_MODIFY_FOOD)
-        }
 
         food.update(
             name = command.name,

@@ -1,19 +1,15 @@
-package org.balanceeat.domain.config.supports
+package org.balanceeat.domain.config
 
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import javax.sql.DataSource
+import kotlin.use
 
 @Component
-class CleanUp(
+class DatabaseCleanUp(
     private val jdbcTemplate: JdbcTemplate
 ) {
-
     fun all() {
-        clearRDB()
-    }
-
-    private fun clearRDB() {
         val dataSource: DataSource = jdbcTemplate.dataSource
             ?: throw IllegalStateException("No DataSource available for cleanup")
 

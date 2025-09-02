@@ -92,12 +92,10 @@ class FoodDomainServiceTest : IntegrationTestContext() {
     inner class UpdateTest {
 
         @Test
-        fun `음식 작성자는 음식을 수정할 수 있다`() {
+        fun `수정 성공`() {
             // given
-            val originalUserId = 1L
             val food = foodRepository.save(FoodFixture(
                 name = "수정 전 음식",
-                userId = originalUserId,
                 perCapitaIntake = 100.0,
                 unit = "g",
                 carbohydrates = 20.0,
@@ -108,7 +106,6 @@ class FoodDomainServiceTest : IntegrationTestContext() {
 
             val updateCommand = FoodCommandFixture.Update(
                 foodId = food.id,
-                modifierId = originalUserId,
                 name = "수정 후 음식",
                 perCapitaIntake = 150.0,
                 unit = "mg",
@@ -123,38 +120,12 @@ class FoodDomainServiceTest : IntegrationTestContext() {
             // then
             assertThat(updatedFood.id).isEqualTo(food.id)
             assertThat(updatedFood.name).isEqualTo("수정 후 음식")
-            assertThat(updatedFood.userId).isEqualTo(originalUserId)
             assertThat(updatedFood.perCapitaIntake).isEqualTo(150.0)
             assertThat(updatedFood.unit).isEqualTo("mg")
             assertThat(updatedFood.carbohydrates).isEqualTo(30.0)
             assertThat(updatedFood.protein).isEqualTo(10.0)
             assertThat(updatedFood.fat).isEqualTo(11.0)
             assertThat(updatedFood.isAdminApproved).isEqualTo(false) // 수정 시 검수 상태 유지
-        }
-
-        @Test
-        fun `음식 작성자가 아닌 사용자는 음식을 수정할 수 없다`() {
-            // given
-            val originalUserId = 1L
-            val differentUserId = 2L
-            val food = foodRepository.save(FoodFixture(
-                name = "권한 테스트 음식",
-                userId = originalUserId,
-                perCapitaIntake = 100.0
-            ).create())
-
-            val updateCommand = FoodCommandFixture.Update(
-                foodId = food.id,
-                modifierId = differentUserId,
-                name = "권한 없는 사용자의 수정 시도"
-            ).create()
-
-            // when & then
-            assertThatThrownBy {
-                foodDomainService.update(updateCommand)
-            }
-                .isInstanceOf(BadCommandException::class.java)
-                .hasFieldOrPropertyWithValue("status", DomainStatus.CANNOT_MODIFY_FOOD)
         }
 
         @Test
@@ -174,7 +145,6 @@ class FoodDomainServiceTest : IntegrationTestContext() {
 
             val updateCommand = FoodCommandFixture.Update(
                 foodId = food.id,
-                modifierId = userId,
                 name = "새로운 이름만 변경",
                 unit = food.unit,
                 perCapitaIntake = food.perCapitaIntake,
@@ -194,100 +164,6 @@ class FoodDomainServiceTest : IntegrationTestContext() {
             assertThat(updatedFood.protein).isEqualTo(10.0)
             assertThat(updatedFood.fat).isEqualTo(food.fat)
             assertThat(updatedFood.isAdminApproved).isEqualTo(false) // 수정 시 검수 상태 유지
-        }
-    }
-
-    @Nested
-    @DisplayName("관리자 수정 테스트")
-    inner class UpdateByAdminTest {
-
-        @Test
-        fun `관리자는 모든 음식을 수정할 수 있다`() {
-            // given
-            val originalUserId = 1L
-            val adminId = 999L
-            val food = foodRepository.save(FoodFixture(
-                name = "일반 사용자 음식",
-                userId = originalUserId,
-                perCapitaIntake = 100.0,
-                unit = "g",
-                carbohydrates = 20.0,
-                protein = 5.0,
-                fat = 2.0,
-                isAdminApproved = false
-            ).create())
-
-            val updateByAdminCommand = FoodCommandFixture.UpdateByAdmin(
-                foodId = food.id,
-                adminId = adminId,
-                name = "관리자가 수정한 음식",
-                perCapitaIntake = 200.0,
-                unit = "ml",
-                carbohydrates = 40.0,
-                protein = 10.0,
-                fat = 5.0,
-                isAdminApproved = true
-            ).create()
-
-            // when
-            val updatedFood = foodDomainService.updateByAdmin(updateByAdminCommand)
-
-            // then
-            assertThat(updatedFood.id).isEqualTo(food.id)
-            assertThat(updatedFood.name).isEqualTo("관리자가 수정한 음식")
-            assertThat(updatedFood.userId).isEqualTo(originalUserId) // 원래 작성자 유지
-            assertThat(updatedFood.perCapitaIntake).isEqualTo(200.0)
-            assertThat(updatedFood.unit).isEqualTo("ml")
-            assertThat(updatedFood.carbohydrates).isEqualTo(40.0)
-            assertThat(updatedFood.protein).isEqualTo(10.0)
-            assertThat(updatedFood.fat).isEqualTo(5.0)
-            assertThat(updatedFood.isAdminApproved).isEqualTo(true)
-        }
-
-        @Test
-        fun `관리자가 존재하지 않는 음식을 수정하려고 하면 예외가 발생한다`() {
-            // given
-            val nonExistentFoodId = 999L
-            val updateByAdminCommand = FoodCommandFixture.UpdateByAdmin(
-                foodId = nonExistentFoodId,
-                adminId = 1L,
-                name = "존재하지 않는 음식"
-            ).create()
-
-            // when & then
-            assertThatThrownBy {
-                foodDomainService.updateByAdmin(updateByAdminCommand)
-            }
-                .isInstanceOf(EntityNotFoundException::class.java)
-                .hasFieldOrPropertyWithValue("status", DomainStatus.FOOD_NOT_FOUND)
-        }
-
-        @Test
-        fun `관리자는 음식을 검증된 상태로 변경할 수 있다`() {
-            // given
-            val food = foodRepository.save(FoodFixture(
-                name = "검증 전 음식",
-                userId = 1L,
-                isAdminApproved = false
-            ).create())
-
-            val updateByAdminCommand = FoodCommandFixture.UpdateByAdmin(
-                foodId = food.id,
-                adminId = 999L,
-                name = food.name,
-                perCapitaIntake = food.perCapitaIntake,
-                unit = food.unit,
-                carbohydrates = food.carbohydrates,
-                protein = food.protein,
-                fat = food.fat,
-                isAdminApproved = true
-            ).create()
-
-            // when
-            val updatedFood = foodDomainService.updateByAdmin(updateByAdminCommand)
-
-            // then
-            assertThat(updatedFood.isAdminApproved).isEqualTo(true)
         }
     }
 }

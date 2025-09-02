@@ -62,6 +62,7 @@ subprojects {
     }
 
     dependencies {
+        implementation(project(":common"))
         // Kotlin
         runtimeOnly("org.springframework.boot:spring-boot-starter-validation")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -77,6 +78,8 @@ subprojects {
         testImplementation("org.mockito:mockito-core:${project.properties["mockitoVersion"]}")
         testImplementation("org.mockito.kotlin:mockito-kotlin:${project.properties["mockitoKotlinVersion"]}")
         testImplementation("org.instancio:instancio-junit:${project.properties["instancioJUnitVersion"]}")
+        testImplementation(testFixtures(project(":common")))
+        testFixturesImplementation(testFixtures(project(":common")))
         // validator
         implementation("commons-validator:commons-validator:1.7")
     }

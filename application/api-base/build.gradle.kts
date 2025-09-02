@@ -19,7 +19,6 @@ repositories {
 }
 
 dependencies {
-    api(project(":common"))
     api(project(":domain"))
     api(project(":supports:jackson"))
     
@@ -39,9 +38,9 @@ dependencies {
     compileOnly("org.springframework.boot:spring-boot-configuration-processor")
 
     // Test
+    testApi("org.springframework.boot:spring-boot-starter-test")
     testApi("org.springframework.boot:spring-boot-testcontainers")
     testApi("org.testcontainers:junit-jupiter")
-    testApi("org.testcontainers:postgresql")
 }
 
 tasks.withType<Test> {
