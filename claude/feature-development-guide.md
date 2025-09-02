@@ -549,6 +549,56 @@ class FoodV1ControllerTest {
 - 입력 유효성 검사
 - API 스펙 준수
 
+### 4.2.4 HTTP 파일 (API 수동 테스트)
+
+**위치**: `http/{domain}-api.http`
+
+```http
+### Food 생성 API 테스트 (성공 케이스)
+
+POST {{baseUrl}}/{{apiVersion}}/foods
+Content-Type: application/json
+
+{
+  "uuid": "550e8400-e29b-41d4-a716-446655440000",
+  "name": "김치찌개",
+  "perCapitaIntake": 200.0,
+  "unit": "g",
+  "carbohydrates": 15.0,
+  "protein": 12.0,
+  "fat": 8.0
+}
+
+###
+
+### Food 수정 API 테스트 (성공 케이스)
+
+PUT {{baseUrl}}/{{apiVersion}}/foods/1
+Content-Type: application/json
+
+{
+  "name": "수정된 김치찌개",
+  "perCapitaIntake": 250.0,
+  "unit": "g",
+  "carbohydrates": 18.0,
+  "protein": 15.0,
+  "fat": 10.0
+}
+
+###
+
+### Food 조회 API 테스트 (성공 케이스)
+
+GET {{baseUrl}}/{{apiVersion}}/foods/1
+Accept: application/json
+```
+
+**작성 원칙**:
+- **성공 케이스만 작성** (에러 케이스는 테스트 코드에서 검증)
+- 각 주요 엔드포인트마다 하나의 요청만 작성
+- 환경 변수 활용 (`{{baseUrl}}`, `{{apiVersion}}`)
+- 실제 사용 가능한 데이터로 작성
+
 ## 5. 개발 체크리스트
 
 ### ✅ Domain Layer
@@ -571,6 +621,9 @@ class FoodV1ControllerTest {
 - [ ] Domain Service 테스트
 - [ ] Application Service 테스트
 - [ ] Controller 테스트 (`@WebMvcTest`)
+
+### ✅ API 테스트 파일
+- [ ] HTTP 파일 생성 (`.http` 확장자, 성공 케이스만)
 
 ### ✅ 명명 규칙 준수
 - [ ] **Entity**: `{Domain}.kt`

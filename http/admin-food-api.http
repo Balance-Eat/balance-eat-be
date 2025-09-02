@@ -1,0 +1,19 @@
+### Admin Food 수정 API 테스트 (성공 케이스)
+
+PUT {{baseUrl}}/admin/v1/foods/1
+Content-Type: application/json
+
+{
+  "name": "관리자 승인 김치찌개",
+  "perCapitaIntake": 200.0,
+  "unit": "g",
+  "carbohydrates": 15.0,
+  "protein": 12.0,
+  "fat": 8.0,
+  "isAdminApproved": true
+}
+
+### Admin Food 조회 API 테스트 (성공 케이스)
+
+GET {{baseUrl}}/admin/v1/foods/1
+Accept: application/json

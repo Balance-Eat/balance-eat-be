@@ -52,23 +52,4 @@ class FoodDomainService(
         val savedFood = foodRepository.save(food)
         return FoodDto.from(savedFood)
     }
-
-    @Transactional
-    fun updateByAdmin(command: FoodCommand.UpdateByAdmin): FoodDto {
-        val food = foodRepository.findById(command.id)
-            .orElseThrow { EntityNotFoundException(DomainStatus.FOOD_NOT_FOUND) }
-
-        food.update(
-            name = command.name,
-            perCapitaIntake = command.perCapitaIntake,
-            unit = command.unit,
-            carbohydrates = command.carbohydrates,
-            protein = command.protein,
-            fat = command.fat
-        )
-        if (command.isAdminApproved) food.approve()
-
-        val savedFood = foodRepository.save(food)
-        return FoodDto.from(savedFood)
-    }
 }
