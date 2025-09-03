@@ -38,7 +38,7 @@ class Food(
     var fat: Double = 0.0,
 
     // 관리자 검수 여부
-    @Column(name = "is_verified", nullable = false)
+    @Column(name = "isAdminApproved", nullable = false)
     var isAdminApproved: Boolean = false
 ) : BaseEntity() {
     override fun guard() {

@@ -1,8 +1,3 @@
-plugins {
-    kotlin("jvm")
-    kotlin("plugin.spring")
-    id("java-library")
-}
 
 dependencies {
     api(project(":domain"))
@@ -17,16 +12,14 @@ dependencies {
     api("io.github.microutils:kotlin-logging-jvm:3.0.5")
 
     // Swagger/OpenAPI
+    api("io.rest-assured:spring-mock-mvc")
+    api("org.springframework.restdocs:spring-restdocs-mockmvc:${project.properties["springRestdocsMockmvcVersion"]}")
+    api("com.epages:restdocs-api-spec-restassured:${project.properties["restdocsApiSpecVersion"]}")
     api("org.springdoc:springdoc-openapi-starter-webmvc-ui:${project.properties["springDocOpenApiVersion"]}")
-    
+
     // Optional dependencies for auto-configuration
     compileOnly("org.springframework.boot:spring-boot-autoconfigure")
     compileOnly("org.springframework.boot:spring-boot-configuration-processor")
-
-    // Test
-    testApi("org.springframework.boot:spring-boot-starter-test")
-    testApi("org.springframework.boot:spring-boot-testcontainers")
-    testApi("org.testcontainers:junit-jupiter")
 }
 
 tasks.withType<Test> {

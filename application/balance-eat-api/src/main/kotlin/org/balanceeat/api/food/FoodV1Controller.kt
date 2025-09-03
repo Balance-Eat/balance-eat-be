@@ -34,4 +34,12 @@ class FoodV1Controller(
         val food = foodService.getDetails(id)
         return ApiResponse.success(FoodV1Response.Info.from(food))
     }
+
+    @GetMapping("/recommendations")
+    fun getRecommendations(@RequestParam(defaultValue = "10") limit: Int): ApiResponse<List<FoodV1Response.Info>> {
+        val result = foodService.getRecommendations(limit)
+            .map { FoodV1Response.Info.from(it) }
+
+        return ApiResponse.success(result)
+    }
 }

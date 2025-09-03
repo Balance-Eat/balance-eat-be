@@ -1,0 +1,35 @@
+### 음식 생성
+POST {{baseUrl}}/v1/foods
+Content-Type: application/json
+
+{
+  "name": "김치찌개",
+  "description": "한국 전통 김치를 이용한 찌개",
+  "calories": 250,
+  "protein": 15.5,
+  "carbohydrate": 20.0,
+  "fat": 12.3,
+  "sodium": 800
+}
+
+### 음식 수정
+PUT {{baseUrl}}/v1/foods/1
+Content-Type: application/json
+
+{
+  "name": "김치찌개 (수정)",
+  "description": "매콤한 김치를 이용한 찌개",
+  "calories": 280,
+  "protein": 18.0,
+  "carbohydrate": 22.5,
+  "fat": 14.0,
+  "sodium": 900
+}
+
+### 음식 상세 조회
+GET {{baseUrl}}/v1/foods/1
+Accept: application/json
+
+### 추천 음식 목록 조회
+GET {{baseUrl}}/v1/foods/recommendations?limit=10
+Accept: application/json

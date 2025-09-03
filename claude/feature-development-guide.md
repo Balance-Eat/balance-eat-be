@@ -170,13 +170,6 @@ interface FoodRepository : JpaRepository<Food, Long> {
 class FoodDomainService(
     private val foodRepository: FoodRepository
 ) {
-    @Transactional(readOnly = true)
-    fun getFood(foodId: Long): FoodDto {
-        val food = foodRepository.findById(foodId)
-            .orElseThrow { EntityNotFoundException(DomainStatus.FOOD_NOT_FOUND) }
-        return FoodDto.from(food)
-    }
-    
     @Transactional
     fun create(command: FoodCommand.Create): FoodDto {
         val food = Food(
@@ -193,13 +186,44 @@ class FoodDomainService(
         val savedFood = foodRepository.save(food)
         return FoodDto.from(savedFood)
     }
+    
+    @Transactional
+    fun update(command: FoodCommand.Update): FoodDto {
+        val food = foodRepository.findById(command.id)
+            .orElseThrow { EntityNotFoundException(DomainStatus.FOOD_NOT_FOUND) }
+        
+        food.name = command.name
+        food.perCapitaIntake = command.perCapitaIntake
+        food.unit = command.unit
+        food.carbohydrates = command.carbohydrates
+        food.protein = command.protein
+        food.fat = command.fat
+        food.isAdminApproved = command.isAdminApproved
+        
+        val savedFood = foodRepository.save(food)
+        return FoodDto.from(savedFood)
+    }
+    
+    @Transactional
+    fun delete(id: Long) {
+        val food = foodRepository.findById(id)
+            .orElseThrow { EntityNotFoundException(DomainStatus.FOOD_NOT_FOUND) }
+        foodRepository.delete(food)
+    }
 }
 ```
+
+**Domain Service 책임 범위**:
+- **포함해야 할 기능**: 순수한 도메인 CUD 로직 (Create, Update, Delete)
+- **제외해야 할 기능**: 권한 검증, 비즈니스 규칙 (예: 사용자별 수정 권한 체크)
+- **읽기 작업**: Application Service에서 Repository를 직접 사용하여 처리
 
 **핵심 원칙**:
 - `@DomainService` 어노테이션 필수
 - 항상 DTO 반환 (엔티티 직접 반환 금지)
 - 트랜잭션 범위 명시 (`@Transactional`)
+- **공통 CUD 로직만 처리** - 어드민/유저 구분 없는 핵심 데이터 조작
+- **권한 검증 및 비즈니스 규칙은 Application Service 담당**
 
 ## 3. Application Layer 구현
 
@@ -239,10 +263,16 @@ class FoodService(
 }
 ```
 
-**역할**:
-- API Request를 Domain Command로 변환
-- 권한 검증 및 비즈니스 로직 조율
-- Domain Service 호출
+**Application Service 책임 범위**:
+- **API Request → Domain Command 변환**: 외부 요청을 내부 도메인 언어로 변환
+- **권한 검증**: 사용자별 수정/삭제 권한 체크 (예: 작성자만 수정 가능)
+- **비즈니스 규칙 적용**: 도메인 공통 로직 외의 애플리케이션별 규칙
+- **읽기 작업**: Repository를 직접 사용하여 조회 기능 구현
+- **Domain Service 호출**: 순수 CUD 작업을 위한 도메인 서비스 위임
+
+**역할 분리**:
+- **Domain Service**: 공통 CUD 로직 (권한/규칙 무관한 핵심 데이터 조작)
+- **Application Service**: 권한 검증 + 비즈니스 규칙 + 읽기 작업
 
 ### 3.2 API Payload 구현 (FoodV1Payload.kt)
 
@@ -466,9 +496,10 @@ class FoodDomainServiceTest : IntegrationTestContext() {
 ```
 
 **테스트 포커스**:
-- 비즈니스 로직 검증
-- 도메인 규칙 준수 확인
-- 엔티티 생명주기 테스트
+- **CUD 로직 검증**: Create, Update, Delete 기능의 정확성
+- **데이터 변환 검증**: Command → Entity, Entity → DTO 변환
+- **트랜잭션 동작 확인**: 데이터베이스 상태 변경 검증
+- **도메인 규칙 검증**: Entity의 guard() 메서드를 통한 비즈니스 규칙
 
 #### 4.2.2 Application Service 테스트
 
@@ -499,9 +530,10 @@ class FoodServiceTest : IntegrationTestContext() {
 ```
 
 **테스트 포커스**:
-- 권한 검증 로직
-- Request → Command 변환
-- 에러 케이스 처리
+- **권한 검증 로직**: 작성자만 수정/삭제 가능 등의 비즈니스 규칙
+- **비즈니스 규칙**: 도메인 공통 로직 외의 애플리케이션별 규칙
+- **읽기 작업**: Repository를 통한 조회 기능의 정확성
+- **Request → Command 변환**: API 요청을 도메인 커맨드로 올바르게 변환
 
 #### 4.2.3 Controller 테스트
 

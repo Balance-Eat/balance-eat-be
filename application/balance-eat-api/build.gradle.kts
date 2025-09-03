@@ -6,6 +6,7 @@ plugins {
     id("io.spring.dependency-management")
 //    id("org.jlleitschuh.gradle.ktlint")
     id("java-test-fixtures")
+    id("com.epages.restdocs-api-spec")
 }
 
 configurations {
@@ -36,3 +37,5 @@ tasks.getByName("bootJar") {
 tasks.getByName("jar") {
     enabled = false
 }
+
+openapi3

@@ -4,10 +4,12 @@ import org.balanceeat.apibase.ApplicationStatus.CANNOT_MODIFY_FOOD
 import org.balanceeat.apibase.ApplicationStatus.FOOD_NOT_FOUND
 import org.balanceeat.apibase.exception.BadRequestException
 import org.balanceeat.apibase.exception.NotFoundException
+import org.balanceeat.domain.curation.CurationFoodRepository
 import org.balanceeat.domain.food.FoodCommand
 import org.balanceeat.domain.food.FoodDomainService
 import org.balanceeat.domain.food.FoodDto
 import org.balanceeat.domain.food.FoodRepository
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,7 +17,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class FoodService(
     private val foodDomainService: FoodDomainService,
-    private val foodRepository: FoodRepository
+    private val foodRepository: FoodRepository,
+    private val curationFoodRepository: CurationFoodRepository
 ) {
     @Transactional(readOnly = true)
     fun getDetails(id: Long): FoodDto {
@@ -62,5 +65,16 @@ class FoodService(
                 isAdminApproved = false
             )
         )
+    }
+
+    @Transactional(readOnly = true)
+    fun getRecommendations(limit: Int = 10): List<FoodDto> {
+        val pageable = PageRequest.of(0, limit)
+        val curationFoodMap =  curationFoodRepository.findRecommendedFoods(pageable)
+            .associateBy { it.foodId }
+
+        return foodRepository.findAllById(curationFoodMap.keys)
+            .map { FoodDto.from(it) }
+            .sortedByDescending { curationFoodMap[it.id]?.weight }
     }
 }

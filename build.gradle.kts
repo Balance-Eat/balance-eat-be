@@ -18,6 +18,7 @@ plugins {
     id("org.springframework.boot") apply false
     id("io.spring.dependency-management") apply false
     id("org.jlleitschuh.gradle.ktlint") apply false
+    id("com.epages.restdocs-api-spec") apply false
 }
 
 java {

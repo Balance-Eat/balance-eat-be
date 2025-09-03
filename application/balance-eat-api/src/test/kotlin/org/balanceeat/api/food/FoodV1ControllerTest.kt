@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.mockito.BDDMockito.willThrow
+import org.mockito.Mockito.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
@@ -18,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.time.LocalDateTime
+import org.hamcrest.Matchers.aMapWithSize
 
 @WebMvcTest(FoodV1Controller::class)
 @DisplayName("FoodV1Controller 테스트")
@@ -65,6 +67,8 @@ class FoodV1ControllerTest {
                 .andExpect(jsonPath("$.data.carbohydrates").value(mockFoodDto.carbohydrates))
                 .andExpect(jsonPath("$.data.protein").value(mockFoodDto.protein))
                 .andExpect(jsonPath("$.data.fat").value(mockFoodDto.fat))
+                .andExpect(jsonPath("$.data.isTest").value(false))
+                .andExpect(jsonPath("$.data", aMapWithSize<Any, Any>(9)))
         }
     }
 
@@ -105,6 +109,8 @@ class FoodV1ControllerTest {
                 .andExpect(jsonPath("$.data.carbohydrates").value(mockFoodDto.carbohydrates))
                 .andExpect(jsonPath("$.data.protein").value(mockFoodDto.protein))
                 .andExpect(jsonPath("$.data.fat").value(mockFoodDto.fat))
+                .andExpect(jsonPath("$.data.isTest").value(false))
+                .andExpect(jsonPath("$.data", aMapWithSize<Any, Any>(9)))
         }
     }
 
@@ -131,6 +137,8 @@ class FoodV1ControllerTest {
                 .andExpect(jsonPath("$.data.carbohydrates").value(mockFoodDto.carbohydrates))
                 .andExpect(jsonPath("$.data.protein").value(mockFoodDto.protein))
                 .andExpect(jsonPath("$.data.fat").value(mockFoodDto.fat))
+                .andExpect(jsonPath("$.data.isTest").value(false))
+                .andExpect(jsonPath("$.data", aMapWithSize<Any, Any>(9)))
         }
     }
 
@@ -148,5 +156,34 @@ class FoodV1ControllerTest {
             isAdminApproved = false,
             createdAt = LocalDateTime.now()
         )
+    }
+
+    @Nested
+    @DisplayName("GET /v1/foods/recommendations - 추천 음식 조회")
+    inner class GetRecommendationsTest {
+        @Test
+        fun `성공`() {
+            // given
+            val limit = 5
+            val food1 = mockFoodDto()
+            val food2 = food1.copy(id = 2L, uuid = "uuid-2", name = "두번째 음식")
+            given(foodService.getRecommendations(limit)).willReturn(listOf(food1, food2))
+
+            // when & then
+            mockMvc.perform(get("/v1/foods/recommendations").param("limit", limit.toString()))
+                .andExpect(status().isOk)
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.status").value("SUCCESS"))
+                .andExpect(jsonPath("$.data[0].id").value(food1.id))
+                .andExpect(jsonPath("$.data[0].uuid").value(food1.uuid))
+                .andExpect(jsonPath("$.data[0].name").value(food1.name))
+                .andExpect(jsonPath("$.data[0].isTest").value(false))
+                .andExpect(jsonPath("$.data[0]", aMapWithSize<Any, Any>(9)))
+                .andExpect(jsonPath("$.data[1].id").value(food2.id))
+                .andExpect(jsonPath("$.data[1].uuid").value(food2.uuid))
+                .andExpect(jsonPath("$.data[1].name").value(food2.name))
+                .andExpect(jsonPath("$.data[1].isTest").value(false))
+                .andExpect(jsonPath("$.data[1]", aMapWithSize<Any, Any>(9)))
+        }
     }
 }

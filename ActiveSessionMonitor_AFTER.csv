@@ -1,0 +1,32 @@
+datid,datname,pid,leader_pid,usesysid,usename,application_name,client_addr,client_hostname,client_port,backend_start,xact_start,query_start,state_change,wait_event_type,wait_event,state,backend_xid,backend_xmin,query_id,query,backend_type
+17003,postgres,2829,null,16481,authenticator,postgrest,::1,null,42565,2025-08-05 02:16:18.014648+00,null,2025-08-05 02:16:18.027468+00,2025-08-05 02:16:18.027504+00,Client,ClientRead,idle,null,null,658074698259335373,"LISTEN ""pgrst""",client backend
+17003,postgres,3118,null,10,supabase_admin,postgres_exporter,::1,null,29001,2025-08-05 02:20:29.712376+00,null,2025-09-03 06:28:29.670331+00,2025-09-03 06:28:29.670549+00,Client,ClientRead,idle,null,null,1575556591405590445,"SELECT slot_name, pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn) AS realtime_lag_bytes, active AS realtime_slot_status FROM pg_replication_slots WHERE slot_name LIKE ANY (ARRAY['realtime', 'realtime_rls',  'supabase_realtime_replication_slot%'])",client backend
+17003,postgres,24542,null,10,supabase_admin,,::1,null,29885,2025-08-05 14:34:00.014641+00,null,2025-09-02 14:34:00.022709+00,2025-09-02 14:34:00.074019+00,Client,ClientRead,idle,null,null,-1612177921068662911,show archive_mode;,client backend
+17003,postgres,1329327,null,16384,postgres,supabase/dashboard-query-editor,2406:da18:96a:8201:dd92:41c7:ae24:1ad5,null,60742,2025-09-03 06:29:02.270689+00,2025-09-03 06:29:02.708848+00,2025-09-03 06:29:02.708848+00,2025-09-03 06:29:02.70885+00,null,null,active,null,1958,1599641651250363029,"SELECT * FROM pg_stat_activity limit 100;
+
+-- source: dashboard
+-- user: 5c5bf50c-2e68-465d-9515-0f1cf8a94be6
+-- date: 2025-09-03T06:29:02.164Z",client backend
+17003,postgres,1329314,null,16385,pgbouncer,Supavisor auth_query,2406:da12:b78:de00:1ab8:8443:4fbd:41d5,null,49162,2025-09-03 06:29:00.695659+00,null,2025-09-03 06:29:00.700542+00,2025-09-03 06:29:02.693956+00,Client,ClientRead,idle,null,null,8580411586163530256,"SELECT t.oid, t.typname, t.typsend, t.typreceive, t.typoutput, t.typinput,
+       coalesce(d.typelem, t.typelem), coalesce(r.rngsubtype, 0), ARRAY (
+  SELECT a.atttypid
+  FROM pg_attribute AS a
+  WHERE a.attrelid = t.typrelid AND a.attnum > 0 AND NOT a.attisdropped
+  ORDER BY a.attnum
+)
+
+FROM pg_type AS t
+LEFT JOIN pg_type AS d ON t.typbasetype = d.oid
+LEFT JOIN pg_range AS r ON r.rngtypid = t.oid OR r.rngmultitypid = t.oid OR (t.typbasetype <> 0 AND r.rngtypid = t.typbasetype)
+WHERE (t.typrelid = 0)
+AND (t.typelem = 0 OR NOT EXISTS (SELECT 1 FROM pg_catalog.pg_type s WHERE s.typrelid != 0 AND s.oid = t.typelem))
+
+",client backend
+17003,postgres,1329315,null,16384,postgres,PostgreSQL JDBC Driver,2406:da12:b78:de00:1ab8:8443:4fbd:41d5,null,49158,2025-09-03 06:29:00.696042+00,null,2025-09-03 06:29:01.251314+00,2025-09-03 06:29:01.251359+00,Client,ClientRead,idle,null,null,-4617938224441564086,SET application_name = 'PostgreSQL JDBC Driver',client backend
+null,null,2824,null,null,null,,null,null,null,2025-08-05 02:16:17.24668+00,null,null,null,Activity,AutovacuumMain,null,null,null,null,,autovacuum launcher
+null,null,2827,null,10,supabase_admin,,null,null,null,2025-08-05 02:16:17.247505+00,null,null,null,Activity,LogicalLauncherMain,null,null,null,null,,logical replication launcher
+17003,postgres,2826,null,10,supabase_admin,pg_cron scheduler,null,null,null,2025-08-05 02:16:17.247553+00,null,null,null,Extension,Extension,null,null,null,null,,pg_cron launcher
+17003,postgres,2825,null,10,supabase_admin,pg_net 0.14.0,null,null,null,2025-08-05 02:16:17.247749+00,null,null,null,Extension,Extension,null,null,null,null,,pg_net 0.14.0 worker
+null,null,2820,null,null,null,,null,null,null,2025-08-05 02:16:17.235728+00,null,null,null,Activity,CheckpointerMain,null,null,null,null,,checkpointer
+null,null,2821,null,null,null,,null,null,null,2025-08-05 02:16:17.236223+00,null,null,null,Activity,BgwriterHibernate,null,null,null,null,,background writer
+null,null,2823,null,null,null,,null,null,null,2025-08-05 02:16:17.246273+00,null,null,null,Activity,WalWriterMain,null,null,null,null,,walwriter
