@@ -76,4 +76,37 @@ class UserDomainService(
         }
         userRepository.save(user)
     }
+
+    @Transactional
+    fun updateByAdmin(command: UserCommand.UpdateByAdmin): UserDto {
+        val user = findById(command.id)
+        user.apply {
+            command.name?.let { name = it }
+            command.email?.let { email = it }
+            command.gender?.let { gender = it }
+            command.age?.let { age = it }
+            command.weight?.let { weight = it }
+            command.height?.let { height = it }
+            command.activityLevel?.let { activityLevel = it }
+            command.smi?.let { smi = it }
+            command.fatPercentage?.let { fatPercentage = it }
+            command.targetWeight?.let { targetWeight = it }
+            command.targetCalorie?.let { targetCalorie = it }
+            command.targetSmi?.let { targetSmi = it }
+            command.targetFatPercentage?.let { targetFatPercentage = it }
+            command.targetCarbohydrates?.let { targetCarbohydrates = it }
+            command.targetProtein?.let { targetProtein = it }
+            command.targetFat?.let { targetFat = it }
+            command.providerId?.let { providerId = it }
+            command.providerType?.let { providerType = it }
+        }
+        val updatedUser = userRepository.save(user)
+        return UserDto.from(updatedUser)
+    }
+
+    @Transactional(readOnly = true)
+    fun getDetailsForAdmin(id: Long): UserDto {
+        val user = findById(id)
+        return UserDto.from(user)
+    }
 }

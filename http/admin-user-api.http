@@ -1,0 +1,80 @@
+### Admin User API 테스트
+
+# 1. 어드민 유저 수정 (전체 필드)
+PUT http://localhost:8080/admin/v1/users/1
+Content-Type: application/json
+
+{
+  "name": "어드민 수정 사용자",
+  "email": "admin-updated@example.com",
+  "gender": "FEMALE",
+  "age": 25,
+  "height": 165.0,
+  "weight": 55.0,
+  "activityLevel": "ACTIVE",
+  "smi": 20.0,
+  "fatPercentage": 18.0,
+  "targetWeight": 52.0,
+  "targetCalorie": 1800,
+  "targetSmi": 21.0,
+  "targetFatPercentage": 16.0,
+  "targetCarbohydrates": 250.0,
+  "targetProtein": 100.0,
+  "targetFat": 60.0,
+  "providerId": "kakao456",
+  "providerType": "KAKAO"
+}
+
+###
+
+# 2. 어드민 유저 수정 (부분 필드만)
+PUT http://localhost:8080/admin/v1/users/1
+Content-Type: application/json
+
+{
+  "name": "부분 수정된 이름",
+  "email": "partial-update@example.com"
+}
+
+###
+
+# 3. 어드민 유저 상세 조회
+GET http://localhost:8080/admin/v1/users/1
+
+###
+
+# 4. 존재하지 않는 유저 조회 (404 테스트)
+GET http://localhost:8080/admin/v1/users/999
+
+###
+
+# 5. 유효하지 않은 이메일 형식으로 수정 시도 (400 테스트)
+PUT http://localhost:8080/admin/v1/users/1
+Content-Type: application/json
+
+{
+  "name": "테스트 사용자",
+  "email": "invalid-email-format"
+}
+
+###
+
+# 6. 나이 범위 초과로 수정 시도 (400 테스트)
+PUT http://localhost:8080/admin/v1/users/1
+Content-Type: application/json
+
+{
+  "name": "테스트 사용자",
+  "age": 200
+}
+
+###
+
+# 7. 몸무게 범위 초과로 수정 시도 (400 테스트)
+PUT http://localhost:8080/admin/v1/users/1
+Content-Type: application/json
+
+{
+  "name": "테스트 사용자",
+  "weight": 2000.0
+}
