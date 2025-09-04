@@ -541,45 +541,88 @@ class FoodServiceTest : IntegrationTestContext() {
 
 ```kotlin
 @WebMvcTest(FoodV1Controller::class)
-@DisplayName("FoodV1Controller 테스트")
-class FoodV1ControllerTest {
-    @Autowired
-    private lateinit var mockMvc: MockMvc
-    
+class FoodV1ControllerTest: ControllerTestContext() {
     @Autowired
     private lateinit var objectMapper: ObjectMapper
     
-    @MockitoBean
+    // 🔑 핵심: 컨트롤러의 모든 의존성을 MockkBean으로 설정
+    @MockkBean(relaxed = true)
     private lateinit var foodService: FoodService
     
-    @Test
-    fun `성공`() {
-        // given
-        val request = FoodV1Request.Create(/* ... */)
-        val mockFoodDto = mockFoodDto()
-        given(foodService.create(request, 1L)).willReturn(mockFoodDto)
+    @Nested
+    @DisplayName("POST /v1/foods - 음식 생성")
+    inner class CreateTest {
+        @Test
+        fun success() {
+            // 🔑 핵심: 해당 테스트에서 실제 호출되는 메서드만 every로 Mock
+            val request = mockCreateRequest()
+            every { foodService.create(any(), any()) } returns mockFoodDto()
+            
+            given()
+                .body(request)
+                .post("/v1/foods")
+                .then()
+                .log().all()
+                .apply(documentationHandler())
+                .status(HttpStatus.CREATED)
+        }
         
-        // when & then
-        mockMvc.perform(
-            post("/v1/foods")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
-        )
-            .andExpect(status().isCreated)
-            .andExpect(jsonPath("$.status").value("SUCCESS"))
-            .andExpected(jsonPath("$.data.name").value(mockFoodDto.name))
+        private fun mockCreateRequest(): FoodV1Request.Create {
+            return FoodV1Request.Create(
+                uuid = "test-uuid-456",
+                name = "새로운 음식",
+                perCapitaIntake = 150.0,
+                unit = "ml"
+            )
+        }
+    }
+
+    @Nested
+    @DisplayName("GET /v1/foods/{id} - 음식 조회")
+    inner class GetDetailsTest {
+        @Test
+        fun success() {
+            // 🔑 이 테스트에서는 getDetails()만 Mock (create는 Mock하지 않음)
+            every { foodService.getDetails(any()) } returns mockFoodDto()
+            
+            given()
+                .get("/v1/foods/1")
+                .then()
+                .log().all()
+                .apply(documentationHandler())
+                .status(HttpStatus.OK)
+        }
     }
     
     private fun mockFoodDto(): FoodDto {
-        return FoodDto(/* 목 데이터 */)
+        return FoodDto(
+            id = 1L,
+            uuid = "test-uuid-123",
+            name = "테스트 음식",
+            userId = 1L,
+            perCapitaIntake = 100.0,
+            unit = "g",
+            carbohydrates = 25.0,
+            protein = 8.0,
+            fat = 3.0,
+            isAdminApproved = false,
+            createdAt = LocalDateTime.now()
+        )
     }
 }
 ```
 
+**🔑 핵심 Mock 설정 원칙**:
+1. **컨트롤러의 모든 의존성을 `@MockkBean`으로 설정**
+2. **각 테스트 메서드에서 실제 호출되는 메서드만 `every`로 Mock**
+3. **불필요한 Mock 설정 금지** (성능 저하 및 테스트 복잡도 증가)
+
 **테스트 포커스**:
-- HTTP 요청/응답 검증
-- 입력 유효성 검사
-- API 스펙 준수
+- HTTP 요청/응답 검증 (성공 케이스만)
+- API 문서화 (RestDocs 통합)
+- 컨트롤러 레이어만 격리 테스트
+
+**⚠️ 상세한 컨트롤러 테스트 가이드라인**: [Controller Test Guidelines](controller-test-guidelines.md) 참조
 
 ### 4.2.4 HTTP 파일 (API 수동 테스트)
 
@@ -653,6 +696,8 @@ Accept: application/json
 - [ ] Domain Service 테스트
 - [ ] Application Service 테스트
 - [ ] Controller 테스트 (`@WebMvcTest`)
+  - [ ] 컨트롤러의 모든 의존성을 `@MockkBean`으로 설정
+  - [ ] 각 테스트에서 실제 호출되는 메서드만 `every`로 Mock
 
 ### ✅ API 테스트 파일
 - [ ] HTTP 파일 생성 (`.http` 확장자, 성공 케이스만)
@@ -673,6 +718,7 @@ Accept: application/json
 - **[Project Structure Guidelines](project-structure.md)** - 프로젝트 구조 및 패키지 구성
 - **[Entity Guidelines](entity-guidelines.md)** - 엔티티 설계 및 검증 규칙
 - **[Fixture Guidelines](fixture-guidelines.md)** - 테스트 픽스처 패턴 및 사용법
+- **[Controller Test Guidelines](controller-test-guidelines.md)** - 컨트롤러 테스트 작성 및 Mock 설정 가이드
 
 ## 7. 주요 원칙 요약
 

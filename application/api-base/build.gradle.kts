@@ -14,7 +14,7 @@ dependencies {
     // Swagger/OpenAPI
     api("io.rest-assured:spring-mock-mvc")
     api("org.springframework.restdocs:spring-restdocs-mockmvc:${project.properties["springRestdocsMockmvcVersion"]}")
-    api("com.epages:restdocs-api-spec-restassured:${project.properties["restdocsApiSpecVersion"]}")
+    api("com.epages:restdocs-api-spec-mockmvc:${project.properties["restdocsApiSpecVersion"]}")
     api("org.springdoc:springdoc-openapi-starter-webmvc-ui:${project.properties["springDocOpenApiVersion"]}")
 
     // Optional dependencies for auto-configuration

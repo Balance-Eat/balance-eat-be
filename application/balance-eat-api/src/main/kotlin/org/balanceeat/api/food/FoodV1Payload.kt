@@ -7,6 +7,7 @@ import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.Size
 import org.balanceeat.domain.food.FoodDto
+import java.time.LocalDateTime
 
 class FoodV1Request {
     @Schema(name = "FoodCreateRequest", description = "음식 생성 요청")
@@ -124,7 +125,8 @@ class FoodV1Response {
         val unit: String,
         val carbohydrates: Double,
         val protein: Double,
-        val fat: Double
+        val fat: Double,
+        val createdAt: LocalDateTime
     ) {
         companion object {
             fun from(food: FoodDto) = Info(
@@ -135,7 +137,8 @@ class FoodV1Response {
                 unit = food.unit,
                 carbohydrates = food.carbohydrates,
                 protein = food.protein,
-                fat = food.fat
+                fat = food.fat,
+                createdAt = food.createdAt
             )
         }
     }
