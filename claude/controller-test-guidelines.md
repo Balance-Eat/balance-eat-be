@@ -24,9 +24,10 @@ Balance-Eat 프로젝트의 컨트롤러 테스트 작성 가이드라인입니�
 2. [기본 패턴](#기본-패턴)
 3. [테스트 클래스 작성](#테스트-클래스-작성)
 4. [API 문서화](#api-문서화)
-5. [Mock 설정](#mock-설정)
-6. [Request/Response 테스트](#requestresponse-테스트)
-7. [Best Practices](#best-practices)
+5. [헬퍼 메서드 활용](#헬퍼-메서드-활용)
+6. [Mock 설정](#mock-설정)
+7. [Request/Response 테스트](#requestresponse-테스트)
+8. [Best Practices](#best-practices)
 
 ## 테스트 구조
 
@@ -182,7 +183,38 @@ every { domainService.getRecommendations(any()) } returns listOf(mockDomainDto()
 requestFields(
     "uuid" type STRING means "도메인 UUID",
     "name" type STRING means "도메인명",
-    "description" type STRING means "설명 (선택사항)"
+    "description" type STRING means "설명 (선택사항)" isOptional true
+)
+```
+
+#### isOptional 사용 원칙
+
+**필수 vs 선택적 필드 구분**:
+- `isOptional true`: Payload에서 nullable이거나 기본값이 있는 필드
+- `isOptional` 생략: @NotNull 어노테이션이 있는 필수 필드
+
+**올바른 사용 예시**:
+```kotlin
+requestFields(
+    // 필수 필드 (isOptional 생략)
+    "name" type STRING means "사용자 이름",
+    "age" type NUMBER means "사용자 나이",
+    
+    // 선택적 필드 (isOptional true 명시)
+    "email" type STRING means "이메일 주소 (선택)" isOptional true,
+    "phone" type STRING means "연락처 (선택)" isOptional true
+)
+```
+
+**responseFields에서도 적용**:
+```kotlin
+responseFields(
+    fieldsWithBasic(
+        "data.id" type NUMBER means "고유 ID",
+        "data.name" type STRING means "이름",
+        "data.email" type STRING means "이메일 (선택)" isOptional true,
+        "data.createdAt" type STRING means "생성일시" isOptional true
+    )
 )
 ```
 
@@ -190,16 +222,174 @@ requestFields(
 
 ```kotlin
 pathParameters(
-    parameterWithName("id").description("도메인 ID")
+    "id" pathMeans "도메인 ID"
 )
 ```
 
 ### Query Parameters 문서화
 
 ```kotlin
-requestParameters(
-    parameterWithName("limit").description("조회 개수").optional(),
-    parameterWithName("offset").description("조회 시작점").optional()
+queryParameters(
+    "limit" queryMeans "조회 개수" isOptional true,
+    "offset" queryMeans "조회 시작점" isOptional true
+)
+```
+
+### 헬퍼 메서드 활용
+
+`ControllerTestContext`에서 제공하는 헬퍼 메서드들을 사용하여 더 간결한 코드 작성이 가능합니다:
+
+#### 파라미터 헬퍼 메서드
+
+```kotlin
+// Path Parameter
+"id" pathMeans "도메인 ID"
+
+// Query Parameter  
+"limit" queryMeans "조회 개수"
+
+// Optional 설정
+"limit" queryMeans "조회 개수" isOptional true
+```
+
+#### 필드 헬퍼 메서드
+
+```kotlin
+// 기본 필드 (필수)
+"name" type STRING means "도메인명"
+
+// Optional 필드 (선택적)
+"description" type STRING means "설명 (선택)" isOptional true
+
+// Enum 필드 (가능한 값들 자동 표시)
+"gender" type STRING means "성별" withEnum User.Gender::class
+"status" type STRING means "상태 (선택)" withEnum Order.Status::class isOptional true
+
+// 다양한 타입별 예시
+"id" type NUMBER means "고유 ID",
+"isActive" type BOOLEAN means "활성 상태",
+"tags" type ARRAY means "태그 목록" isOptional true,
+"metadata" type OBJECT means "메타데이터" isOptional true,
+"createdAt" type STRING means "생성일시",
+"updatedAt" type STRING means "수정일시" isOptional true
+```
+
+#### withEnum 사용 가이드라인
+
+**목적**: Enum 타입 필드에 대해 가능한 모든 상수값들을 자동으로 문서에 포함시켜 API 사용자가 유효한 값을 쉽게 확인할 수 있도록 함.
+
+**동작 방식**: 
+- Enum 클래스의 모든 상수를 추출하여 필드 설명에 자동 추가
+- 형식: `"원래 설명 (ENUM_VALUE1, ENUM_VALUE2, ENUM_VALUE3)"`
+
+**기본 문법**:
+```kotlin
+// 필수 enum 필드
+"gender" type STRING means "성별" withEnum User.Gender::class
+
+// 선택적 enum 필드 (isOptional과 조합)
+"activityLevel" type STRING means "활동 수준 (선택)" withEnum User.ActivityLevel::class isOptional true
+
+// responseFields에서도 동일하게 사용
+"data.status" type STRING means "주문 상태" withEnum Order.Status::class
+```
+
+**실제 프로젝트 사용 예시**:
+```kotlin
+// 사용자 생성 API - 성별 필드 (필수)
+requestFields(
+    "name" type STRING means "사용자 이름",
+    "gender" type STRING means "사용자 성별" withEnum User.Gender::class,
+    "age" type NUMBER means "사용자 나이"
+)
+
+// 사용자 수정 API - 활동 수준 필드 (선택)
+requestFields(
+    "name" type STRING means "사용자 이름 (선택)" isOptional true,
+    "activityLevel" type STRING means "사용자 활동 수준 (선택)" withEnum User.ActivityLevel::class isOptional true
+)
+
+// 응답 필드에서의 사용
+responseFields(
+    fieldsWithBasic(
+        "data.id" type NUMBER means "사용자 ID",
+        "data.gender" type STRING means "사용자 성별" withEnum User.Gender::class,
+        "data.activityLevel" type STRING means "사용자 활동 수준" withEnum User.ActivityLevel::class
+    )
+)
+```
+
+**자동 생성되는 문서화 예시**:
+- `User.Gender`: "사용자 성별 (MALE, FEMALE, OTHER)"
+- `User.ActivityLevel`: "사용자 활동 수준 (SEDENTARY, LIGHT, MODERATE, ACTIVE)"
+
+**적용 대상**:
+- 모든 Enum 타입 필드 (requestFields, responseFields, pathParameters, queryParameters)
+- 필수 필드와 선택적 필드 모두 적용 가능
+- 기존 `isOptional`과 함께 조합하여 사용
+
+#### isOptional 사용 가이드라인
+
+**1. Payload 클래스 분석**:
+```kotlin
+// Payload에서 nullable 필드는 isOptional true
+data class CreateRequest(
+    val name: String,           // 필수 → isOptional 생략
+    val email: String? = null   // 선택 → isOptional true
+)
+```
+
+**2. 문서화 일관성**:
+- 필드명 뒤에 "(선택)" 표시와 `isOptional true` 같이 사용
+- 필수 필드는 둘 다 생략
+
+**3. 실제 사용 예시**:
+```kotlin
+requestFields(
+    "uuid" type STRING means "사용자 UUID",
+    "name" type STRING means "사용자 이름", 
+    "email" type STRING means "이메일 (선택)" isOptional true,
+    "age" type NUMBER means "나이",
+    "phone" type STRING means "연락처 (선택)" isOptional true
+)
+```
+
+**프로젝트 실제 사용 예시**:
+```kotlin
+// 사용자 생성 API (withEnum 적용)
+requestFields(
+    "uuid" type STRING means "사용자 UUID",
+    "name" type STRING means "사용자 이름",
+    "gender" type STRING means "사용자 성별" withEnum User.Gender::class,
+    "age" type NUMBER means "사용자 나이",
+    "height" type NUMBER means "사용자 키 (cm 단위)",
+    "weight" type NUMBER means "사용자 몸무게 (kg 단위)",
+    "email" type STRING means "사용자 이메일 (선택)" isOptional true,
+    "activityLevel" type STRING means "사용자 활동 수준 (선택)" withEnum User.ActivityLevel::class isOptional true,
+    "smi" type NUMBER means "사용자 SMI (선택)" isOptional true,
+    "fatPercentage" type NUMBER means "사용자 체지방률 (선택)" isOptional true
+)
+
+// 음식 생성 API  
+requestFields(
+    "uuid" type STRING means "음식 UUID",
+    "name" type STRING means "음식명",
+    "perCapitaIntake" type NUMBER means "1회 기준 섭취량",
+    "unit" type STRING means "단위 (예: g, ml 등)",
+    "carbohydrates" type NUMBER means "탄수화물 함량 (g, 선택)" isOptional true,
+    "protein" type NUMBER means "단백질 함량 (g, 선택)" isOptional true,
+    "fat" type NUMBER means "지방 함량 (g, 선택)" isOptional true
+)
+
+// 어드민 사용자 수정 API (모든 필드 선택적, withEnum 적용)
+requestFields(
+    "name" type STRING means "이름 (선택)" isOptional true,
+    "email" type STRING means "이메일 (선택)" isOptional true,
+    "gender" type STRING means "성별 (선택)" withEnum User.Gender::class isOptional true,
+    "age" type NUMBER means "나이 (선택)" isOptional true,
+    "height" type NUMBER means "키 (cm) (선택)" isOptional true,
+    "weight" type NUMBER means "몸무게 (kg) (선택)" isOptional true,
+    "activityLevel" type STRING means "활동 수준 (선택)" withEnum User.ActivityLevel::class isOptional true
 )
 ```
 
@@ -357,6 +547,11 @@ given()
     .status(HttpStatus.OK)
 ```
 
+**필요한 import 추가:**
+```kotlin
+import org.springframework.restdocs.request.RequestDocumentation.queryParameters
+```
+
 ## Best Practices
 
 ### 1. 테스트 독립성 보장
@@ -386,8 +581,38 @@ private fun mockFoodDto(): FoodDto {
 responseFields(
     fieldsWithBasic( // 기본 응답 필드 (status, serverDatetime, message) 포함
         "data.field1" type TYPE means "필드 설명",
-        "data.field2" type TYPE means "필드 설명"
+        "data.field2" type TYPE means "필드 설명 (선택)" isOptional true
     )
+)
+```
+
+### 4. isOptional 사용 일관성 유지
+```kotlin
+// ✅ 올바른 접근: 필수/선택 필드 명확히 구분
+requestFields(
+    "name" type STRING means "이름", // 필수 필드
+    "email" type STRING means "이메일 (선택)" isOptional true // 선택 필드
+)
+
+// ❌ 잘못된 접근: isOptional과 설명이 불일치
+requestFields(
+    "name" type STRING means "이름 (선택)", // 설명은 선택이라 했는데
+    "email" type STRING means "이메일" isOptional true // isOptional 표시 없음
+)
+```
+
+### 5. withEnum 사용 일관성 유지
+```kotlin
+// ✅ 올바른 접근: 모든 Enum 필드에 withEnum 적용
+requestFields(
+    "gender" type STRING means "성별" withEnum User.Gender::class,
+    "status" type STRING means "상태 (선택)" withEnum Order.Status::class isOptional true
+)
+
+// ❌ 잘못된 접근: Enum 필드인데 withEnum 누락
+requestFields(
+    "gender" type STRING means "성별", // Enum 필드인데 withEnum 없음
+    "status" type STRING means "상태"  // 유효한 값들을 확인하기 어려움
 )
 ```
 

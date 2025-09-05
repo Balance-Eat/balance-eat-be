@@ -1,4 +1,4 @@
-package org.balanceeat.api.config.supports
+package org.balanceeat.admin.api.supports
 
 import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper
 import com.epages.restdocs.apispec.ResourceSnippetDetails
@@ -33,7 +33,6 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.function.Function
 import java.util.stream.Collectors
-import java.util.stream.Stream
 import kotlin.reflect.KClass
 
 
@@ -105,9 +104,8 @@ abstract class ControllerTestContext {
     }
 
     protected enum class Tags(val tagName: String) {
-        FOOD("음식"),
-        USER("사용자"),
-        DIET("식단"),
+        ADMIN_FOOD("어드민 음식"),
+        ADMIN_USER("어드민 사용자"),
         ;
 
         fun tagName(): String {
@@ -172,7 +170,6 @@ abstract class ControllerTestContext {
     protected infix fun FieldDescriptor.isOptional(value: Boolean): FieldDescriptor {
         return if (value) this.optional() else this
     }
-
 
     protected fun fieldsWithBasic(vararg fieldDescriptors: FieldDescriptor): List<FieldDescriptor> {
         val basicFields = mutableListOf(

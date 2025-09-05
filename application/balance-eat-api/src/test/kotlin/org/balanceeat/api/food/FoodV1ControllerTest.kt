@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpStatus
 import org.springframework.restdocs.payload.JsonFieldType.*
+import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
+import org.springframework.restdocs.request.RequestDocumentation.pathParameters
+import org.springframework.restdocs.request.RequestDocumentation.queryParameters
 import java.time.LocalDateTime
 
 @WebMvcTest(FoodV1Controller::class)
@@ -42,6 +45,15 @@ class FoodV1ControllerTest: ControllerTestContext() {
                         ResourceSnippetParametersBuilder()
                             .tag(Tags.FOOD.tagName)
                             .description(Tags.FOOD.descriptionWith("생성")),
+                        requestFields(
+                            "uuid" type STRING means "음식 UUID",
+                            "name" type STRING means "음식명",
+                            "perCapitaIntake" type NUMBER means "1회 기준 섭취량",
+                            "unit" type STRING means "단위 (예: g, ml 등)",
+                            "carbohydrates" type NUMBER means "탄수화물 함량 (g, 선택)",
+                            "protein" type NUMBER means "단백질 함량 (g, 선택)",
+                            "fat" type NUMBER means "지방 함량 (g, 선택)"
+                        ),
                         responseFields(
                             fieldsWithBasic(
                                 "data.id" type NUMBER means "음식 ID",
@@ -83,7 +95,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
 
             given()
                 .body(request)
-                .put("/v1/foods/1")
+                .put("/v1/foods/{id}", 1)
                 .then()
                 .log().all()
                 .apply(
@@ -92,6 +104,17 @@ class FoodV1ControllerTest: ControllerTestContext() {
                         ResourceSnippetParametersBuilder()
                             .tag(Tags.FOOD.tagName)
                             .description(Tags.FOOD.descriptionWith("수정")),
+                        pathParameters(
+                            "id" pathMeans "음식 ID"
+                        ),
+                        requestFields(
+                            "name" type STRING means "음식명",
+                            "perCapitaIntake" type NUMBER means "1회 기준 섭취량",
+                            "unit" type STRING means "단위 (예: g, ml 등)",
+                            "carbohydrates" type NUMBER means "탄수화물 함량 (g)",
+                            "protein" type NUMBER means "단백질 함량 (g)",
+                            "fat" type NUMBER means "지방 함량 (g)"
+                        ),
                         responseFields(
                             fieldsWithBasic(
                                 "data.id" type NUMBER means "음식 ID",
@@ -130,7 +153,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
             every { foodService.getDetails(any()) } returns mockFoodDto()
 
             given()
-                .get("/v1/foods/1")
+                .get("/v1/foods/{id}", 1)
                 .then()
                 .log().all()
                 .apply(
@@ -139,6 +162,9 @@ class FoodV1ControllerTest: ControllerTestContext() {
                         ResourceSnippetParametersBuilder()
                             .tag(Tags.FOOD.tagName)
                             .description(Tags.FOOD.descriptionWith("상세 조회")),
+                        pathParameters(
+                            "id" pathMeans "음식 ID"
+                        ),
                         responseFields(
                             fieldsWithBasic(
                                 "data.id" type NUMBER means "음식 ID",
@@ -176,6 +202,9 @@ class FoodV1ControllerTest: ControllerTestContext() {
                         ResourceSnippetParametersBuilder()
                             .tag(Tags.FOOD.tagName)
                             .description(Tags.FOOD.descriptionWith("목록 조회")),
+                        queryParameters(
+                            "limit" queryMeans "조회 개수" isOptional true
+                        ),
                         responseFields(
                             fieldsWithBasic(
                                 "data" type ARRAY means "추천 음식 목록",
