@@ -5,18 +5,34 @@ spring:
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:password}
     hikari:
-      maximum-pool-size: 3
-      minimum-idle: 1
-      connection-timeout: 20000
-      idle-timeout: 300000
-      max-lifetime: 1200000
+      pool-name: BalanceEat-HikariPool
+      maximum-pool-size: 5
+      minimum-idle: 0
+      connection-timeout: 3000
+      idle-timeout: 10000       # 10초 후 연결 반환
+      max-lifetime: 300000      # 5분 (PgBouncer 기본값에 맞춤)
+      connection-test-query: SELECT 1
+      validation-timeout: 5000
+      data-source-properties:
+        socketTimeout: 3000
+        prepStmtCacheSize: 100
+        prepStmtCacheSqlLimit: 2048
+        cachePrepStmts: true
+        useServerPrepStmts: true
+        rewriteBatchedStatements: true
+        useSsl: false
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
     show-sql: true
+    generate-ddl: false
     properties:
+      connection:
+        provider_disables_autocommit: true
+      temp:
+        use_jdbc_metadata_defaults: false
       hibernate:
         format_sql: true
         use_sql_comments: true
@@ -70,7 +86,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     show-sql: false
     properties:
       hibernate:
