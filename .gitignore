@@ -40,7 +40,7 @@ out/
 .vscode/
 
 ## openAPI yaml
-/src/main/resources/static/api-docs/**
+**/resources/static/api-docs/**
 
 ## Mac
 .DS_Store

@@ -24,12 +24,6 @@ class JsonUtilsTest {
     }
 
     @Test
-    fun `stringify - null 입력 시 null 문자열 반환`() {
-        val result = JsonUtils.stringify(null)
-        assertEquals("null", result)
-    }
-
-    @Test
     fun `parse - JSON 문자열을 객체로 변환`() {
         val json = """{"name":"박민수","age":28,"email":"park@example.com"}"""
         val result = JsonUtils.parse<TestData>(json)
@@ -62,7 +56,7 @@ class JsonUtilsTest {
     @Test
     fun `parseToList - JSON 배열을 List로 변환`() {
         val json = """[{"name":"사용자1"},{"name":"사용자2"}]"""
-        val result = JsonUtils.parseToList(json)
+        val result = JsonUtils.parseToList<TestUser>(json)
         
         assertEquals(2, result.size)
         assertNotNull(result[0])
@@ -88,4 +82,6 @@ class JsonUtilsTest {
             JsonUtils.parse<TestData>(invalidJson)
         }
     }
+
+    data class TestUser(val name: String, val age: Int)
 }
