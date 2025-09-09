@@ -7,13 +7,9 @@ import java.time.LocalDate
 
 interface DietRepository : JpaRepository<Diet, Long> {
     
-    fun findByUserIdAndMealDate(userId: Long, mealDate: LocalDate): List<Diet>
-    
-    fun findByUserIdAndMealDateBetween(userId: Long, startDate: LocalDate, endDate: LocalDate): List<Diet>
-    
-    @Query("SELECT d FROM Diet d WHERE d.userId = :userId AND d.mealDate = :mealDate ORDER BY d.mealType, d.createdAt")
+    @Query("SELECT d FROM Diet d WHERE d.userId = :userId AND DATE(d.consumedAt) = :date ORDER BY d.mealType, d.createdAt")
     fun findByUserIdAndMealDateOrderByMealTypeAndCreatedAt(
         @Param("userId") userId: Long, 
-        @Param("mealDate") mealDate: LocalDate
+        @Param("date") date: LocalDate
     ): List<Diet>
 }

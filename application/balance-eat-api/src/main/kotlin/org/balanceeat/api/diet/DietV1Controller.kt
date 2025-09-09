@@ -1,13 +1,17 @@
 package org.balanceeat.api.diet
 
+import jakarta.validation.Valid
 import org.balanceeat.apibase.response.ApiResponse
 import org.springframework.format.annotation.DateTimeFormat
+import org.springframework.http.HttpStatus.CREATED
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
 
 @RestController
 @RequestMapping("/v1/diets")
-class DietV1Controller : DietV1ApiSpec {
+class DietV1Controller(
+    private val dietService: DietService
+) : DietV1ApiSpec {
 
     @GetMapping("/daily")
     override fun getDietsByDate(
@@ -57,5 +61,14 @@ class DietV1Controller : DietV1ApiSpec {
         )
 
         return ApiResponse.success(response, "성공적으로 조회되었습니다.")
+    }
+    
+    @PostMapping
+    @ResponseStatus(CREATED)
+    override fun createDiet(
+        @RequestHeader("X-USER-ID") userId: Long,
+        @RequestBody @Valid request: DietV1Request.Create
+    ): ApiResponse<DietV1Response.Details> {
+        return ApiResponse.success(dietService.create(request, userId))
     }
 }

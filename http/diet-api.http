@@ -1,106 +1,23 @@
-### Diet 조회 API 테스트
-
-# 특정 날짜의 식사 기록 조회 (Mock 데이터)
+### 특정 날짜의 식사 기록 조회
 GET {{baseUrl}}/{{apiVersion}}/diets/daily?date=2025-08-04
 Accept: application/json
 
-###
+### 아침 식단 생성
+POST {{baseUrl}}/{{apiVersion}}/diets
+Content-Type: application/json
+X-USER-ID: 1
 
-# 오늘 날짜의 식사 기록 조회
-GET {{baseUrl}}/{{apiVersion}}/diets?date={{$todayDate}}
-Accept: application/json
-
-###
-
-# 어제 날짜의 식사 기록 조회
-GET {{baseUrl}}/{{apiVersion}}/diets?date=2025-08-03
-Accept: application/json
-
-###
-
-# 일주일 전 날짜의 식사 기록 조회
-GET {{baseUrl}}/{{apiVersion}}/diets?date=2025-07-28
-Accept: application/json
-
-###
-
-# 미래 날짜의 식사 기록 조회
-GET {{baseUrl}}/{{apiVersion}}/diets?date=2025-12-25
-Accept: application/json
-
-###
-
-# 잘못된 날짜 형식 테스트 (400 에러 예상)
-GET {{baseUrl}}/{{apiVersion}}/diets?date=2025/08/04
-Accept: application/json
-
-###
-
-# 날짜 파라미터 누락 테스트 (400 에러 예상)  
-GET {{baseUrl}}/{{apiVersion}}/diets
-Accept: application/json
-
-###
-
-### 환경 변수 사용법
-# IntelliJ IDEA나 VS Code에서 우측 상단의 환경 선택 드롭다운에서 환경을 선택하세요
-# - development: 로컬 개발 환경 (http://localhost:8080)
-# - staging: 스테이징 환경
-# - production: 프로덕션 환경
-# - local-docker: 로컬 도커 환경 (http://localhost:8081)
-
-### 테스트 데이터 생성을 위한 식사 기록 생성 API (향후 구현 예정)
-# POST {{baseUrl}}/{{apiVersion}}/diets
-# Content-Type: application/json
-# 
-# {
-#   "userId": 1,
-#   "mealType": "BREAKFAST",
-#   "foodName": "계란말이",
-#   "foodBrand": "자취방",
-#   "servingSize": 1.0,
-#   "servingUnit": "개",
-#   "calories": 150.0,
-#   "carbohydrates": 2.0,
-#   "protein": 12.0,
-#   "fat": 10.0,
-#   "sugar": 1.0,
-#   "sodium": 200.0,
-#   "fiber": 0.5,
-#   "mealDate": "2024-01-15",
-#   "consumedAt": "2024-01-15T08:30:00"
-# }
-
-### 식사 유형별 예시 데이터
-
-# 아침 식사 예시
-# {
-#   "mealType": "BREAKFAST",
-#   "foodName": "토스트",
-#   "calories": 200.0,
-#   "mealDate": "2024-01-15"
-# }
-
-# 점심 식사 예시  
-# {
-#   "mealType": "LUNCH", 
-#   "foodName": "김치찌개",
-#   "calories": 350.0,
-#   "mealDate": "2024-01-15"
-# }
-
-# 저녁 식사 예시
-# {
-#   "mealType": "DINNER",
-#   "foodName": "삼겹살",
-#   "calories": 500.0,
-#   "mealDate": "2024-01-15"
-# }
-
-# 간식 예시
-# {
-#   "mealType": "SNACK",
-#   "foodName": "사과",
-#   "calories": 80.0,
-#   "mealDate": "2024-01-15"
-# }
+{
+  "mealType": "BREAKFAST",
+  "consumedAt": "2025-08-04T08:30:00",
+  "dietFoods": [
+    {
+      "foodId": 1,
+      "intake": 2
+    },
+    {
+      "foodId": 2,
+      "intake": 1
+    }
+  ]
+}

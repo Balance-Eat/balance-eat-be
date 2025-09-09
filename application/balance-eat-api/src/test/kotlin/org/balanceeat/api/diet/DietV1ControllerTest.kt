@@ -2,7 +2,11 @@ package org.balanceeat.api.diet
 
 import com.epages.restdocs.apispec.ResourceSnippetParametersBuilder
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ninjasquad.springmockk.MockkBean
+import io.mockk.every
 import org.balanceeat.api.config.supports.ControllerTestContext
+import org.balanceeat.domain.diet.Diet
+import org.balanceeat.domain.diet.NutritionInfo
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -10,13 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpStatus
 import org.springframework.restdocs.payload.JsonFieldType.*
+import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.queryParameters
+import java.time.LocalDateTime
 
 @WebMvcTest(DietV1Controller::class)
 class DietV1ControllerTest: ControllerTestContext() {
-    @Autowired
-    private lateinit var objectMapper: ObjectMapper
+    @MockkBean(relaxed = true)
+    private lateinit var dietService: DietService
 
     @Nested
     @DisplayName("GET /v1/diets/daily - 일별 식단 조회")
@@ -63,5 +69,120 @@ class DietV1ControllerTest: ControllerTestContext() {
                 )
                 .status(HttpStatus.OK)
         }
+    }
+    
+    @Nested
+    @DisplayName("POST /v1/diets - 식단 생성")
+    inner class CreateDietTest {
+        @Test
+        fun success() {
+            // given
+            val request = mockCreateDietRequest()
+            every { dietService.create(any(), any()) } returns mockDietResponse()
+            
+            given()
+                .header("X-USER-ID", "1")
+                .body(request)
+                .post("/v1/diets")
+                .then()
+                .log().all()
+                .apply(
+                    document(
+                        identifier("CreateDietTest"),
+                        ResourceSnippetParametersBuilder()
+                            .tag(Tags.DIET.tagName)
+                            .description(Tags.DIET.descriptionWith("생성")),
+                        requestFields(
+                            "mealType" type STRING means "식사 유형" withEnum Diet.MealType::class,
+                            "consumedAt" type STRING means "섭취 시간",
+                            "dietFoods" type ARRAY means "섭취한 음식 목록",
+                            "dietFoods[].foodId" type NUMBER means "음식 ID",
+                            "dietFoods[].intake" type NUMBER means "섭취량"
+                        ),
+                        responseFields(
+                            fieldsWithBasic(
+                                "data.dietId" type NUMBER means "생성된 식단 ID",
+                                "data.userId" type NUMBER means "사용자 ID",
+                                "data.mealType" type STRING means "식사 유형" withEnum Diet.MealType::class,
+                                "data.consumedAt" type STRING means "섭취 시간",
+                                "data.totalNutrition" type OBJECT means "총 영양성분",
+                                "data.totalNutrition.calories" type NUMBER means "총 칼로리 (kcal)",
+                                "data.totalNutrition.carbohydrates" type NUMBER means "총 탄수화물 (g)",
+                                "data.totalNutrition.protein" type NUMBER means "총 단백질 (g)",
+                                "data.totalNutrition.fat" type NUMBER means "총 지방 (g)",
+                                "data.dietFoods" type ARRAY means "섭취한 음식 목록",
+                                "data.dietFoods[].id" type NUMBER means "식단 음식 ID",
+                                "data.dietFoods[].foodId" type NUMBER means "음식 ID",
+                                "data.dietFoods[].foodName" type STRING means "음식 이름",
+                                "data.dietFoods[].intake" type NUMBER means "섭취량",
+                                "data.dietFoods[].nutrition" type OBJECT means "개별 음식의 영양성분",
+                                "data.dietFoods[].nutrition.calories" type NUMBER means "칼로리 (kcal)",
+                                "data.dietFoods[].nutrition.carbohydrates" type NUMBER means "탄수화물 (g)",
+                                "data.dietFoods[].nutrition.protein" type NUMBER means "단백질 (g)",
+                                "data.dietFoods[].nutrition.fat" type NUMBER means "지방 (g)"
+                            )
+                        )
+                    )
+                )
+                .status(HttpStatus.CREATED)
+        }
+        
+        private fun mockCreateDietRequest(): DietV1Request.Create {
+            return DietV1Request.Create(
+                mealType = "DINNER",
+                consumedAt = LocalDateTime.of(2025, 1, 15, 19, 30),
+                dietFoods = listOf(
+                    DietV1Request.Create.Companion.DietFood(
+                        foodId = 1L,
+                        intake = 1
+                    ),
+                    DietV1Request.Create.Companion.DietFood(
+                        foodId = 2L,
+                        intake = 2
+                    )
+                )
+            )
+        }
+    }
+    
+    private fun mockDietResponse(): DietV1Response.Details {
+        return DietV1Response.Details(
+            dietId = 1L,
+            userId = 1L,
+            mealType = Diet.MealType.DINNER,
+            consumedAt = LocalDateTime.of(2025, 1, 15, 19, 30),
+            totalNutrition = NutritionInfo(
+                calories = 245.0,
+                carbohydrates = 15.0,
+                protein = 25.0,
+                fat = 8.0
+            ),
+            dietFoods = listOf(
+                DietV1Response.Details.DietFood(
+                    id = 1L,
+                    foodId = 1L,
+                    foodName = "닭가슴살",
+                    intake = 1,
+                    nutrition = NutritionInfo(
+                        calories = 120.0,
+                        carbohydrates = 0.0,
+                        protein = 23.0,
+                        fat = 1.2
+                    )
+                ),
+                DietV1Response.Details.DietFood(
+                    id = 2L,
+                    foodId = 2L,
+                    foodName = "현미밥",
+                    intake = 2,
+                    nutrition = NutritionInfo(
+                        calories = 125.0,
+                        carbohydrates = 15.0,
+                        protein = 2.0,
+                        fat = 6.8
+                    )
+                )
+            )
+        )
     }
 }

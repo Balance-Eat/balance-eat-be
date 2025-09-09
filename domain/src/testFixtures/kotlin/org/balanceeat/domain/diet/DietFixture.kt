@@ -9,16 +9,18 @@ class DietFixture(
     var id: Long = NEW_ID,
     var userId: Long = 1L,
     var mealType: Diet.MealType = Diet.MealType.BREAKFAST,
-    var mealDate: LocalDate = LocalDate.now(),
-    var consumedAt: LocalDateTime = LocalDateTime.now()
+    var consumedAt: LocalDateTime = LocalDateTime.now(),
+    var dietFoods: MutableList<DietFood> = mutableListOf(
+        DietFoodFixture().create()
+    )
 ) : TestFixture<Diet> {
     override fun create(): Diet {
         return Diet(
             id = id,
             userId = userId,
             mealType = mealType,
-            mealDate = mealDate,
-            consumedAt = consumedAt
+            consumedAt = consumedAt,
+            dietFoods = dietFoods
         )
     }
 }
