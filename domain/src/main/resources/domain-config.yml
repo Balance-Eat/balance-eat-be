@@ -6,7 +6,7 @@ spring:
     password: ${DB_PASSWORD:password}
     hikari:
       pool-name: BalanceEat-HikariPool
-      maximum-pool-size: 5
+      maximum-pool-size: 2
       minimum-idle: 0
       connection-timeout: 3000
       idle-timeout: 10000       # 10초 후 연결 반환

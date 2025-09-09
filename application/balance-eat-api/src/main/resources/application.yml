@@ -17,16 +17,17 @@ spring:
 
 # Swagger/OpenAPI 설정
 springdoc:
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
   api-docs:
-    path: /api-docs
+    enabled: false
+    path: /api-docs/balance-eat
   swagger-ui:
-    path: /swagger-ui.html
+    url: /api-docs/balanceeat/main.yaml
     tags-sorter: alpha
     operations-sorter: alpha
     doc-expansion: none
     disable-swagger-default-url: true
-  packages-to-scan: org.balanceeat.api
-  paths-to-match: /v1/**, /health
 
 ---
 # ==============================================
