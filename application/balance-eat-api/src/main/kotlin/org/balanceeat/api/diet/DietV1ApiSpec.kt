@@ -2,6 +2,7 @@ package org.balanceeat.api.diet
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.parameters.RequestBody
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.balanceeat.apibase.response.ApiResponse
 import org.springframework.format.annotation.DateTimeFormat
@@ -16,4 +17,12 @@ interface DietV1ApiSpec {
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         date: LocalDate
     ): ApiResponse<DietV1Response.DailyDietInfo>
+    
+    @Operation(summary = "식단 생성")
+    fun createDiet(
+        @Parameter(description = "사용자 ID", required = true, example = "1")
+        userId: Long,
+        @RequestBody(description = "식단 생성 요청", required = true)
+        request: DietV1Request.Create
+    ): ApiResponse<DietV1Response.Details>
 }

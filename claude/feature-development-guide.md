@@ -245,8 +245,8 @@ class FoodService(
     }
 
     @Transactional
-    fun create(request: FoodV1Request.Create, creatorId: Long): FoodDto {
-        return foodDomainService.create(
+    fun create(request: FoodV1Request.Create, creatorId: Long): FoodV1Response.Info {
+        val domainResult = foodDomainService.create(
             command = FoodCommand.Create(
                 uuid = request.uuid,
                 userId = creatorId,
@@ -259,6 +259,9 @@ class FoodService(
                 isAdminApproved = false
             )
         )
+        
+        // API 모듈의 서비스에서 컨트롤러 응답 타입으로 변환
+        return FoodV1Response.Info.from(domainResult)
     }
 }
 ```
@@ -269,10 +272,11 @@ class FoodService(
 - **비즈니스 규칙 적용**: 도메인 공통 로직 외의 애플리케이션별 규칙
 - **읽기 작업**: Repository를 직접 사용하여 조회 기능 구현
 - **Domain Service 호출**: 순수 CUD 작업을 위한 도메인 서비스 위임
+- **컨트롤러 타입 사용**: API 모듈의 서비스이므로 컨트롤러 요청/응답 타입 직접 사용 가능
 
 **역할 분리**:
-- **Domain Service**: 공통 CUD 로직 (권한/규칙 무관한 핵심 데이터 조작)
-- **Application Service**: 권한 검증 + 비즈니스 규칙 + 읽기 작업
+- **Domain Service**: 공통 CUD 로직 (권한/규칙 무관한 핵심 데이터 조작), **반드시 DTO 반환**
+- **Application Service**: 권한 검증 + 비즈니스 규칙 + 읽기 작업, **컨트롤러 타입과의 변환**
 
 ### 3.2 API Payload 구현 (FoodV1Payload.kt)
 
@@ -280,17 +284,12 @@ class FoodService(
 
 ```kotlin
 class FoodV1Request {
-    @Schema(name = "FoodCreateRequest", description = "음식 생성 요청")
     data class Create(
         @field:NotNull(message = "UUID는 필수입니다")
         val uuid: String,
-        
         @field:NotNull(message = "음식명은 필수입니다")
-        @field:Size(min = 1, max = 100, message = "음식명은 1자 이상 100자 이하여야 합니다")
         val name: String,
-        
         @field:NotNull(message = "1회 기준 섭취량은 필수입니다")
-        @field:Positive(message = "1회 기준 섭취량은 0보다 큰 값이어야 합니다")
         val perCapitaIntake: Double,
         
         // ... 기타 필드들
@@ -298,15 +297,15 @@ class FoodV1Request {
 }
 
 class FoodV1Response {
-    @Schema(name = "FoodDetailsResponse", description = "음식 상세정보 응답")
-    data class Info(
+    // 상세 정보
+    data class Details(
         val id: Long,
         val uuid: String,
         val name: String,
         // ... 기타 필드들
     ) {
         companion object {
-            fun from(food: FoodDto) = Info(
+            fun from(food: FoodDto) = Details(
                 id = food.id,
                 uuid = food.uuid,
                 name = food.name,
@@ -317,26 +316,7 @@ class FoodV1Response {
 }
 ```
 
-### 3.3 API Spec 인터페이스 (FoodV1ApiSpec.kt)
-
-**위치**: `application/balance-eat-api/src/main/kotlin/org/balanceeat/api/food/FoodV1ApiSpec.kt`
-
-```kotlin
-@Tag(name = "Food", description = "음식 관리 API")
-interface FoodV1ApiSpec {
-    @Operation(summary = "음식 생성", description = "새로운 음식을 등록합니다")
-    @ApiResponses(value = [
-        ApiResponse(responseCode = "201", description = "음식 생성 성공"),
-        ApiResponse(responseCode = "400", description = "잘못된 요청")
-    ])
-    fun create(@RequestBody request: FoodV1Request.Create): ApiResponse<FoodV1Response.Info>
-
-    @Operation(summary = "음식 상세 조회", description = "음식의 상세 정보를 조회합니다")
-    fun getDetails(@PathVariable id: Long): ApiResponse<FoodV1Response.Info>
-}
-```
-
-### 3.4 Controller 구현 (FoodV1Controller.kt)
+### 3.3 Controller 구현 (FoodV1Controller.kt)
 
 **위치**: `application/balance-eat-api/src/main/kotlin/org/balanceeat/api/food/FoodV1Controller.kt`
 
@@ -345,7 +325,7 @@ interface FoodV1ApiSpec {
 @RequestMapping("/v1/foods")
 class FoodV1Controller(
     private val foodService: FoodService,
-) : FoodV1ApiSpec {
+) {
     
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

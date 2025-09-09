@@ -3,6 +3,7 @@ package org.balanceeat.domain.diet
 import jakarta.persistence.*
 import org.balanceeat.domain.config.BaseEntity
 import org.balanceeat.domain.config.NEW_ID
+import org.balanceeat.domain.food.Food
 
 @Entity
 @Table(name = "diet_food")
@@ -10,37 +11,22 @@ class DietFood(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = NEW_ID,
-    
-    @Column(name = "diet_id", nullable = false)
-    val dietId: Long,
 
     @Column(name = "food_id", nullable = false)
     val foodId: Long,
-    
-    @Column(name = "actual_serving_size", nullable = false)
-    val actualServingSize: Double,
-    
-    @Column(name = "serving_unit", length = 20, nullable = false)
-    val servingUnit: String,
-    
-    @Column(name = "calculated_calories", nullable = false)
-    val calculatedCalories: Double,
-    
-    @Column(name = "calculated_carbohydrates")
-    val calculatedCarbohydrates: Double? = null,
-    
-    @Column(name = "calculated_protein")
-    val calculatedProtein: Double? = null,
-    
-    @Column(name = "calculated_fat")
-    val calculatedFat: Double? = null,
-    
-    @Column(name = "calculated_sugar")
-    val calculatedSugar: Double? = null,
-    
-    @Column(name = "calculated_sodium")
-    val calculatedSodium: Double? = null,
-    
-    @Column(name = "calculated_fiber")
-    val calculatedFiber: Double? = null
-) : BaseEntity()
+
+    // 섭취량 ex) 3 -> 3개
+    @Column(name = "intake", nullable = false)
+    var intake: Int
+) : BaseEntity() {
+    constructor(food: Food, intake: Int) : this(
+        foodId = food.id,
+        intake = intake
+    )
+
+    override fun guard() {
+        require(foodId > 0) { "음식 ID는 0보다 큰 값이어야 합니다" }
+        require(intake > 0) { "섭취량은 0보다 큰 값이어야 합니다" }
+        require(intake <= 100) { "섭취량은 100개를 초과할 수 없습니다" }
+    }
+}

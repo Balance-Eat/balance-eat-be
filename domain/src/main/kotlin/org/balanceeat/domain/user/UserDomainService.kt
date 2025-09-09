@@ -11,6 +11,13 @@ import org.springframework.transaction.annotation.Transactional
 class UserDomainService(
     private val userRepository: UserRepository
 ) {
+    @Transactional(readOnly = true)
+    fun validateExistsUser(id: Long) {
+        if (userRepository.existsById(id).not()) {
+            throw EntityNotFoundException(DomainStatus.USER_NOT_FOUND)
+        }
+    }
+
     @Transactional
     fun create(command: UserCommand.Create) {
         if (userRepository.existsByUuid(command.uuid)) {

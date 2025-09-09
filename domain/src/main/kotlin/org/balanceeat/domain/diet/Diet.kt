@@ -3,6 +3,7 @@ package org.balanceeat.domain.diet
 import jakarta.persistence.*
 import org.balanceeat.domain.config.BaseEntity
 import org.balanceeat.domain.config.NEW_ID
+import org.balanceeat.domain.food.Food
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -20,93 +21,32 @@ class Diet(
     @Enumerated(EnumType.STRING)
     val mealType: MealType,
     
-    @Column(name = "meal_date", nullable = false)
-    val mealDate: LocalDate,
-    
-    @Column(name = "consumed_at")
-    var consumedAt: LocalDateTime? = null
-) : BaseEntity() {
-    
+    @Column(name = "consumed_at", nullable = false)
+    var consumedAt: LocalDateTime,
+
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "diet_id")
+    @JoinColumn(name = "diet_id", nullable = false)
     val dietFoods: MutableList<DietFood> = mutableListOf()
-    
-    fun addFood(foodId: Long, actualServingSize: Double, servingUnit: String, foodDomainService: org.balanceeat.domain.food.FoodDomainService): DietFood {
-        val food = foodDomainService.getFood(foodId)
-        val nutritionInfo = food.calculateNutrition(actualServingSize)
-        
-        val dietFood = DietFood(
-            dietId = this.id,
-            foodId = foodId,
-            actualServingSize = actualServingSize,
-            servingUnit = servingUnit,
-            calculatedCalories = nutritionInfo.calories,
-            calculatedCarbohydrates = nutritionInfo.carbohydrates,
-            calculatedProtein = nutritionInfo.protein,
-            calculatedFat = nutritionInfo.fat,
-            calculatedSugar = null,
-            calculatedSodium = null,
-            calculatedFiber = null
-        )
-        
-        dietFoods.add(dietFood)
-        return dietFood
+) : BaseEntity() {
+    companion object {
+        const val MAX_FOOD_SIZE = 10
+    }
+
+    override fun guard() {
+        require(userId > 0) { "사용자 ID는 0보다 큰 값이어야 합니다" }
+        require(dietFoods.isNotEmpty()) { "식단에는 최소 1개 이상의 음식이 포함되어야 합니다" }
+        require(dietFoods.size <= MAX_FOOD_SIZE) { "식단에는 최대 50개까지 음식을 포함할 수 있습니다" }
     }
     
-    fun removeFood(dietFood: DietFood) {
-        dietFoods.remove(dietFood)
+    fun addFood(food: Food, intake: Int) {
+        val newFood = DietFood(food, intake)
+        dietFoods.add(newFood)
     }
     
-    fun getTotalCalories(): Double {
-        return dietFoods.sumOf { it.calculatedCalories }
-    }
-    
-    fun getTotalCarbohydrates(): Double {
-        return dietFoods.mapNotNull { it.calculatedCarbohydrates }
-            .takeIf { it.isNotEmpty() }
-            ?.reduce { acc, value -> acc + value }
-            ?: 0.0
-    }
-    
-    fun getTotalProtein(): Double {
-        return dietFoods.mapNotNull { it.calculatedProtein }
-            .takeIf { it.isNotEmpty() }
-            ?.reduce { acc, value -> acc + value }
-            ?: 0.0
-    }
-    
-    fun getTotalFat(): Double {
-        return dietFoods.mapNotNull { it.calculatedFat }
-            .takeIf { it.isNotEmpty() }
-            ?.reduce { acc, value -> acc + value }
-            ?: 0.0
-    }
-    
-    fun getTotalSugar(): Double {
-        return dietFoods.mapNotNull { it.calculatedSugar }
-            .takeIf { it.isNotEmpty() }
-            ?.reduce { acc, value -> acc + value }
-            ?: 0.0
-    }
-    
-    fun getTotalSodium(): Double {
-        return dietFoods.mapNotNull { it.calculatedSodium }
-            .takeIf { it.isNotEmpty() }
-            ?.reduce { acc, value -> acc + value }
-            ?: 0.0
-    }
-    
-    fun getTotalFiber(): Double {
-        return dietFoods.mapNotNull { it.calculatedFiber }
-            .takeIf { it.isNotEmpty() }
-            ?.reduce { acc, value -> acc + value }
-            ?: 0.0
-    }
-    
-    enum class MealType(val displayName: String) {
-        BREAKFAST("아침"),
-        LUNCH("점심"),
-        DINNER("저녁"),
-        SNACK("간식")
+    enum class MealType {
+        BREAKFAST,
+        LUNCH,
+        DINNER,
+        SNACK
     }
 }
