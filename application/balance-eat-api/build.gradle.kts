@@ -5,7 +5,6 @@ import org.gradle.internal.declarativedsl.intrinsics.listOf
 plugins {
     kotlin("plugin.spring")
     kotlin("plugin.jpa")
-    kotlin("kapt")
     id("org.springframework.boot")
     id("io.spring.dependency-management")
 //    id("org.jlleitschuh.gradle.ktlint")

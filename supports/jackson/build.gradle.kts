@@ -1,8 +1,3 @@
-plugins {
-    kotlin("kapt")
-    id("java-test-fixtures")
-}
-
 dependencies {
     // Jackson
     api("com.fasterxml.jackson.module:jackson-module-kotlin")

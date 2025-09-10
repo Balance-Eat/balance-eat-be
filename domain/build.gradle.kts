@@ -1,6 +1,7 @@
+val openfeignQuerydslVersion: String by project
+
 plugins {
     kotlin("plugin.jpa")
-    kotlin("kapt")
     id("java-test-fixtures")
 }
 
@@ -22,11 +23,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.github.f4b6a3:uuid-creator:6.1.0")
 
-//    val querydslVersion: String by project
-//    implementation("com.querydsl:querydsl-jpa:$querydslVersion:jakarta")
-//    kapt("com.querydsl:querydsl-apt:$querydslVersion:jakarta")
-//    kapt("jakarta.annotation:jakarta.annotation-api")
-//    kapt("jakarta.persistence:jakarta.persistence-api")
+    implementation("io.github.openfeign.querydsl:querydsl-jpa:$openfeignQuerydslVersion")
+    ksp("io.github.openfeign.querydsl:querydsl-ksp-codegen:$openfeignQuerydslVersion")
 
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.testcontainers:postgresql")

@@ -12,9 +12,9 @@ fun getGitHash(): String {
 
 plugins {
     kotlin("jvm")
-    kotlin("kapt")
     kotlin("plugin.spring") apply false
     id("java-test-fixtures")
+    id("com.google.devtools.ksp")
     id("org.springframework.boot") apply false
     id("io.spring.dependency-management") apply false
     id("org.jlleitschuh.gradle.ktlint") apply false
@@ -57,9 +57,9 @@ subprojects {
         plugin("org.jetbrains.kotlin.plugin.spring")
         plugin("kotlin")
         plugin("kotlin-spring")
-        plugin("kotlin-kapt")
 //        plugin("org.jlleitschuh.gradle.ktlint")
         plugin("java-test-fixtures")
+        plugin("com.google.devtools.ksp")
     }
 
     dependencies {

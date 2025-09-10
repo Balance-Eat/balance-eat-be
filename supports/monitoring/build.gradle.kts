@@ -1,8 +1,3 @@
-plugins {
-    kotlin("kapt")
-    id("java-test-fixtures")
-}
-
 dependencies {
     // Spring Boot
     api("org.springframework.boot:spring-boot-starter-actuator")
