@@ -11,10 +11,10 @@ import java.time.LocalDate
 @RequestMapping("/v1/diets")
 class DietV1Controller(
     private val dietService: DietService
-) : DietV1ApiSpec {
+) {
 
     @GetMapping("/daily")
-    override fun getDietsByDate(
+    fun getDietsByDate(
         @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") date: LocalDate
     ): ApiResponse<DietV1Response.DailyDietInfo> {
         // Mock data
@@ -65,7 +65,7 @@ class DietV1Controller(
     
     @PostMapping
     @ResponseStatus(CREATED)
-    override fun createDiet(
+    fun createDiet(
         @RequestHeader("X-USER-ID") userId: Long,
         @RequestBody @Valid request: DietV1Request.Create
     ): ApiResponse<DietV1Response.Details> {

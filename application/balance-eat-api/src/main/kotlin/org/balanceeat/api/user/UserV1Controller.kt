@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/v1/users")
 class UserV1Controller(
     private val userDomainService: UserDomainService,
-) : UserV1ApiSpec {
+) {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    override fun create(@RequestBody request: UserV1Request.Create): ApiResponse<Void> {
+    fun create(@RequestBody request: UserV1Request.Create): ApiResponse<Void> {
         val command = UserCommand.Create(
             uuid = request.uuid,
             name = request.name,
@@ -41,7 +41,7 @@ class UserV1Controller(
     }
 
     @GetMapping("/me")
-    override fun getMe(@RequestParam(required = false) uuid: String): ApiResponse<UserV1Response.Info> {
+    fun getMe(@RequestParam(required = false) uuid: String): ApiResponse<UserV1Response.Info> {
         val user = userDomainService.findByUuid(uuid)
         val response = UserV1Response.Info(
             id = user.id,
@@ -69,7 +69,7 @@ class UserV1Controller(
     }
 
     @PutMapping("/{id}")
-    override fun update(
+    fun update(
         @PathVariable id: Long,
         @RequestBody @Valid request: UserV1Request.Update
     ): ApiResponse<Void> {

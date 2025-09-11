@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/v1/foods")
 class FoodV1Controller(
     private val foodService: FoodService,
-) : FoodV1ApiSpec {
+) {
     
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    override fun create(@RequestBody @Valid request: FoodV1Request.Create): ApiResponse<FoodV1Response.Info> {
+    fun create(@RequestBody @Valid request: FoodV1Request.Create): ApiResponse<FoodV1Response.Info> {
         val result = foodService.create(request, 1L) // TODO: 인증 연동 후 수정
         return ApiResponse.success(
             FoodV1Response.Info.from(result)
@@ -21,7 +21,7 @@ class FoodV1Controller(
     }
 
     @PutMapping("/{id}")
-    override fun update(@PathVariable id: Long,
+    fun update(@PathVariable id: Long,
                         @RequestBody @Valid request: FoodV1Request.Update): ApiResponse<FoodV1Response.Info> {
         val result = foodService.update(request, id, 1L) // TODO: 인증 연동 후 수정
         return ApiResponse.success(
@@ -30,7 +30,7 @@ class FoodV1Controller(
     }
 
     @GetMapping("/{id}")
-    override fun getDetails(@PathVariable id: Long): ApiResponse<FoodV1Response.Info> {
+    fun getDetails(@PathVariable id: Long): ApiResponse<FoodV1Response.Info> {
         val food = foodService.getDetails(id)
         return ApiResponse.success(FoodV1Response.Info.from(food))
     }
