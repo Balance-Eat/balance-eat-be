@@ -1,5 +1,6 @@
 import org.gradle.api.Project.DEFAULT_VERSION
 import org.springframework.boot.gradle.tasks.bundling.BootJar
+import java.time.Duration
 
 /** --- configuration functions --- */
 fun getGitHash(): String {
@@ -87,5 +88,25 @@ subprojects {
 
     tasks.withType<Test> {
         useJUnitPlatform()
+        
+        // Enable parallel test execution
+        maxParallelForks = Runtime.getRuntime()
+            .availableProcessors()
+            .div(2)
+            .takeIf { it > 0 } ?: 1
+        
+        // Optimize JVM settings for tests
+        jvmArgs(
+            "-XX:+UseG1GC",
+            "-XX:MaxGCPauseMillis=100",
+            "-XX:+UseStringDeduplication",
+            "-Xmx1g"
+        )
+        
+        // Set test execution timeout
+        timeout.set(Duration.ofMinutes(5))
+        
+        // Enable test result caching
+        outputs.upToDateWhen { false }
     }
 }
