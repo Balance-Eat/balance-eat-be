@@ -58,6 +58,11 @@ class FoodV1Request {
         @field:NotNull(message = "지방 함량은 필수입니다")
         val fat: Double
     )
+
+    data class Search(
+        val foodName: String?,
+        val userId: Long?,
+    )
 }
 
 class FoodV1Response {

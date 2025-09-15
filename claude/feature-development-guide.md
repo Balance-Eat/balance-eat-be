@@ -109,8 +109,18 @@ class FoodCommand {
         val fat: Double = 0.0,
         val isAdminApproved: Boolean = false
     )
+
+    data class Search(
+        val foodName: String?,
+        val userId: Long?,
+        val pageable: Pageable
+    )
 }
 ```
+
+**검색 Command 설계 원칙**:
+- **필터 조건**: 선택적 검색 조건들 (nullable 필드 사용)
+- **페이징 정보**: Spring의 `Pageable` 인터페이스 활용
 
 ### 2.3 DTO 구현 (FoodDto.kt)
 
@@ -150,16 +160,153 @@ data class FoodDto(
 }
 ```
 
+### 2.3.1 검색 결과 DTO 구현 (FoodResult.kt)
+
+**위치**: `domain/src/main/kotlin/org/balanceeat/domain/food/FoodResult.kt`
+
+```kotlin
+@QueryProjection
+data class FoodSearchResult(
+    val id: Long,
+    val uuid: String,
+    val name: String,
+    val userId: Long,
+    val perCapitaIntake: Double,
+    val unit: String,
+    val carbohydrates: Double,
+    val protein: Double,
+    val fat: Double,
+    val isAdminApproved: Boolean,
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime
+)
+```
+
+**검색 결과 DTO 원칙**:
+- `@QueryProjection` 어노테이션으로 QueryDSL 프로젝션 지원
+- 검색 성능을 위해 필요한 필드만 선택적으로 포함
+- 정렬 및 필터링에 사용되는 필드 포함 (createdAt, updatedAt 등)
+
 ### 2.4 Repository 인터페이스 (FoodRepository.kt)
 
 **위치**: `domain/src/main/kotlin/org/balanceeat/domain/food/FoodRepository.kt`
 
 ```kotlin
-interface FoodRepository : JpaRepository<Food, Long> {
+interface FoodRepository : JpaRepository<Food, Long>, FoodRepositoryCustom {
     fun findByUuid(uuid: String): Food?
     fun findByUserId(userId: Long): List<Food>
 }
 ```
+
+### 2.4.1 Custom Repository 인터페이스 (FoodRepositoryCustom.kt)
+
+**위치**: `domain/src/main/kotlin/org/balanceeat/domain/food/FoodRepositoryCustom.kt`
+
+```kotlin
+interface FoodRepositoryCustom {
+    fun search(command: FoodCommand.Search): PageResponse<FoodSearchResult>
+    fun findRecommendations(userId: Long, limit: Int): List<Food>
+}
+```
+
+### 2.4.2 Custom Repository 구현 (FoodRepositoryCustomImpl.kt)
+
+**위치**: `domain/src/main/kotlin/org/balanceeat/domain/food/FoodRepositoryCustomImpl.kt`
+
+```kotlin
+@Repository
+class FoodRepositoryCustomImpl(
+    private val queryFactory: JPAQueryFactory
+) : FoodRepositoryCustom {
+
+    override fun search(command: FoodCommand.Search): PageResponse<FoodSearchResult> {
+        val query = queryFactory
+            .select(
+                QFoodSearchResult(
+                    food.id,
+                    food.uuid,
+                    food.name,
+                    food.userId,
+                    food.perCapitaIntake,
+                    food.unit,
+                    food.carbohydrates,
+                    food.protein,
+                    food.fat,
+                    food.isAdminApproved,
+                    food.createdAt,
+                    food.updatedAt
+                )
+            )
+            .from(food)
+            .where(
+                buildSearchConditions(command)
+            )
+            .orderBy(food.id.desc()) // 최신 순 정렬
+
+        // 전체 개수 조회
+        val total = query.fetchCount()
+
+        // 페이징 적용
+        val results = query
+            .offset(command.pageable.offset)
+            .limit(command.pageable.pageSize.toLong())
+            .fetch()
+
+        return PageResponse.of(
+            items = results,
+            totalItems = total,
+            currentPage = command.pageable.pageNumber + 1,
+            itemsPerPage = command.pageable.pageSize
+        )
+    }
+
+    override fun findRecommendations(userId: Long, limit: Int): List<Food> {
+        return queryFactory
+            .selectFrom(food)
+            .where(
+                food.isAdminApproved.isTrue
+                    .or(food.userId.eq(userId))
+            )
+            .orderBy(food.id.desc())
+            .limit(limit.toLong())
+            .fetch()
+    }
+
+    private fun buildSearchConditions(command: FoodCommand.Search): BooleanExpression? {
+        val conditions = mutableListOf<BooleanExpression>()
+
+        // 음식명 필터 (부분 검색, 대소문자 무시)
+        command.foodName?.let { name ->
+            conditions.add(food.name.containsIgnoreCase(name))
+        }
+
+        // 사용자 ID 필터 (본인 데이터 + 관리자 승인 데이터)
+        command.userId?.let { userId ->
+            conditions.add(
+                food.userId.eq(userId)
+                    .or(food.isAdminApproved.isTrue)
+            )
+        }
+
+        return if (conditions.isEmpty()) {
+            null
+        } else {
+            conditions.reduce { acc, condition -> acc.and(condition) }
+        }
+    }
+
+    companion object {
+        private val food = QFood.food
+    }
+}
+```
+
+**Repository 구현 원칙**:
+- **QueryDSL 활용**: 동적 쿼리 구성을 위한 QueryDSL 사용
+- **성능 최적화**: 필요한 필드만 선택하는 프로젝션 사용
+- **페이징 처리**: Spring의 Pageable과 커스텀 PageResponse 활용
+- **조건부 필터링**: 선택적 검색 조건을 위한 동적 쿼리 구성
+- **정렬 기준**: 비즈니스 요구사항에 맞는 정렬 로직 (최신순 등)
 
 ### 2.5 Domain Service 구현 (FoodDomainService.kt)
 
@@ -263,6 +410,26 @@ class FoodService(
         // API 모듈의 서비스에서 컨트롤러 응답 타입으로 변환
         return FoodV1Response.Info.from(domainResult)
     }
+
+    @Transactional(readOnly = true)
+    fun search(request: FoodV1Request.Search, pageable: Pageable): PageResponse<FoodSearchResult> {
+        val command = FoodCommand.Search(
+            foodName = request.foodName,
+            userId = request.userId,
+            pageable = pageable
+        )
+        
+        val result = foodRepository.search(command)
+        
+        return PageResponse.from(result)
+    }
+
+    @Transactional(readOnly = true)
+    fun getRecommendations(limit: Int): List<FoodDto> {
+        val userId = 1L // TODO: 인증 연동 후 실제 사용자 ID 사용
+        return foodRepository.findRecommendations(userId, limit)
+            .map { FoodDto.from(it) }
+    }
 }
 ```
 
@@ -291,8 +458,28 @@ class FoodV1Request {
         val name: String,
         @field:NotNull(message = "1회 기준 섭취량은 필수입니다")
         val perCapitaIntake: Double,
-        
-        // ... 기타 필드들
+        @field:NotNull(message = "단위는 필수입니다")
+        val unit: String,
+        val carbohydrates: Double? = null,
+        val protein: Double? = null,
+        val fat: Double? = null
+    )
+
+    data class Update(
+        @field:NotNull(message = "음식명은 필수입니다")
+        val name: String,
+        @field:NotNull(message = "1회 기준 섭취량은 필수입니다")
+        val perCapitaIntake: Double,
+        @field:NotNull(message = "단위는 필수입니다")
+        val unit: String,
+        val carbohydrates: Double? = null,
+        val protein: Double? = null,
+        val fat: Double? = null
+    )
+
+    data class Search(
+        val foodName: String? = null,
+        val userId: Long? = null
     )
 }
 
@@ -316,6 +503,12 @@ class FoodV1Response {
 }
 ```
 
+**검색 관련 Payload 설계 원칙**:
+- **Search Request**: 선택적 필터 조건들만 포함 (nullable 필드)
+- **페이징 파라미터**: Controller에서 `@RequestParam`으로 직접 처리
+- **Search Response**: Repository에서 반환하는 `FoodSearchResult`를 직접 사용
+- **권한 처리**: Application Service에서 userId 주입
+
 ### 3.3 Controller 구현 (FoodV1Controller.kt)
 
 **위치**: `application/balance-eat-api/src/main/kotlin/org/balanceeat/api/food/FoodV1Controller.kt`
@@ -329,20 +522,49 @@ class FoodV1Controller(
     
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    override fun create(@RequestBody @Valid request: FoodV1Request.Create): ApiResponse<FoodV1Response.Info> {
+    fun create(@RequestBody @Valid request: FoodV1Request.Create): ApiResponse<FoodV1Response.Info> {
         val result = foodService.create(request, 1L) // TODO: 인증 연동 후 수정
-        return ApiResponse.success(
-            FoodV1Response.Info.from(result)
-        )
+        return ApiResponse.success(result)
+    }
+
+    @PutMapping("/{id}")
+    fun update(@PathVariable id: Long,
+                        @RequestBody @Valid request: FoodV1Request.Update): ApiResponse<FoodV1Response.Info> {
+        val result = foodService.update(request, id, 1L) // TODO: 인증 연동 후 수정
+        return ApiResponse.success(result)
     }
 
     @GetMapping("/{id}")
-    override fun getDetails(@PathVariable id: Long): ApiResponse<FoodV1Response.Info> {
+    fun getDetails(@PathVariable id: Long): ApiResponse<FoodV1Response.Info> {
         val food = foodService.getDetails(id)
         return ApiResponse.success(FoodV1Response.Info.from(food))
     }
+
+    @GetMapping("/recommendations")
+    fun getRecommendations(@RequestParam(defaultValue = "10") limit: Int): ApiResponse<List<FoodV1Response.Info>> {
+        val result = foodService.getRecommendations(limit)
+            .map { FoodV1Response.Info.from(it) }
+
+        return ApiResponse.success(result)
+    }
+
+    @GetMapping("/search")
+    fun search(
+      request: FoodV1Request.Search,
+      @PageableDefault pageable: Pageable
+    ): ApiResponse<PageResponse<FoodSearchResult>> {
+        val result = foodService.search(request, pageable)
+        
+        return ApiResponse.success(result)
+    }
 }
 ```
+
+**검색 관련 Controller 설계 원칙**:
+- **페이징 파라미터**: `@RequestParam`으로 직접 처리하여 Spring의 Pageable 생성
+- **선택적 필터**: `required = false`와 기본값 설정으로 선택적 검색 조건 처리
+- **권한 처리**: 현재 사용자 ID를 Application Service에 전달
+- **응답 타입**: 검색은 `FoodSearchResult` 직접 반환, 추천은 `FoodDto` → `Info` 변환
 
 ## 4. 테스트 코드 명세
 
@@ -645,6 +867,20 @@ Content-Type: application/json
 ### Food 조회 API 테스트 (성공 케이스)
 
 GET {{baseUrl}}/{{apiVersion}}/foods/1
+Accept: application/json
+
+###
+
+### Food 검색 API 테스트 (성공 케이스)
+
+GET {{baseUrl}}/{{apiVersion}}/foods/search?foodName=김치&page=0&size=10
+Accept: application/json
+
+###
+
+### Food 추천 목록 API 테스트 (성공 케이스)
+
+GET {{baseUrl}}/{{apiVersion}}/foods/recommendations?limit=10
 Accept: application/json
 ```
 

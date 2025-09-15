@@ -22,4 +22,16 @@ class FoodV1RequestFixture {
             )
         }
     }
+
+    data class Search(
+        val foodName: String? = null,
+        val userId: Long? = null
+    ): TestFixture<FoodV1Request.Search> {
+        override fun create(): FoodV1Request.Search {
+            return FoodV1Request.Search(
+                foodName = foodName,
+                userId = userId
+            )
+        }
+    }
 }

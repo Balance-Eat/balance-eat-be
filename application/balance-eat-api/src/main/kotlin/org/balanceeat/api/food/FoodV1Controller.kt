@@ -2,6 +2,10 @@ package org.balanceeat.api.food
 
 import jakarta.validation.Valid
 import org.balanceeat.apibase.response.ApiResponse
+import org.balanceeat.apibase.response.PageResponse
+import org.balanceeat.domain.food.FoodSearchResult
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
@@ -39,6 +43,16 @@ class FoodV1Controller(
     fun getRecommendations(@RequestParam(defaultValue = "10") limit: Int): ApiResponse<List<FoodV1Response.Info>> {
         val result = foodService.getRecommendations(limit)
             .map { FoodV1Response.Info.from(it) }
+
+        return ApiResponse.success(result)
+    }
+
+    @GetMapping("/search")
+    fun search(
+        request: FoodV1Request.Search,
+        @PageableDefault pageable: Pageable
+    ): ApiResponse<PageResponse<FoodSearchResult>> {
+        val result = foodService.search(request, pageable)
 
         return ApiResponse.success(result)
     }

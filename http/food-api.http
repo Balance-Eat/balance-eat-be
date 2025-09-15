@@ -33,3 +33,9 @@ Accept: application/json
 ### 추천 음식 목록 조회
 GET {{baseUrl}}/v1/foods/recommendations?limit=10
 Accept: application/json
+
+### 음식 검색
+@foodName = 김치
+@userId = 1
+GET {{baseUrl}}/v1/foods/search?foodName={{foodName}}&userId={{userId}}&page=0&size=10
+Accept: application/json

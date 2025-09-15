@@ -1,8 +1,9 @@
 package org.balanceeat.domain.food
 
+import org.springframework.data.domain.Pageable
+
 
 sealed class FoodCommand {
-    
     data class Create(
         val uuid: String,
         val name: String,
@@ -26,15 +27,9 @@ sealed class FoodCommand {
         val isAdminApproved: Boolean
     )
 
-    data class UpdateByAdmin(
-        val id: Long,
-        val adminId: Long,
-        val name: String,
-        val perCapitaIntake: Double,
-        val unit: String,
-        val carbohydrates: Double,
-        val protein: Double,
-        val fat: Double,
-        val isAdminApproved: Boolean
+    data class Search(
+        val foodName: String?,
+        val userId: Long?,
+        val pageable: Pageable
     )
 }

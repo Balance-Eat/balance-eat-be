@@ -5,7 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.balanceeat.api.config.supports.ControllerTestContext
+import org.balanceeat.apibase.response.PageResponse
 import org.balanceeat.domain.food.FoodDto
+import org.balanceeat.domain.food.FoodSearchResult
+import org.balanceeat.domain.food.FoodSearchResultFixture
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -223,6 +226,72 @@ class FoodV1ControllerTest: ControllerTestContext() {
                 )
                 .status(HttpStatus.OK);
         }
+    }
+
+    @Nested
+    @DisplayName("GET /v1/foods/search - 음식 검색")
+    inner class SearchTest {
+        @Test
+        fun `검색 성공`() {
+            val mockPageResponse = mockSearchPageResponse()
+            every { foodService.search(any(), any()) } returns mockPageResponse
+
+            given()
+                .params("foodName", "사과")
+                .params("page", 0)
+                .params("size", 10)
+                .get("/v1/foods/search")
+                .then()
+                .log().all()
+                .apply(
+                    document(
+                        identifier("SearchWithFoodNameTest"),
+                        ResourceSnippetParametersBuilder()
+                            .tag(Tags.FOOD.tagName)
+                            .description(Tags.FOOD.descriptionWith("검색")),
+                        queryParameters(
+                            "foodName" queryMeans "음식명 (부분 검색)" isOptional true,
+                            "page" queryMeans "페이지 번호 (0부터 시작)" isOptional true,
+                            "size" queryMeans "페이지 크기" isOptional true
+                        ),
+                        responseFields(
+                            fieldsWithBasic(
+                                "data.totalItems" type NUMBER means "전체 아이템 수",
+                                "data.currentPage" type NUMBER means "현재 페이지 번호",
+                                "data.itemsPerPage" type NUMBER means "페이지당 아이템 수",
+                                "data.totalPages" type NUMBER means "전체 페이지 수",
+                                "data.items" type ARRAY means "검색 결과 목록",
+                                "data.items[].id" type NUMBER means "음식 ID",
+                                "data.items[].uuid" type STRING means "음식 UUID",
+                                "data.items[].name" type STRING means "음식명",
+                                "data.items[].userId" type NUMBER means "사용자 ID",
+                                "data.items[].perCapitaIntake" type NUMBER means "1회 제공량",
+                                "data.items[].unit" type STRING means "단위",
+                                "data.items[].carbohydrates" type NUMBER means "탄수화물 (g)",
+                                "data.items[].protein" type NUMBER means "단백질 (g)",
+                                "data.items[].fat" type NUMBER means "지방 (g)",
+                                "data.items[].isAdminApproved" type BOOLEAN means "관리자 승인 여부",
+                                "data.items[].createdAt" type STRING means "생성일시",
+                                "data.items[].updatedAt" type STRING means "수정일시"
+                            )
+                        )
+                    )
+                )
+                .status(HttpStatus.OK);
+        }
+
+        private fun mockSearchPageResponse(): PageResponse<FoodSearchResult> {
+            return PageResponse(
+                totalItems = 2,
+                currentPage = 1,
+                itemsPerPage = 10,
+                items = listOf(
+                    FoodSearchResultFixture(id = 1L, name = "사과").create(),
+                    FoodSearchResultFixture(id = 2L, name = "사과주스").create()
+                )
+            )
+        }
+
     }
 
     private fun mockFoodDto(): FoodDto {

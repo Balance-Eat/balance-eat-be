@@ -4,12 +4,15 @@ import org.balanceeat.apibase.ApplicationStatus.CANNOT_MODIFY_FOOD
 import org.balanceeat.apibase.ApplicationStatus.FOOD_NOT_FOUND
 import org.balanceeat.apibase.exception.BadRequestException
 import org.balanceeat.apibase.exception.NotFoundException
+import org.balanceeat.apibase.response.PageResponse
 import org.balanceeat.domain.curation.CurationFoodRepository
 import org.balanceeat.domain.food.FoodCommand
 import org.balanceeat.domain.food.FoodDomainService
 import org.balanceeat.domain.food.FoodDto
 import org.balanceeat.domain.food.FoodRepository
+import org.balanceeat.domain.food.FoodSearchResult
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -76,5 +79,18 @@ class FoodService(
         return foodRepository.findAllById(curationFoodMap.keys)
             .map { FoodDto.from(it) }
             .sortedByDescending { curationFoodMap[it.id]?.weight }
+    }
+
+    @Transactional(readOnly = true)
+    fun search(request: FoodV1Request.Search, pageable: Pageable): PageResponse<FoodSearchResult>{
+        val result =  foodRepository.search(
+            FoodCommand.Search(
+                foodName = request.foodName,
+                userId = request.userId,
+                pageable = pageable
+            )
+        )
+
+        return PageResponse.from(result)
     }
 }
