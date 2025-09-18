@@ -20,6 +20,7 @@ class AdminUserService(
             age = request.age,
             height = request.height,
             weight = request.weight,
+            goalType = request.goalType,
             activityLevel = request.activityLevel,
             smi = request.smi,
             fatPercentage = request.fatPercentage,

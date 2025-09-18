@@ -32,6 +32,7 @@ class UserDomainService(
             age = command.age,
             weight = command.weight,
             height = command.height,
+            goalType = command.goalType,
             activityLevel = command.activityLevel,
             smi = command.smi,
             fatPercentage = command.fatPercentage,
@@ -70,6 +71,7 @@ class UserDomainService(
             command.age?.let { age = it }
             command.weight?.let { weight = it }
             command.height?.let { height = it }
+            command.goalType?.let { goalType = it }
             command.activityLevel?.let { activityLevel = it }
             command.smi?.let { smi = it }
             command.fatPercentage?.let { fatPercentage = it }
@@ -94,6 +96,7 @@ class UserDomainService(
             command.age?.let { age = it }
             command.weight?.let { weight = it }
             command.height?.let { height = it }
+            command.goalType?.let { goalType = it }
             command.activityLevel?.let { activityLevel = it }
             command.smi?.let { smi = it }
             command.fatPercentage?.let { fatPercentage = it }

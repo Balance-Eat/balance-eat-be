@@ -50,6 +50,9 @@ class User(
     var providerId: String? = null,
     @Column(name = "provider_type", length = 50)
     var providerType: String? = null,
+    @Enumerated(EnumType.STRING)
+    @Column(name = "goal_type", length = 20, nullable = false)
+    var goalType: GoalType,
 ) : BaseEntity() {
 
     override fun guard() {
@@ -155,5 +158,14 @@ class User(
         MODERATE(1.55),
         // 활발한 활동 (매일 격렬)
         ACTIVE(1.725)
+    }
+
+    enum class GoalType {
+        // 다이어트
+        DIET,
+        // 벌크업
+        BULK_UP,
+        // 체중 유지
+        MAINTAIN
     }
 }

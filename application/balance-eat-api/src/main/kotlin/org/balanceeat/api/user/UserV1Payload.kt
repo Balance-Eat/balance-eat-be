@@ -17,6 +17,8 @@ class UserV1Request {
         val height: Double,
         @field:NotNull(message = "weight은 필수입니다")
         val weight: Double,
+        @field:NotNull(message = "goalType은 필수입니다")
+        val goalType: User.GoalType,
         val email: String? = null,
         val activityLevel: User.ActivityLevel? = null,
         val smi: Double? = null,
@@ -39,6 +41,7 @@ class UserV1Request {
         val age: Int? = null,
         val height: Double? = null,
         val weight: Double? = null,
+        val goalType: User.GoalType? = null,
         val activityLevel: User.ActivityLevel? = null,
         val smi: Double? = null,
         val fatPercentage: Double? = null,
@@ -62,6 +65,7 @@ class UserV1Response {
         val age: Int,
         val weight: Double,
         val height: Double,
+        val goalType: User.GoalType,
         val activityLevel: User.ActivityLevel?,
         val smi: Double?,
         val fatPercentage: Double?,

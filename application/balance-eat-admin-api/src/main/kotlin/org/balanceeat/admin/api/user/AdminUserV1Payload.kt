@@ -27,6 +27,8 @@ class AdminUserV1Request {
         @field:DecimalMax(value = "1000.0", message = "몸무게는 1000kg 이하여야 합니다")
         val weight: Double? = null,
 
+        val goalType: User.GoalType? = null,
+
         val activityLevel: User.ActivityLevel? = null,
 
         @field:DecimalMin(value = "0.0", message = "SMI는 0 이상이어야 합니다")
@@ -83,6 +85,7 @@ class AdminUserV1Response {
         val age: Int,
         val height: Double,
         val weight: Double,
+        val goalType: User.GoalType,
         val activityLevel: User.ActivityLevel?,
         val smi: Double?,
         val fatPercentage: Double?,
@@ -106,6 +109,7 @@ class AdminUserV1Response {
                 age = user.age,
                 height = user.height,
                 weight = user.weight,
+                goalType = user.goalType,
                 activityLevel = user.activityLevel,
                 smi = user.smi,
                 fatPercentage = user.fatPercentage,
