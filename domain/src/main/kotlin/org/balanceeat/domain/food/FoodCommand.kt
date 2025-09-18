@@ -13,6 +13,7 @@ sealed class FoodCommand {
         val carbohydrates: Double = 0.0,
         val protein: Double = 0.0,
         val fat: Double = 0.0,
+        val brand: String,
         val isAdminApproved: Boolean = false
     )
     
@@ -24,6 +25,7 @@ sealed class FoodCommand {
         val carbohydrates: Double,
         val protein: Double,
         val fat: Double,
+        val brand: String,
         val isAdminApproved: Boolean
     )
 

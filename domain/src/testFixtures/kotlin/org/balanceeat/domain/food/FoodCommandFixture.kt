@@ -13,6 +13,7 @@ class FoodCommandFixture {
         var carbohydrates: Double = 20.0,
         var protein: Double = 5.0,
         var fat: Double = 2.0,
+        var brand: String = "테스트 브랜드",
         var isAdminApproved: Boolean = false
     ) : TestFixture<FoodCommand.Create> {
         override fun create(): FoodCommand.Create {
@@ -25,6 +26,7 @@ class FoodCommandFixture {
                 carbohydrates = carbohydrates,
                 protein = protein,
                 fat = fat,
+                brand = brand,
                 isAdminApproved = isAdminApproved
             )
         }
@@ -38,6 +40,7 @@ class FoodCommandFixture {
         var carbohydrates: Double = 20.0,
         var protein: Double = 5.0,
         var fat: Double = 2.0,
+        var brand: String = "테스트 브랜드",
         var isAdminApproved: Boolean = false
     ) : TestFixture<FoodCommand.Update> {
         override fun create(): FoodCommand.Update {
@@ -49,6 +52,7 @@ class FoodCommandFixture {
                 carbohydrates = carbohydrates,
                 protein = protein,
                 fat = fat,
+                brand = brand,
                 isAdminApproved = isAdminApproved
             )
         }

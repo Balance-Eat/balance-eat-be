@@ -24,7 +24,10 @@ class AdminFoodV1Request {
         val fat: Double,
 
         @field:NotNull(message = "isAdminApproved는 필수입니다")
-        val isAdminApproved: Boolean
+        val isAdminApproved: Boolean,
+
+        @field:NotNull(message = "brand는 필수입니다")
+        val brand: String
     )
 }
 
@@ -38,6 +41,7 @@ class AdminFoodV1Response {
         val carbohydrates: Double,
         val protein: Double,
         val fat: Double,
+        val brand: String,
         val isAdminApproved: Boolean
     ) {
         companion object {
@@ -50,6 +54,7 @@ class AdminFoodV1Response {
                 carbohydrates = food.carbohydrates,
                 protein = food.protein,
                 fat = food.fat,
+                brand = food.brand,
                 isAdminApproved = food.isAdminApproved
             )
         }

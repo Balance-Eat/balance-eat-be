@@ -10,6 +10,7 @@ class AdminFoodV1RequestFixture {
         var carbohydrates: Double = 30.0,
         var protein: Double = 10.0,
         var fat: Double = 5.0,
+        var brand: String = "수정된 브랜드",
         var isAdminApproved: Boolean = true
     ) : TestFixture<AdminFoodV1Request.Update> {
         override fun create(): AdminFoodV1Request.Update {
@@ -20,6 +21,7 @@ class AdminFoodV1RequestFixture {
                 carbohydrates = carbohydrates,
                 protein = protein,
                 fat = fat,
+                brand = brand,
                 isAdminApproved = isAdminApproved
             )
         }

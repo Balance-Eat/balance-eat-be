@@ -14,6 +14,7 @@ data class FoodSearchResult(
     val carbohydrates: Double,
     val protein: Double,
     val fat: Double,
+    val brand: String,
     val isAdminApproved: Boolean,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime

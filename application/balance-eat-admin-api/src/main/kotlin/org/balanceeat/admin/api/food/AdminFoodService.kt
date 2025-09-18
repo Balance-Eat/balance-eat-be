@@ -33,6 +33,7 @@ class AdminFoodService(
                 carbohydrates = request.carbohydrates,
                 protein = request.protein,
                 fat = request.fat,
+                brand = request.brand,
                 isAdminApproved = request.isAdminApproved
             )
         )

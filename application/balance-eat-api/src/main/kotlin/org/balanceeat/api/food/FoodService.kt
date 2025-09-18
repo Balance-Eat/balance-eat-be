@@ -42,6 +42,7 @@ class FoodService(
                 carbohydrates = request.carbohydrates,
                 protein = request.protein,
                 fat = request.fat,
+                brand = request.brand,
                 isAdminApproved = false
             )
         )
@@ -65,6 +66,7 @@ class FoodService(
                 carbohydrates = request.carbohydrates,
                 protein = request.protein,
                 fat = request.fat,
+                brand = request.brand,
                 isAdminApproved = false
             )
         )

@@ -12,6 +12,7 @@ data class FoodDto(
     val carbohydrates: Double,
     val protein: Double,
     val fat: Double,
+    val brand: String,
     val isAdminApproved: Boolean,
     val createdAt: LocalDateTime
 ) {
@@ -50,6 +51,7 @@ data class FoodDto(
                 carbohydrates = food.carbohydrates,
                 protein = food.protein,
                 fat = food.fat,
+                brand = food.brand,
                 isAdminApproved = food.isAdminApproved,
                 createdAt = food.createdAt
             )

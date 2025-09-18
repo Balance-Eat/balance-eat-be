@@ -9,7 +9,8 @@ class FoodV1RequestFixture {
         val unit: String = "g",
         val carbohydrates: Double = 25.0,
         val protein: Double = 8.0,
-        val fat: Double = 3.0
+        val fat: Double = 3.0,
+        val brand: String = "테스트 브랜드"
     ): TestFixture<FoodV1Request.Update> {
         override fun create(): FoodV1Request.Update {
             return FoodV1Request.Update(
@@ -18,7 +19,8 @@ class FoodV1RequestFixture {
                 unit = unit,
                 carbohydrates = carbohydrates,
                 protein = protein,
-                fat = fat
+                fat = fat,
+                brand = brand
             )
         }
     }

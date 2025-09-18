@@ -14,6 +14,7 @@ class FoodSearchResultFixture(
     var carbohydrates: Double = 25.0,
     var protein: Double = 8.0,
     var fat: Double = 3.0,
+    var brand: String = "테스트 브랜드",
     var isAdminApproved: Boolean = false,
     var createdAt: LocalDateTime = LocalDateTime.now(),
     var updatedAt: LocalDateTime = LocalDateTime.now()
@@ -29,6 +30,7 @@ class FoodSearchResultFixture(
             carbohydrates = carbohydrates,
             protein = protein,
             fat = fat,
+            brand = brand,
             isAdminApproved = isAdminApproved,
             createdAt = createdAt,
             updatedAt = updatedAt

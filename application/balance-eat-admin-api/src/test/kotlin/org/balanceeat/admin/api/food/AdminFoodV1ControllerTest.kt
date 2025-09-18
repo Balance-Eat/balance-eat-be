@@ -55,6 +55,7 @@ class AdminFoodV1ControllerTest: ControllerTestContext() {
                             "carbohydrates" type NUMBER means "탄수화물 함량 (g)",
                             "protein" type NUMBER means "단백질 함량 (g)",
                             "fat" type NUMBER means "지방 함량 (g)",
+                            "brand" type STRING means "브랜드명",
                             "isAdminApproved" type BOOLEAN means "관리자 승인 여부"
                         ),
                         responseFields(
@@ -67,6 +68,7 @@ class AdminFoodV1ControllerTest: ControllerTestContext() {
                                 "data.carbohydrates" type NUMBER means "탄수화물 함량 (g)",
                                 "data.protein" type NUMBER means "단백질 함량 (g)",
                                 "data.fat" type NUMBER means "지방 함량 (g)",
+                                "data.brand" type STRING means "브랜드명",
                                 "data.isAdminApproved" type BOOLEAN means "관리자 승인 여부"
                             )
                         )
@@ -83,6 +85,7 @@ class AdminFoodV1ControllerTest: ControllerTestContext() {
                 carbohydrates = 40.0,
                 protein = 15.0,
                 fat = 8.0,
+                brand = "수정된 브랜드",
                 isAdminApproved = true
             )
         }
@@ -118,6 +121,7 @@ class AdminFoodV1ControllerTest: ControllerTestContext() {
                                 "data.carbohydrates" type NUMBER means "탄수화물 함량 (g)",
                                 "data.protein" type NUMBER means "단백질 함량 (g)",
                                 "data.fat" type NUMBER means "지방 함량 (g)",
+                                "data.brand" type STRING means "브랜드명",
                                 "data.isAdminApproved" type BOOLEAN means "관리자 승인 여부"
                             )
                         )
@@ -138,6 +142,7 @@ class AdminFoodV1ControllerTest: ControllerTestContext() {
             carbohydrates = 25.0,
             protein = 8.0,
             fat = 3.0,
+            brand = "테스트 브랜드",
             isAdminApproved = true,
             createdAt = LocalDateTime.now()
         )

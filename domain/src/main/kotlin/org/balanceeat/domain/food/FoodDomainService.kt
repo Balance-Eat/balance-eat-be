@@ -2,7 +2,6 @@ package org.balanceeat.domain.food
 
 import org.balanceeat.domain.common.DomainService
 import org.balanceeat.domain.common.DomainStatus
-import org.balanceeat.domain.common.exception.BadCommandException
 import org.balanceeat.domain.common.exception.EntityNotFoundException
 import org.springframework.transaction.annotation.Transactional
 
@@ -28,6 +27,7 @@ class FoodDomainService(
             carbohydrates = command.carbohydrates,
             protein = command.protein,
             fat = command.fat,
+            brand = command.brand,
             isAdminApproved = command.isAdminApproved
         )
         
@@ -46,7 +46,8 @@ class FoodDomainService(
             unit = command.unit,
             carbohydrates = command.carbohydrates,
             protein = command.protein,
-            fat = command.fat
+            fat = command.fat,
+            brand = command.brand
         )
 
         val savedFood = foodRepository.save(food)

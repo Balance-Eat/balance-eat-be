@@ -37,6 +37,10 @@ class Food(
     @Column(name = "fat", nullable = false)
     var fat: Double = 0.0,
 
+    // 브랜드명
+    @Column(name = "brand", length = 50, nullable = false)
+    var brand: String,
+
     // 관리자 검수 여부
     @Column(name = "isAdminApproved", nullable = false)
     var isAdminApproved: Boolean = false
@@ -62,6 +66,9 @@ class Food(
 
         require(fat >= 0.0) { "지방 함량은 0 이상이어야 합니다" }
         require(fat <= 1000.0) { "지방 함량은 1000g을 초과할 수 없습니다" }
+
+        require(brand.isNotBlank()) { "브랜드명은 필수값입니다" }
+        require(brand.length <= 50) { "브랜드명은 50자를 초과할 수 없습니다" }
     }
     
     fun update(name: String,
@@ -69,13 +76,15 @@ class Food(
                     unit: String,
                     carbohydrates: Double,
                     protein: Double,
-                    fat: Double) {
+                    fat: Double,
+                    brand: String) {
         this.name = name
         this.perCapitaIntake = perCapitaIntake
         this.unit = unit
         this.carbohydrates = carbohydrates
         this.protein = protein
         this.fat = fat
+        this.brand = brand
     }
 
     fun approve() {

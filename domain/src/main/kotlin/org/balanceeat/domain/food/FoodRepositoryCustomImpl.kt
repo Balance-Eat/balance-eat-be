@@ -39,6 +39,7 @@ class FoodRepositoryCustomImpl(
                     food.carbohydrates,
                     food.protein,
                     food.fat,
+                    food.brand,
                     food.isAdminApproved,
                     food.createdAt,
                     food.updatedAt

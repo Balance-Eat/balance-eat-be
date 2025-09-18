@@ -14,16 +14,13 @@ class FoodTest {
         @Test
         fun success() {
             // given
-            val food = Food(
-                uuid = "test-food-uuid",
-                name = "테스트 음식",
-                userId = 1L,
+            val food = FoodFixture(
                 perCapitaIntake = 100.0,
                 unit = "g",
                 carbohydrates = 20.0,
                 protein = 5.0,
                 fat = 2.0
-            )
+            ).create()
 
             // when
             val nutrition = food.calculateNutrition(200.0) // 2배 섭취
@@ -61,7 +58,8 @@ class FoodTest {
                 unit = "ml",
                 carbohydrates = 30.0,
                 protein = 7.0,
-                fat = 3.0
+                fat = 3.0,
+                brand = "수정된 브랜드"
             )
 
             // then
@@ -92,7 +90,8 @@ class FoodTest {
                     unit = food.unit,
                     carbohydrates = food.carbohydrates,
                     protein = food.protein,
-                    fat = food.fat
+                    fat = food.fat,
+                    brand = food.brand
                 )
                 food.guard() // 엔티티 검증 호출
             }

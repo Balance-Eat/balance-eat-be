@@ -53,9 +53,10 @@ class FoodV1ControllerTest: ControllerTestContext() {
                             "name" type STRING means "음식명",
                             "perCapitaIntake" type NUMBER means "1회 기준 섭취량",
                             "unit" type STRING means "단위 (예: g, ml 등)",
-                            "carbohydrates" type NUMBER means "탄수화물 함량 (g, 선택)",
-                            "protein" type NUMBER means "단백질 함량 (g, 선택)",
-                            "fat" type NUMBER means "지방 함량 (g, 선택)"
+                            "carbohydrates" type NUMBER means "탄수화물 함량 (g)",
+                            "protein" type NUMBER means "단백질 함량 (g)",
+                            "fat" type NUMBER means "지방 함량 (g)",
+                            "brand" type STRING means "브랜드명"
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -67,6 +68,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
                                 "data.carbohydrates" type NUMBER means "탄수화물 (g)",
                                 "data.protein" type NUMBER means "단백질 (g)",
                                 "data.fat" type NUMBER means "지방 (g)",
+                                "data.brand" type STRING means "브랜드명",
                                 "data.createdAt" type STRING means "생성일시",
                             )
                         )
@@ -83,7 +85,8 @@ class FoodV1ControllerTest: ControllerTestContext() {
                 unit = "ml",
                 carbohydrates = 30.0,
                 protein = 10.0,
-                fat = 5.0
+                fat = 5.0,
+                brand = "테스트 브랜드"
             )
         }
     }
@@ -116,7 +119,8 @@ class FoodV1ControllerTest: ControllerTestContext() {
                             "unit" type STRING means "단위 (예: g, ml 등)",
                             "carbohydrates" type NUMBER means "탄수화물 함량 (g)",
                             "protein" type NUMBER means "단백질 함량 (g)",
-                            "fat" type NUMBER means "지방 함량 (g)"
+                            "fat" type NUMBER means "지방 함량 (g)",
+                            "brand" type STRING means "브랜드명"
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -128,6 +132,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
                                 "data.carbohydrates" type NUMBER means "탄수화물 (g)",
                                 "data.protein" type NUMBER means "단백질 (g)",
                                 "data.fat" type NUMBER means "지방 (g)",
+                                "data.brand" type STRING means "브랜드명",
                                 "data.createdAt" type STRING means "생성일시",
                             )
                         )
@@ -143,7 +148,8 @@ class FoodV1ControllerTest: ControllerTestContext() {
                 unit = "g",
                 carbohydrates = 40.0,
                 protein = 15.0,
-                fat = 8.0
+                fat = 8.0,
+                brand = "수정된 브랜드"
             )
         }
     }
@@ -178,6 +184,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
                                 "data.carbohydrates" type NUMBER means "탄수화물 (g)",
                                 "data.protein" type NUMBER means "단백질 (g)",
                                 "data.fat" type NUMBER means "지방 (g)",
+                                "data.brand" type STRING means "브랜드명",
                                 "data.createdAt" type STRING means "생성일시",
                             )
                         )
@@ -219,6 +226,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
                                 "data[].carbohydrates" type NUMBER means "탄수화물 (g)",
                                 "data[].protein" type NUMBER means "단백질 (g)",
                                 "data[].fat" type NUMBER means "지방 (g)",
+                                "data[].brand" type STRING means "브랜드명",
                                 "data[].createdAt" type STRING means "생성일시",
                             )
                         )
@@ -270,6 +278,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
                                 "data.items[].carbohydrates" type NUMBER means "탄수화물 (g)",
                                 "data.items[].protein" type NUMBER means "단백질 (g)",
                                 "data.items[].fat" type NUMBER means "지방 (g)",
+                                "data.items[].brand" type STRING means "브랜드명",
                                 "data.items[].isAdminApproved" type BOOLEAN means "관리자 승인 여부",
                                 "data.items[].createdAt" type STRING means "생성일시",
                                 "data.items[].updatedAt" type STRING means "수정일시"
@@ -305,6 +314,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
             carbohydrates = 25.0,
             protein = 8.0,
             fat = 3.0,
+            brand = "테스트 브랜드",
             isAdminApproved = false,
             createdAt = LocalDateTime.now()
         )
