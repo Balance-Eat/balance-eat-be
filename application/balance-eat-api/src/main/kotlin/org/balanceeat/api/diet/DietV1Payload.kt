@@ -3,10 +3,15 @@ package org.balanceeat.api.diet
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.NotEmpty
+import org.balanceeat.domain.common.DomainStatus
+import org.balanceeat.domain.common.exception.DomainException
+import org.balanceeat.domain.diet.Diet
 import org.balanceeat.domain.diet.Diet.MealType
 import org.balanceeat.domain.diet.DietDto
+import org.balanceeat.domain.diet.DietFood
 import org.balanceeat.domain.diet.DietFoodDto
 import org.balanceeat.domain.diet.NutritionInfo
+import org.balanceeat.domain.food.Food
 import java.time.LocalDateTime
 
 class DietV1Request {
@@ -45,23 +50,57 @@ class DietV1Response {
         val totalFat: Int
     )
 
-    data class Diet(
+    data class DietResponse(
         val dietId: Long,
-        val eatingAt: String,
-        val type: String,
-        val items: List<DietItem>
-    )
+        val consumedAt: LocalDateTime,
+        val mealType: MealType,
+        val items: List<DietFoodResponse>
+    ) {
+        companion object {
+            fun of(diet: Diet, foodMap: Map<Long, Food>): DietResponse {
+                return DietResponse(
+                    dietId = diet.id,
+                    consumedAt = diet.consumedAt,
+                    mealType = diet.mealType,
+                    items = diet.dietFoods.map { dietFood ->
+                        val food = foodMap[dietFood.foodId]
+                            ?: throw DomainException(DomainStatus.FOOD_NOT_FOUND)
+                        DietFoodResponse.of(dietFood, food)
+                    }
+                )
+            }
+        }
+    }
 
-    data class DietItem(
+    data class DietFoodResponse(
         val foodId: Long,
         val foodName: String,
         val intake: Int,
         val unit: String,
-        val calories: Int,
-        val carbohydrates: Int,
-        val protein: Int,
-        val fat: Int
-    )
+        val calories: Double,
+        val carbohydrates: Double,
+        val protein: Double,
+        val fat: Double
+    ) {
+        companion object {
+            fun of(dietFood: DietFood, food: Food): DietFoodResponse {
+                val info = food.calculateNutrition(
+                    dietFood.intake.toDouble()
+                )
+
+                return DietFoodResponse(
+                    foodId = dietFood.foodId,
+                    foodName = food.name,
+                    intake = dietFood.intake,
+                    unit = food.unit,
+                    calories = info.calories,
+                    carbohydrates = info.carbohydrates,
+                    protein = info.protein,
+                    fat = info.fat
+                )
+            }
+        }
+    }
     
     data class Details(
         val dietId: Long,

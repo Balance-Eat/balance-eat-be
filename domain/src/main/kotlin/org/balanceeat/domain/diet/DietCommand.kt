@@ -1,5 +1,6 @@
 package org.balanceeat.domain.diet
 
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 sealed class DietCommand {
@@ -14,4 +15,9 @@ sealed class DietCommand {
             val intake: Int
         )
     }
+
+    data class FindDailyDiets(
+        val userId: Long,
+        val date: LocalDate
+    )
 }

@@ -28,7 +28,11 @@ class DietV1ControllerTest: ControllerTestContext() {
     inner class GetDietsByDateTest {
         @Test
         fun success() {
+            // given
+            every { dietService.getDailyDiets(any(), any()) } returns mockDietResponseList()
+
             given()
+                .header("X-USER-ID", "1")
                 .params("date", "2025-08-04")
                 .get("/v1/diets/daily")
                 .then()
@@ -44,24 +48,19 @@ class DietV1ControllerTest: ControllerTestContext() {
                         ),
                         responseFields(
                             fieldsWithBasic(
-                                "data.dailyTotal" type OBJECT means "해당 날짜의 총 영양 정보",
-                                "data.dailyTotal.totalCalorie" type NUMBER means "총 칼로리 (kcal)",
-                                "data.dailyTotal.totalCarbohydrates" type NUMBER means "총 탄수화물 (g)",
-                                "data.dailyTotal.totalProtein" type NUMBER means "총 단백질 (g)",
-                                "data.dailyTotal.totalFat" type NUMBER means "총 지방 (g)",
-                                "data.diets" type ARRAY means "식사 기록 목록",
-                                "data.diets[].dietId" type NUMBER means "식사 기록 고유 ID (DIET 테이블의 id)",
-                                "data.diets[].eatingAt" type STRING means "식사 시간 (ISO 8601)",
-                                "data.diets[].type" type STRING means "식사 유형 (아침, 점심, 저녁, 간식 등)",
-                                "data.diets[].items" type ARRAY means "해당 식사에 포함된 음식 목록",
-                                "data.diets[].items[].foodId" type NUMBER means "음식 고유 ID (FOOD 테이블의 id)",
-                                "data.diets[].items[].foodName" type STRING means "음식 이름 (FOOD 테이블의 name)",
-                                "data.diets[].items[].intake" type NUMBER means "섭취량 (DIET_ITEM 테이블의 intake)",
-                                "data.diets[].items[].unit" type STRING means "섭취량 단위 (FOOD 테이블의 unit)",
-                                "data.diets[].items[].calories" type NUMBER means "해당 섭취량의 칼로리 (계산된 값)",
-                                "data.diets[].items[].carbohydrates" type NUMBER means "해당 섭취량의 탄수화물 (계산된 값)",
-                                "data.diets[].items[].protein" type NUMBER means "해당 섭취량의 단백질 (계산된 값)",
-                                "data.diets[].items[].fat" type NUMBER means "해당 섭취량의 지방 (계산된 값)"
+                                "data" type ARRAY means "식사 기록 목록",
+                                "data[].dietId" type NUMBER means "식사 기록 고유 ID",
+                                "data[].mealType" type STRING means "식사 유형" withEnum Diet.MealType::class,
+                                "data[].consumedAt" type STRING means "섭취 시간",
+                                "data[].items" type ARRAY means "해당 식사에 포함된 음식 목록",
+                                "data[].items[].foodId" type NUMBER means "음식 ID",
+                                "data[].items[].foodName" type STRING means "음식 이름",
+                                "data[].items[].intake" type NUMBER means "섭취량",
+                                "data[].items[].unit" type STRING means "섭취량 단위",
+                                "data[].items[].calories" type NUMBER means "해당 섭취량의 칼로리 (계산된 값)",
+                                "data[].items[].carbohydrates" type NUMBER means "해당 섭취량의 탄수화물 (계산된 값)",
+                                "data[].items[].protein" type NUMBER means "해당 섭취량의 단백질 (계산된 값)",
+                                "data[].items[].fat" type NUMBER means "해당 섭취량의 지방 (계산된 값)"
                             )
                         )
                     )
@@ -179,6 +178,65 @@ class DietV1ControllerTest: ControllerTestContext() {
                         carbohydrates = 15.0,
                         protein = 2.0,
                         fat = 6.8
+                    )
+                )
+            )
+        )
+    }
+
+    private fun mockDietResponseList(): List<DietV1Response.DietResponse> {
+        return listOf(
+            DietV1Response.DietResponse(
+                dietId = 1L,
+                mealType = Diet.MealType.BREAKFAST,
+                consumedAt = LocalDateTime.now(),
+                items = listOf(
+                    DietV1Response.DietFoodResponse(
+                        foodId = 1L,
+                        foodName = "오트밀",
+                        intake = 1,
+                        unit = "컵",
+                        calories = 150.0,
+                        carbohydrates = 30.0,
+                        protein = 5.0,
+                        fat = 3.0
+                    ),
+                    DietV1Response.DietFoodResponse(
+                        foodId = 2L,
+                        foodName = "바나나",
+                        intake = 1,
+                        unit = "개",
+                        calories = 100.0,
+                        carbohydrates = 25.0,
+                        protein = 1.0,
+                        fat = 0.3
+                    )
+                )
+            ),
+            DietV1Response.DietResponse(
+                dietId = 2L,
+                mealType = Diet.MealType.LUNCH,
+                consumedAt = LocalDateTime.now(),
+                items = listOf(
+                    DietV1Response.DietFoodResponse(
+                        foodId = 3L,
+                        foodName = "닭가슴살",
+                        intake = 100,
+                        unit = "g",
+                        calories = 165.0,
+                        carbohydrates = 0.0,
+                        protein = 31.0,
+                        fat = 3.6
+                    ),
+                    DietV1Response.DietFoodResponse(
+                        foodId = 4L,
+                        foodName = "현미밥",
+                        intake = 1,
+                        unit = "공기",
+                        calories = 218.0,
+                        carbohydrates = 45.0,
+                        protein = 4.5,
+                        fat = 1.8
                     )
                 )
             )

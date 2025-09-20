@@ -3,14 +3,19 @@ package org.balanceeat.api.diet
 import org.balanceeat.domain.diet.Diet
 import org.balanceeat.domain.diet.DietCommand
 import org.balanceeat.domain.diet.DietDomainService
+import org.balanceeat.domain.diet.DietRepository
+import org.balanceeat.domain.food.FoodRepository
 import org.balanceeat.domain.user.UserDomainService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 
 @Service
 class DietService(
     private val dietDomainService: DietDomainService,
-    private val userDomainService: UserDomainService
+    private val userDomainService: UserDomainService,
+    private val dietRepository: DietRepository,
+    private val foodRepository: FoodRepository
 ) {
     @Transactional
     fun create(request: DietV1Request.Create, userId: Long): DietV1Response.Details {
@@ -31,5 +36,19 @@ class DietService(
         return DietV1Response.Details.from(
             dietDomainService.create(command)
         )
+    }
+
+    @Transactional(readOnly = true)
+    fun getDailyDiets(userId: Long, date: LocalDate): List<DietV1Response.DietResponse> {
+        val diets = dietRepository.findDailyDiets(userId, date)
+        val foodMap = diets.flatMap { it.dietFoods }
+            .map { it.foodId }
+            .distinct()
+            .let { foodRepository.findAllById(it) }
+            .associateBy { it.id }
+
+        return diets.map {
+            DietV1Response.DietResponse.of(it, foodMap)
+        }
     }
 }

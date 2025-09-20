@@ -1,6 +1,11 @@
+### Diet API 테스트 파일
+
 ### 특정 날짜의 식사 기록 조회
-GET {{baseUrl}}/{{apiVersion}}/diets/daily?date=2025-08-04
+@date=2024-01-15
+GET {{baseUrl}}/{{apiVersion}}/diets/daily?date={{date}}
 Accept: application/json
+X-USER-ID: 1
+###
 
 ### 아침 식단 생성
 POST {{baseUrl}}/{{apiVersion}}/diets
