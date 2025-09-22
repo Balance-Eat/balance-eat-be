@@ -5,7 +5,9 @@ import jakarta.validation.ConstraintViolationException
 import mu.KotlinLogging
 import org.balanceeat.apibase.response.ApiResponse
 import org.balanceeat.domain.common.exception.DomainException
+import org.springframework.dao.InvalidDataAccessApiUsageException
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.validation.BindException
 import org.springframework.validation.ObjectError
@@ -75,7 +77,7 @@ class BaseExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception::class)
     fun handle5xx(ex: Exception, request: HttpServletRequest): ApiResponse<Any> {
-        logger.error(ex) { "[${request.requestURI}] 예상치 못한 오류가 발생하였습니다." }
+        logger.error(ex) { "[${request.requestURI}] 예상치 못한 오류가 발생하였습니다. message: ${ex.message}" }
         return ApiResponse.Companion.error(USER_5XX_MESSAGE)
     }
 
@@ -96,7 +98,7 @@ class BaseExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(InternalErrorException::class)
     fun handleInternalErrorException(ex: InternalErrorException, request: HttpServletRequest): ApiResponse<Any> {
-        logger.error(ex) { "[${request.requestURI}] 서버 오류가 발생하였습니다." }
+        logger.error(ex) { "[${request.requestURI}] 서버 오류가 발생하였습니다. message: ${ex.message}" }
         return ApiResponse.Companion.error(ex.message ?: "서버 오류가 발생했습니다.")
     }
 
@@ -128,5 +130,22 @@ class BaseExceptionHandler {
                 .mapNotNull(ObjectError::getDefaultMessage)
                 .joinToString("\n")
         )
+    }
+
+    @ExceptionHandler(InvalidDataAccessApiUsageException::class)
+    fun handleInvalidDataAccessApiUsageException(ex: InvalidDataAccessApiUsageException, request: HttpServletRequest): ResponseEntity<ApiResponse<Any>> {
+        if (ex.cause is IllegalArgumentException || ex.cause is IllegalStateException) {
+            logger.warn(ex.cause) { "도메인 검증 실패: 허용되지 않는 값이 입력되었습니다. URI: ${request.requestURI}, 에러: ${ex.cause?.message}" }
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ApiResponse.fail(ex.message ?: USER_4XX_MESSAGE)
+            )
+        } else {
+            logger.error(ex) { "[${request.requestURI}] 영속화 과정에서 오류가 발생하였습니다. message: ${ex.message}" }
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                ApiResponse.error(USER_5XX_MESSAGE)
+            )
+        }
     }
 }
