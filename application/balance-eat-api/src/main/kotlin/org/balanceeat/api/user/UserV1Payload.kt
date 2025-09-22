@@ -2,6 +2,7 @@ package org.balanceeat.api.user
 
 import jakarta.validation.constraints.NotNull
 import org.balanceeat.domain.user.User
+import org.balanceeat.domain.user.UserDto
 
 class UserV1Request {
     data class Create(
@@ -35,13 +36,19 @@ class UserV1Request {
     )
 
     data class Update(
-        val name: String? = null,
+        @field:NotNull(message = "name은 필수입니다")
+        val name: String,
+        @field:NotNull(message = "gender은 필수입니다")
+        val gender: User.Gender,
+        @field:NotNull(message = "age는 필수입니다")
+        val age: Int,
+        @field:NotNull(message = "height는 필수입니다")
+        val height: Double,
+        @field:NotNull(message = "weight은 필수입니다")
+        val weight: Double,
+        @field:NotNull(message = "goalType은 필수입니다")
+        val goalType: User.GoalType,
         val email: String? = null,
-        val gender: User.Gender? = null,
-        val age: Int? = null,
-        val height: Double? = null,
-        val weight: Double? = null,
-        val goalType: User.GoalType? = null,
         val activityLevel: User.ActivityLevel? = null,
         val smi: Double? = null,
         val fatPercentage: Double? = null,
@@ -56,7 +63,7 @@ class UserV1Request {
 }
 
 class UserV1Response {
-    data class Info(
+    data class Details(
         val id: Long,
         val uuid: String,
         val name: String,
@@ -78,5 +85,31 @@ class UserV1Response {
         val targetFat: Double?,
         val providerId: String?,
         val providerType: String?
-    )
+    ) {
+        companion object {
+            fun from(user: UserDto) = Details(
+                id = user.id,
+                uuid = user.uuid,
+                name = user.name,
+                email = user.email,
+                gender = user.gender,
+                age = user.age,
+                weight = user.weight,
+                height = user.height,
+                goalType = user.goalType,
+                activityLevel = user.activityLevel,
+                smi = user.smi,
+                fatPercentage = user.fatPercentage,
+                targetWeight = user.targetWeight,
+                targetCalorie = user.targetCalorie,
+                targetSmi = user.targetSmi,
+                targetFatPercentage = user.targetFatPercentage,
+                targetCarbohydrates = user.targetCarbohydrates,
+                targetProtein = user.targetProtein,
+                targetFat = user.targetFat,
+                providerId = user.providerId,
+                providerType = user.providerType
+            )
+        }
+    }
 }

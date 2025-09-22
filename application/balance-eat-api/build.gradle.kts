@@ -31,6 +31,7 @@ dependencies {
     testImplementation(testFixtures(project(":domain")))
     testImplementation(sourceSets.main.get().output)
     testFixturesImplementation(sourceSets.main.get().output)
+    testFixturesImplementation(project(":domain"))
 }
 
 tasks.getByName("bootJar") {

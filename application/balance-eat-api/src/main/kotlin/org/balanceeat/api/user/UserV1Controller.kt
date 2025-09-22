@@ -10,91 +10,34 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/v1/users")
 class UserV1Controller(
-    private val userDomainService: UserDomainService,
+    private val userService: UserService,
 ) {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun create(@RequestBody request: UserV1Request.Create): ApiResponse<Void> {
-        val command = UserCommand.Create(
-            uuid = request.uuid,
-            name = request.name,
-            gender = request.gender,
-            age = request.age,
-            height = request.height,
-            weight = request.weight,
-            goalType = request.goalType,
-            email = request.email,
-            activityLevel = request.activityLevel,
-            smi = request.smi,
-            fatPercentage = request.fatPercentage,
-            targetWeight = request.targetWeight,
-            targetCalorie = request.targetCalorie,
-            targetSmi = request.targetSmi,
-            targetFatPercentage = request.targetFatPercentage,
-            targetCarbohydrates = request.targetCarbohydrates,
-            targetProtein = request.targetProtein,
-            targetFat = request.targetFat,
-            providerId = request.providerId,
-            providerType = request.providerType
+    fun create(
+        @RequestBody request: UserV1Request.Create
+    ): ApiResponse<UserV1Response.Details> {
+        return ApiResponse.success(
+            userService.create(request)
         )
-        userDomainService.create(command)
-        return ApiResponse.success()
     }
 
     @GetMapping("/me")
-    fun getMe(@RequestParam(required = false) uuid: String): ApiResponse<UserV1Response.Info> {
-        val user = userDomainService.findByUuid(uuid)
-        val response = UserV1Response.Info(
-            id = user.id,
-            uuid = user.uuid,
-            name = user.name,
-            email = user.email,
-            gender = user.gender,
-            age = user.age,
-            weight = user.weight,
-            height = user.height,
-            goalType = user.goalType,
-            activityLevel = user.activityLevel,
-            smi = user.smi,
-            fatPercentage = user.fatPercentage,
-            targetWeight = user.targetWeight,
-            targetCalorie = user.targetCalorie,
-            targetSmi = user.targetSmi,
-            targetFatPercentage = user.targetFatPercentage,
-            targetCarbohydrates = user.targetCarbohydrates,
-            targetProtein = user.targetProtein,
-            targetFat = user.targetFat,
-            providerId = user.providerId,
-            providerType = user.providerType
+    fun getMe(
+        @RequestParam(required = false) uuid: String
+    ): ApiResponse<UserV1Response.Details> {
+        return ApiResponse.success(
+            userService.findByUuid(uuid)
         )
-        return ApiResponse.success(response)
     }
 
     @PutMapping("/{id}")
     fun update(
         @PathVariable id: Long,
         @RequestBody @Valid request: UserV1Request.Update
-    ): ApiResponse<Void> {
-        val command = UserCommand.Update(
-            name = request.name,
-            email = request.email,
-            gender = request.gender,
-            age = request.age,
-            height = request.height,
-            weight = request.weight,
-            goalType = request.goalType,
-            activityLevel = request.activityLevel,
-            smi = request.smi,
-            fatPercentage = request.fatPercentage,
-            targetWeight = request.targetWeight,
-            targetCalorie = request.targetCalorie,
-            targetSmi = request.targetSmi,
-            targetFatPercentage = request.targetFatPercentage,
-            targetCarbohydrates = request.targetCarbohydrates,
-            targetProtein = request.targetProtein,
-            targetFat = request.targetFat
+    ): ApiResponse<UserV1Response.Details> {
+        return ApiResponse.success(
+            userService.update(id, request)
         )
-        userDomainService.update(id, command)
-        return ApiResponse.success()
     }
 }

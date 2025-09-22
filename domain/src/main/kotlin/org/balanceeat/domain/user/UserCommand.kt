@@ -27,13 +27,14 @@ class UserCommand {
     )
 
     data class Update(
-        val name: String? = null,
+        val id: Long,
+        val name: String,
+        val gender: User.Gender,
+        val age: Int,
+        val height: Double,
+        val weight: Double,
+        val goalType: User.GoalType,
         val email: String? = null,
-        val gender: User.Gender? = null,
-        val age: Int? = null,
-        val height: Double? = null,
-        val weight: Double? = null,
-        val goalType: User.GoalType? = null,
         val activityLevel: User.ActivityLevel? = null,
         val smi: Double? = null,
         val fatPercentage: Double? = null,
@@ -44,29 +45,5 @@ class UserCommand {
         val targetCarbohydrates: Double? = null,
         val targetProtein: Double? = null,
         val targetFat: Double? = null
-    )
-
-    data class UpdateByAdmin(
-        val id: Long,
-        val adminId: Long,
-        val name: String? = null,
-        val email: String? = null,
-        val gender: User.Gender? = null,
-        val age: Int? = null,
-        val height: Double? = null,
-        val weight: Double? = null,
-        val goalType: User.GoalType? = null,
-        val activityLevel: User.ActivityLevel? = null,
-        val smi: Double? = null,
-        val fatPercentage: Double? = null,
-        val targetWeight: Double? = null,
-        val targetCalorie: Int? = null,
-        val targetSmi: Double? = null,
-        val targetFatPercentage: Double? = null,
-        val targetCarbohydrates: Double? = null,
-        val targetProtein: Double? = null,
-        val targetFat: Double? = null,
-        val providerId: String? = null,
-        val providerType: String? = null
     )
 }

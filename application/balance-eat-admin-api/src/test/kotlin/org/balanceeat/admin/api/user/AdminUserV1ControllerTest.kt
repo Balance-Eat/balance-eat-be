@@ -33,7 +33,7 @@ class AdminUserV1ControllerTest: ControllerTestContext() {
         @Test
         fun success() {
             val request = mockUpdateRequest()
-            every { adminUserService.update(any(), any(), any()) } returns mockUserDto()
+            every { adminUserService.update(any(), any()) } returns mockUserDetails()
 
             given()
                 .body(request)
@@ -50,13 +50,13 @@ class AdminUserV1ControllerTest: ControllerTestContext() {
                             "id" pathMeans "유저 ID"
                         ),
                         requestFields(
-                            "name" type STRING means "이름 (선택)" isOptional true,
+                            "name" type STRING means "이름",
+                            "gender" type STRING means "성별" withEnum User.Gender::class,
+                            "age" type NUMBER means "나이",
+                            "height" type NUMBER means "키 (cm)",
+                            "weight" type NUMBER means "몸무게 (kg)",
+                            "goalType" type STRING means "목표 타입" withEnum User.GoalType::class,
                             "email" type STRING means "이메일 (선택)" isOptional true,
-                            "gender" type STRING means "성별 (선택)" withEnum User.Gender::class isOptional true,
-                            "age" type NUMBER means "나이 (선택)" isOptional true,
-                            "height" type NUMBER means "키 (cm) (선택)" isOptional true,
-                            "weight" type NUMBER means "몸무게 (kg) (선택)" isOptional true,
-                            "goalType" type STRING means "목표 타입 (선택)" withEnum User.GoalType::class isOptional true,
                             "activityLevel" type STRING means "활동 수준 (선택)" withEnum User.ActivityLevel::class isOptional true,
                             "smi" type NUMBER means "SMI (선택)" isOptional true,
                             "fatPercentage" type NUMBER means "체지방률 (%) (선택)" isOptional true,
@@ -66,9 +66,7 @@ class AdminUserV1ControllerTest: ControllerTestContext() {
                             "targetFatPercentage" type NUMBER means "목표 체지방률 (%) (선택)" isOptional true,
                             "targetCarbohydrates" type NUMBER means "목표 탄수화물 (g) (선택)" isOptional true,
                             "targetProtein" type NUMBER means "목표 단백질 (g) (선택)" isOptional true,
-                            "targetFat" type NUMBER means "목표 지방 (g) (선택)" isOptional true,
-                            "providerId" type STRING means "Provider ID (선택)" isOptional true,
-                            "providerType" type STRING means "Provider Type (선택)" isOptional true
+                            "targetFat" type NUMBER means "목표 지방 (g) (선택)" isOptional true
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -101,26 +99,7 @@ class AdminUserV1ControllerTest: ControllerTestContext() {
         }
 
         private fun mockUpdateRequest(): AdminUserV1Request.Update {
-            return AdminUserV1Request.Update(
-                name = "수정된 사용자",
-                email = "updated@example.com",
-                gender = User.Gender.MALE,
-                age = 30,
-                height = 175.0,
-                weight = 70.0,
-                activityLevel = User.ActivityLevel.MODERATE,
-                smi = 22.0,
-                fatPercentage = 15.0,
-                targetWeight = 68.0,
-                targetCalorie = 2000,
-                targetSmi = 23.0,
-                targetFatPercentage = 12.0,
-                targetCarbohydrates = 300.0,
-                targetProtein = 120.0,
-                targetFat = 70.0,
-                providerId = "kakao789",
-                providerType = "KAKAO"
-            )
+            return AdminUserV1RequestFixture.Update().create()
         }
     }
 
@@ -129,7 +108,7 @@ class AdminUserV1ControllerTest: ControllerTestContext() {
     inner class GetDetailsTest {
         @Test
         fun success() {
-            every { adminUserService.getDetails(any()) } returns mockUserDto()
+            every { adminUserService.getDetails(any()) } returns mockUserDetails()
 
             given()
                 .get("/admin/v1/users/{id}", 1)
@@ -175,30 +154,7 @@ class AdminUserV1ControllerTest: ControllerTestContext() {
         }
     }
 
-    private fun mockUserDto(): UserDto {
-        return UserDto(
-            id = 1L,
-            uuid = "test-user-uuid-123",
-            name = "테스트 사용자",
-            email = "test@example.com",
-            gender = User.Gender.FEMALE,
-            age = 25,
-            weight = 55.0,
-            height = 165.0,
-            goalType = User.GoalType.DIET,
-            activityLevel = User.ActivityLevel.ACTIVE,
-            smi = 20.0,
-            fatPercentage = 18.0,
-            targetWeight = 52.0,
-            targetCalorie = 1800,
-            targetSmi = 21.0,
-            targetFatPercentage = 16.0,
-            targetCarbohydrates = 250.0,
-            targetProtein = 100.0,
-            targetFat = 60.0,
-            providerId = "kakao456",
-            providerType = "KAKAO",
-            createdAt = LocalDateTime.now()
-        )
+    private fun mockUserDetails(): AdminUserV1Response.Details {
+        return AdminUserV1ResponseFixture.Details().create()
     }
 }

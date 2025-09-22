@@ -11,17 +11,21 @@ class AdminUserV1Controller(
 ) {
 
     @PutMapping("/{id}")
-    fun update(@PathVariable id: Long,
-                        @RequestBody @Valid request: AdminUserV1Request.Update): ApiResponse<AdminUserV1Response.Info> {
-        val result = adminUserService.update(request, id, 1L) // TODO: 관리자 인증 연동 후 수정
+    fun update(
+        @PathVariable id: Long,
+        @RequestBody @Valid request: AdminUserV1Request.Update
+    ): ApiResponse<AdminUserV1Response.Details> {
         return ApiResponse.success(
-            AdminUserV1Response.Info.from(result)
+            adminUserService.update(request, id)
         )
     }
 
     @GetMapping("/{id}")
-    fun getDetails(@PathVariable id: Long): ApiResponse<AdminUserV1Response.Info> {
-        val user = adminUserService.getDetails(id)
-        return ApiResponse.success(AdminUserV1Response.Info.from(user))
+    fun getDetails(
+        @PathVariable id: Long
+    ): ApiResponse<AdminUserV1Response.Details> {
+        return ApiResponse.success(
+            adminUserService.getDetails(id)
+        )
     }
 }

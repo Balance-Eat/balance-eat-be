@@ -140,6 +140,57 @@ class DietCommandFixture {
 }
 ```
 
+### 3. API Payload Fixtures
+API payload fixtures combine both request and response fixtures in a single file for convenience:
+
+```kotlin
+class UserV1PayloadFixture {
+    class Create(
+        var uuid: String = UUID.randomUUID().toString(),
+        var name: String = "신규 사용자",
+        var email: String? = "new@example.com",
+        var gender: User.Gender = User.Gender.MALE,
+        var age: Int = 25
+    ) : TestFixture<UserV1Request.Create> {
+        override fun create(): UserV1Request.Create {
+            return UserV1Request.Create(
+                uuid = uuid,
+                name = name,
+                email = email,
+                gender = gender,
+                age = age
+            )
+        }
+    }
+
+    class Update(
+        var name: String = "수정된 사용자",
+        var email: String? = "updated@example.com",
+        var age: Int = 26
+    ) : TestFixture<UserV1Request.Update> {
+        override fun create(): UserV1Request.Update {
+            return UserV1Request.Update(
+                name = name,
+                email = email,
+                age = age
+            )
+        }
+    }
+}
+```
+
+Usage in API tests:
+```kotlin
+// Create request test
+val request = UserV1PayloadFixture.Create().create()
+every { userService.create(any()) } returns mockUser()
+
+// Update request test
+val updateRequest = UserV1PayloadFixture.Update(
+    name = "새로운 이름"
+).create()
+```
+
 ## Best Practices
 
 ### 1. Default Values
@@ -228,8 +279,17 @@ fun `사용자를 생성할 수 있다`() {
 ```
 
 ## File Naming Conventions
-- Fixtures: `{Entity}Fixture.kt`
+
+### Domain Fixtures
+- Entity Fixtures: `{Entity}Fixture.kt`
+- Command Fixtures: `{Entity}CommandFixture.kt`
 - Location: `src/testFixtures/kotlin/org/balanceeat/domain/{domain}/`
+
+### API Fixtures
+- Request/Response Fixtures: `{Entity}V1PayloadFixture.kt`
+- Location: `src/testFixtures/kotlin/org/balanceeat/{module}/api/{domain}/`
+
+Note: API fixtures use "PayloadFixture" naming to accommodate both request and response fixtures in the same file.
 
 ## Quality Standards
 

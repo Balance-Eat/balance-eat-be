@@ -1,19 +1,23 @@
 package org.balanceeat.admin.api.user
 
+import org.balanceeat.apibase.ApplicationStatus
+import org.balanceeat.apibase.exception.BadRequestException
 import org.balanceeat.domain.user.UserCommand
 import org.balanceeat.domain.user.UserDomainService
 import org.balanceeat.domain.user.UserDto
+import org.balanceeat.domain.user.UserRepository
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
 class AdminUserService(
-    private val userDomainService: UserDomainService
+    private val userDomainService: UserDomainService,
+    private val userRepository: UserRepository
 ) {
 
-    fun update(request: AdminUserV1Request.Update, userId: Long, adminId: Long): UserDto {
-        val command = UserCommand.UpdateByAdmin(
+    fun update(request: AdminUserV1Request.Update, userId: Long): AdminUserV1Response.Details {
+        val command = UserCommand.Update(
             id = userId,
-            adminId = adminId,
             name = request.name,
             email = request.email,
             gender = request.gender,
@@ -30,14 +34,17 @@ class AdminUserService(
             targetFatPercentage = request.targetFatPercentage,
             targetCarbohydrates = request.targetCarbohydrates,
             targetProtein = request.targetProtein,
-            targetFat = request.targetFat,
-            providerId = request.providerId,
-            providerType = request.providerType
+            targetFat = request.targetFat
         )
-        return userDomainService.updateByAdmin(command)
+
+        return userDomainService.update(command)
+            .let { AdminUserV1Response.Details.from(it) }
     }
 
-    fun getDetails(userId: Long): UserDto {
-        return userDomainService.getDetailsForAdmin(userId)
+    fun getDetails(userId: Long): AdminUserV1Response.Details {
+        return  userRepository.findByIdOrNull(userId)
+            ?.let { UserDto.from(it) }
+            ?.let { AdminUserV1Response.Details.from(it) }
+            ?: throw BadRequestException(ApplicationStatus.USER_NOT_FOUND)
     }
 }

@@ -52,40 +52,36 @@ class UserCommandFixture {
         }
     }
 
-    class UpdateByAdmin(
+    class Update(
         var id: Long = 1L,
-        var adminId: Long = 1L,
-        var name: String? = "어드민 수정 사용자",
-        var email: String? = "admin-updated@example.com",
-        var gender: User.Gender? = User.Gender.FEMALE,
-        var age: Int? = 25,
-        var height: Double? = 165.0,
-        var weight: Double? = 55.0,
-        var goalType: User.GoalType? = User.GoalType.DIET,
+        var name: String = "수정된 사용자",
+        var gender: User.Gender = User.Gender.FEMALE,
+        var age: Int = 31,
+        var height: Double = 170.0,
+        var weight: Double = 72.0,
+        var goalType: User.GoalType = User.GoalType.DIET,
+        var email: String? = "updated@example.com",
         var activityLevel: User.ActivityLevel? = User.ActivityLevel.ACTIVE,
-        var smi: Double? = 20.0,
+        var smi: Double? = 25.0,
         var fatPercentage: Double? = 18.0,
-        var targetWeight: Double? = 52.0,
-        var targetCalorie: Int? = 1800,
-        var targetSmi: Double? = 21.0,
-        var targetFatPercentage: Double? = 16.0,
+        var targetWeight: Double? = 65.0,
+        var targetCalorie: Int? = 2100,
+        var targetSmi: Double? = 24.0,
+        var targetFatPercentage: Double? = 15.0,
         var targetCarbohydrates: Double? = 250.0,
         var targetProtein: Double? = 100.0,
-        var targetFat: Double? = 60.0,
-        var providerId: String? = "kakao456",
-        var providerType: String? = "KAKAO"
-    ) : TestFixture<UserCommand.UpdateByAdmin> {
-        override fun create(): UserCommand.UpdateByAdmin {
-            return UserCommand.UpdateByAdmin(
+        var targetFat: Double? = 60.0
+    ) : TestFixture<UserCommand.Update> {
+        override fun create(): UserCommand.Update {
+            return UserCommand.Update(
                 id = id,
-                adminId = adminId,
                 name = name,
-                email = email,
                 gender = gender,
                 age = age,
                 height = height,
                 weight = weight,
                 goalType = goalType,
+                email = email,
                 activityLevel = activityLevel,
                 smi = smi,
                 fatPercentage = fatPercentage,
@@ -95,9 +91,7 @@ class UserCommandFixture {
                 targetFatPercentage = targetFatPercentage,
                 targetCarbohydrates = targetCarbohydrates,
                 targetProtein = targetProtein,
-                targetFat = targetFat,
-                providerId = providerId,
-                providerType = providerType
+                targetFat = targetFat
             )
         }
     }
