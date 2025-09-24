@@ -9,11 +9,12 @@ class FoodFixture(
     var uuid: String = UuidGenerator.generateUuidV7().toString(),
     var name: String = "테스트 음식",
     var userId: Long = 1L,
-    var perCapitaIntake: Double = 1.0,
+    var servingSize: Double = 1.0,
     var unit: String = "g",
     var carbohydrates: Double = 20.0,
     var protein: Double = 5.0,
     var fat: Double = 2.0,
+    var perServingCalories: Double = 118.0, // 20*4 + 5*4 + 2*9 = 118
     var brand: String = "테스트 브랜드",
     var isAdminApproved: Boolean = false
 ) : TestFixture<Food> {
@@ -23,11 +24,12 @@ class FoodFixture(
             name = name,
             uuid = uuid,
             userId = userId,
-            perCapitaIntake = perCapitaIntake,
+            servingSize = servingSize,
             unit = unit,
             carbohydrates = carbohydrates,
             protein = protein,
             fat = fat,
+            perServingCalories = perServingCalories,
             brand = brand,
             isAdminApproved = isAdminApproved
         )

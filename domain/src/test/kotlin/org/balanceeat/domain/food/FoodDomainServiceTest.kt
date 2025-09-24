@@ -1,10 +1,6 @@
 package org.balanceeat.domain.food
 
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.balanceeat.domain.common.DomainStatus
-import org.balanceeat.domain.common.exception.BadCommandException
-import org.balanceeat.domain.common.exception.EntityNotFoundException
 import org.balanceeat.domain.config.supports.IntegrationTestContext
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -29,7 +25,7 @@ class FoodDomainServiceTest : IntegrationTestContext() {
             val command = FoodCommandFixture.Create(
                 name = "테스트 음식",
                 userId = 1L,
-                perCapitaIntake = 100.0,
+                servingSize = 100.0,
                 unit = "g",
                 carbohydrates = 25.0,
                 protein = 8.0,
@@ -44,7 +40,7 @@ class FoodDomainServiceTest : IntegrationTestContext() {
             assertThat(createdFood.id).isNotNull()
             assertThat(createdFood.name).isEqualTo(command.name)
             assertThat(createdFood.userId).isEqualTo(command.userId)
-            assertThat(createdFood.perCapitaIntake).isEqualTo(command.perCapitaIntake)
+            assertThat(createdFood.servingSize).isEqualTo(command.servingSize)
             assertThat(createdFood.unit).isEqualTo(command.unit)
             assertThat(createdFood.carbohydrates).isEqualTo(command.carbohydrates)
             assertThat(createdFood.protein).isEqualTo(command.protein)
@@ -64,7 +60,7 @@ class FoodDomainServiceTest : IntegrationTestContext() {
             val food = foodRepository.save(FoodFixture(
                 name = "조회 테스트 음식",
                 userId = 1L,
-                perCapitaIntake = 200.0,
+                servingSize = 200.0,
                 unit = "g",
                 carbohydrates = 45.0,
                 protein = 12.0,
@@ -79,7 +75,7 @@ class FoodDomainServiceTest : IntegrationTestContext() {
             assertThat(foundFood.name).isEqualTo(food.name)
             assertThat(foundFood.uuid).isEqualTo(food.uuid)
             assertThat(foundFood.userId).isEqualTo(food.userId)
-            assertThat(foundFood.perCapitaIntake).isEqualTo(food.perCapitaIntake)
+            assertThat(foundFood.servingSize).isEqualTo(food.servingSize)
             assertThat(foundFood.unit).isEqualTo(food.unit)
             assertThat(foundFood.carbohydrates).isEqualTo(food.carbohydrates)
             assertThat(foundFood.protein).isEqualTo(food.protein)
@@ -96,7 +92,7 @@ class FoodDomainServiceTest : IntegrationTestContext() {
             // given
             val food = foodRepository.save(FoodFixture(
                 name = "수정 전 음식",
-                perCapitaIntake = 100.0,
+                servingSize = 100.0,
                 unit = "g",
                 carbohydrates = 20.0,
                 protein = 5.0,
@@ -107,7 +103,7 @@ class FoodDomainServiceTest : IntegrationTestContext() {
             val updateCommand = FoodCommandFixture.Update(
                 foodId = food.id,
                 name = "수정 후 음식",
-                perCapitaIntake = 150.0,
+                servingSize = 150.0,
                 unit = "mg",
                 carbohydrates = 30.0,
                 protein = 10.0,
@@ -120,7 +116,7 @@ class FoodDomainServiceTest : IntegrationTestContext() {
             // then
             assertThat(updatedFood.id).isEqualTo(food.id)
             assertThat(updatedFood.name).isEqualTo("수정 후 음식")
-            assertThat(updatedFood.perCapitaIntake).isEqualTo(150.0)
+            assertThat(updatedFood.servingSize).isEqualTo(150.0)
             assertThat(updatedFood.unit).isEqualTo("mg")
             assertThat(updatedFood.carbohydrates).isEqualTo(30.0)
             assertThat(updatedFood.protein).isEqualTo(10.0)
@@ -135,7 +131,7 @@ class FoodDomainServiceTest : IntegrationTestContext() {
             val food = foodRepository.save(FoodFixture(
                 name = "부분 수정 테스트",
                 userId = userId,
-                perCapitaIntake = 100.0,
+                servingSize = 100.0,
                 unit = "g",
                 carbohydrates = 20.0,
                 protein = 5.0,
@@ -147,7 +143,7 @@ class FoodDomainServiceTest : IntegrationTestContext() {
                 foodId = food.id,
                 name = "새로운 이름만 변경",
                 unit = food.unit,
-                perCapitaIntake = food.perCapitaIntake,
+                servingSize = food.servingSize,
                 carbohydrates = 30.0,
                 protein = 10.0,
                 fat = food.fat
@@ -159,7 +155,7 @@ class FoodDomainServiceTest : IntegrationTestContext() {
             // then
             assertThat(updatedFood.name).isEqualTo("새로운 이름만 변경")
             assertThat(updatedFood.unit).isEqualTo(food.unit)
-            assertThat(updatedFood.perCapitaIntake).isEqualTo(food.perCapitaIntake)
+            assertThat(updatedFood.servingSize).isEqualTo(food.servingSize)
             assertThat(updatedFood.carbohydrates).isEqualTo(30.0)
             assertThat(updatedFood.protein).isEqualTo(10.0)
             assertThat(updatedFood.fat).isEqualTo(food.fat)

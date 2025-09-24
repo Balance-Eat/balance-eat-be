@@ -12,16 +12,16 @@ class AdminFoodV1Controller(
 
     @PutMapping("/{id}")
     fun update(@PathVariable id: Long,
-                        @RequestBody @Valid request: AdminFoodV1Request.Update): ApiResponse<AdminFoodV1Response.Info> {
-        val result = adminFoodService.update(request, id, 1L) // TODO: 관리자 인증 연동 후 수정
+                        @RequestBody @Valid request: AdminFoodV1Request.Update): ApiResponse<AdminFoodV1Response.Details> {
         return ApiResponse.success(
-            AdminFoodV1Response.Info.from(result)
+            adminFoodService.update(request, id, 1L) // TODO: 관리자 인증 연동 후 수정
         )
     }
 
     @GetMapping("/{id}")
-    fun getDetails(@PathVariable id: Long): ApiResponse<AdminFoodV1Response.Info> {
-        val food = adminFoodService.getDetails(id)
-        return ApiResponse.success(AdminFoodV1Response.Info.from(food))
+    fun getDetails(@PathVariable id: Long): ApiResponse<AdminFoodV1Response.Details> {
+        return ApiResponse.success(
+            adminFoodService.getDetails(id)
+        )
     }
 }

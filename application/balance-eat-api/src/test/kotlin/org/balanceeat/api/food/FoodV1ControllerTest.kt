@@ -51,11 +51,12 @@ class FoodV1ControllerTest: ControllerTestContext() {
                         requestFields(
                             "uuid" type STRING means "음식 UUID",
                             "name" type STRING means "음식명",
-                            "perCapitaIntake" type NUMBER means "1회 기준 섭취량",
+                            "servingSize" type NUMBER means "1회 기준 섭취량",
                             "unit" type STRING means "단위 (예: g, ml 등)",
                             "carbohydrates" type NUMBER means "탄수화물 함량 (g)",
                             "protein" type NUMBER means "단백질 함량 (g)",
                             "fat" type NUMBER means "지방 함량 (g)",
+                            "perServingCalories" type NUMBER means "1회 제공량 기준 칼로리 (kcal)",
                             "brand" type STRING means "브랜드명"
                         ),
                         responseFields(
@@ -63,8 +64,9 @@ class FoodV1ControllerTest: ControllerTestContext() {
                                 "data.id" type NUMBER means "음식 ID",
                                 "data.uuid" type STRING means "음식 UUID",
                                 "data.name" type STRING means "음식명",
-                                "data.perCapitaIntake" type NUMBER means "1회 제공량",
+                                "data.servingSize" type NUMBER means "1회 제공량",
                                 "data.unit" type STRING means "단위",
+                                "data.perServingCalories" type NUMBER means "1회 제공량 기준 칼로리 (kcal)",
                                 "data.carbohydrates" type NUMBER means "탄수화물 (g)",
                                 "data.protein" type NUMBER means "단백질 (g)",
                                 "data.fat" type NUMBER means "지방 (g)",
@@ -81,11 +83,12 @@ class FoodV1ControllerTest: ControllerTestContext() {
             return FoodV1Request.Create(
                 uuid = "test-uuid-456",
                 name = "새로운 음식",
-                perCapitaIntake = 150.0,
+                servingSize = 150.0,
                 unit = "ml",
                 carbohydrates = 30.0,
                 protein = 10.0,
                 fat = 5.0,
+                perServingCalories = 185.0, // 30*4 + 10*4 + 5*9 = 185
                 brand = "테스트 브랜드"
             )
         }
@@ -115,11 +118,12 @@ class FoodV1ControllerTest: ControllerTestContext() {
                         ),
                         requestFields(
                             "name" type STRING means "음식명",
-                            "perCapitaIntake" type NUMBER means "1회 기준 섭취량",
+                            "servingSize" type NUMBER means "1회 기준 섭취량",
                             "unit" type STRING means "단위 (예: g, ml 등)",
                             "carbohydrates" type NUMBER means "탄수화물 함량 (g)",
                             "protein" type NUMBER means "단백질 함량 (g)",
                             "fat" type NUMBER means "지방 함량 (g)",
+                            "perServingCalories" type NUMBER means "1회 제공량 기준 칼로리 (kcal)",
                             "brand" type STRING means "브랜드명"
                         ),
                         responseFields(
@@ -127,8 +131,9 @@ class FoodV1ControllerTest: ControllerTestContext() {
                                 "data.id" type NUMBER means "음식 ID",
                                 "data.uuid" type STRING means "음식 UUID",
                                 "data.name" type STRING means "음식명",
-                                "data.perCapitaIntake" type NUMBER means "1회 제공량",
+                                "data.servingSize" type NUMBER means "1회 제공량",
                                 "data.unit" type STRING means "단위",
+                                "data.perServingCalories" type NUMBER means "1회 제공량 기준 칼로리 (kcal)",
                                 "data.carbohydrates" type NUMBER means "탄수화물 (g)",
                                 "data.protein" type NUMBER means "단백질 (g)",
                                 "data.fat" type NUMBER means "지방 (g)",
@@ -144,11 +149,12 @@ class FoodV1ControllerTest: ControllerTestContext() {
         private fun mockUpdateRequest(): FoodV1Request.Update {
             return FoodV1Request.Update(
                 name = "수정된 음식",
-                perCapitaIntake = 200.0,
+                servingSize = 200.0,
                 unit = "g",
                 carbohydrates = 40.0,
                 protein = 15.0,
                 fat = 8.0,
+                perServingCalories = 292.0, // 40*4 + 15*4 + 8*9 = 292
                 brand = "수정된 브랜드"
             )
         }
@@ -179,8 +185,9 @@ class FoodV1ControllerTest: ControllerTestContext() {
                                 "data.id" type NUMBER means "음식 ID",
                                 "data.uuid" type STRING means "음식 UUID",
                                 "data.name" type STRING means "음식명",
-                                "data.perCapitaIntake" type NUMBER means "1회 제공량",
+                                "data.servingSize" type NUMBER means "1회 제공량",
                                 "data.unit" type STRING means "단위",
+                                "data.perServingCalories" type NUMBER means "1회 제공량 기준 칼로리 (kcal)",
                                 "data.carbohydrates" type NUMBER means "탄수화물 (g)",
                                 "data.protein" type NUMBER means "단백질 (g)",
                                 "data.fat" type NUMBER means "지방 (g)",
@@ -221,8 +228,9 @@ class FoodV1ControllerTest: ControllerTestContext() {
                                 "data[].id" type NUMBER means "음식 ID",
                                 "data[].uuid" type STRING means "음식 UUID",
                                 "data[].name" type STRING means "음식명",
-                                "data[].perCapitaIntake" type NUMBER means "1회 제공량",
+                                "data[].servingSize" type NUMBER means "1회 제공량",
                                 "data[].unit" type STRING means "단위",
+                                "data[].perServingCalories" type NUMBER means "1회 제공량 기준 칼로리 (kcal)",
                                 "data[].carbohydrates" type NUMBER means "탄수화물 (g)",
                                 "data[].protein" type NUMBER means "단백질 (g)",
                                 "data[].fat" type NUMBER means "지방 (g)",
@@ -273,8 +281,9 @@ class FoodV1ControllerTest: ControllerTestContext() {
                                 "data.items[].uuid" type STRING means "음식 UUID",
                                 "data.items[].name" type STRING means "음식명",
                                 "data.items[].userId" type NUMBER means "사용자 ID",
-                                "data.items[].perCapitaIntake" type NUMBER means "1회 제공량",
+                                "data.items[].servingSize" type NUMBER means "1회 제공량",
                                 "data.items[].unit" type STRING means "단위",
+                                "data.items[].perServingCalories" type NUMBER means "1회 제공량 기준 칼로리 (kcal)",
                                 "data.items[].carbohydrates" type NUMBER means "탄수화물 (g)",
                                 "data.items[].protein" type NUMBER means "단백질 (g)",
                                 "data.items[].fat" type NUMBER means "지방 (g)",
@@ -309,8 +318,9 @@ class FoodV1ControllerTest: ControllerTestContext() {
             uuid = "test-uuid-123",
             name = "테스트 음식",
             userId = 1L,
-            perCapitaIntake = 100.0,
+            servingSize = 100.0,
             unit = "g",
+            perServingCalories = 150.0,
             carbohydrates = 25.0,
             protein = 8.0,
             fat = 3.0,

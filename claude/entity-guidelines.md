@@ -428,7 +428,7 @@ data class FoodDto(
     val id: Long,
     val uuid: String,
     val name: String,
-    val perCapitaIntake: Double,
+    val servingSize: Double,
     val unit: String,
     val carbohydrates: Double,
     val protein: Double,
@@ -436,7 +436,7 @@ data class FoodDto(
     val createdAt: LocalDateTime
 ) {
     fun calculateNutrition(actualServingSize: Double): NutritionInfo {
-        val ratio = actualServingSize / perCapitaIntake
+        val ratio = actualServingSize / servingSize
         return NutritionInfo(
             calories = calculateCalories(ratio),
             carbohydrates = carbohydrates * ratio,
@@ -462,7 +462,7 @@ data class FoodDto(
                 id = food.id,
                 uuid = food.uuid,
                 name = food.name,
-                perCapitaIntake = food.perCapitaIntake,
+                servingSize = food.servingSize,
                 unit = food.unit,
                 carbohydrates = food.carbohydrates,
                 protein = food.protein,

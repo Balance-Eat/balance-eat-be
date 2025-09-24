@@ -37,7 +37,7 @@ class FoodService(
                 uuid = request.uuid,
                 userId = creatorId,
                 name = request.name,
-                perCapitaIntake = request.perCapitaIntake,
+                servingSize = request.servingSize,
                 unit = request.unit,
                 carbohydrates = request.carbohydrates,
                 protein = request.protein,
@@ -61,7 +61,7 @@ class FoodService(
             command = FoodCommand.Update(
                 id = id,
                 name = request.name,
-                perCapitaIntake = request.perCapitaIntake,
+                servingSize = request.servingSize,
                 unit = request.unit,
                 carbohydrates = request.carbohydrates,
                 protein = request.protein,

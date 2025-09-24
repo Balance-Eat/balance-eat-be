@@ -34,7 +34,7 @@ class DietDomainServiceTest : IntegrationTestContext() {
             // given
             val food1 = foodRepository.save(FoodFixture(
                 name = "바나나",
-                perCapitaIntake = 100.0,
+                servingSize = 100.0,
                 unit = "g",
                 carbohydrates = 27.0,
                 protein = 1.3,
@@ -43,7 +43,7 @@ class DietDomainServiceTest : IntegrationTestContext() {
             
             val food2 = foodRepository.save(FoodFixture(
                 name = "우유",
-                perCapitaIntake = 200.0,
+                servingSize = 200.0,
                 unit = "ml",
                 carbohydrates = 9.1,
                 protein = 6.6,

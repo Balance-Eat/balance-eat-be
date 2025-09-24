@@ -1,6 +1,7 @@
 package org.balanceeat.domain.food
 
 import jakarta.persistence.*
+import org.balanceeat.domain.common.utils.CalorieCalculator
 import org.balanceeat.domain.config.BaseEntity
 import org.balanceeat.domain.config.NEW_ID
 
@@ -21,8 +22,11 @@ class Food(
     val userId: Long,
 
     // 1회 기준 섭취량
-    @Column(name = "per_capita_intake", nullable = false)
-    var perCapitaIntake: Double,
+    @Column(name = "serving_size", nullable = false)
+    var servingSize: Double,
+
+    @Column(name = "per_serving_calories", nullable = false)
+    var perServingCalories: Double,
 
     // 단위 (예: mg, ml, g 등)
     @Column(name = "unit", length = 20, nullable = false)
@@ -52,8 +56,11 @@ class Food(
         require(uuid.isNotBlank()) { "UUID는 필수값입니다" }
         require(uuid.length <= 36) { "UUID는 36자를 초과할 수 없습니다" }
 
-        require(perCapitaIntake > 0.0) { "1회 기준 섭취량은 0보다 큰 값이어야 합니다" }
-        require(perCapitaIntake <= 10000.0) { "1회 기준 섭취량은 10000을 초과할 수 없습니다" }
+        require(servingSize > 0.0) { "1회 기준 섭취량은 0보다 큰 값이어야 합니다" }
+        require(servingSize <= 10000.0) { "1회 기준 섭취량은 10000을 초과할 수 없습니다" }
+
+        require(perServingCalories >= 0.0) { "1회 기준 칼로리는 음수가 될 수 없습니다" }
+        require(perServingCalories <= 10000.0) { "1회 기준 칼로리는 10000을 초과할 수 없습니다" }
 
         require(unit.isNotBlank()) { "단위는 필수값입니다" }
         require(unit.length <= 20) { "단위는 20자를 초과할 수 없습니다" }
@@ -72,18 +79,19 @@ class Food(
     }
     
     fun update(name: String,
-                    perCapitaIntake: Double,
+                    servingSize: Double,
                     unit: String,
                     carbohydrates: Double,
                     protein: Double,
                     fat: Double,
                     brand: String) {
         this.name = name
-        this.perCapitaIntake = perCapitaIntake
+        this.servingSize = servingSize
         this.unit = unit
         this.carbohydrates = carbohydrates
         this.protein = protein
         this.fat = fat
+        this.perServingCalories = CalorieCalculator.calculate(carbohydrates, protein, fat)
         this.brand = brand
     }
 
@@ -91,8 +99,8 @@ class Food(
         isAdminApproved = true
     }
 
-    fun calculateNutrition(actualServingSize: Double): NutritionInfo {
-        val ratio = actualServingSize / perCapitaIntake
+    fun calculateNutrition(intake: Double): NutritionInfo {
+        val ratio = intake / servingSize
         
         return NutritionInfo(
             calories = calculateCalories(ratio),

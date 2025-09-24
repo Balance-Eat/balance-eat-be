@@ -1,4 +1,4 @@
-package org.balanceeat.domain.food
+package org.balanceeat.domain.common.repository
 
 import com.querydsl.jpa.JPQLQuery
 import com.querydsl.jpa.impl.JPAQueryFactory

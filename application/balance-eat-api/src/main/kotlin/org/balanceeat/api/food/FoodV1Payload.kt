@@ -1,10 +1,6 @@
 package org.balanceeat.api.food
 
 import jakarta.validation.constraints.NotNull
-import jakarta.validation.constraints.Positive
-import jakarta.validation.constraints.DecimalMax
-import jakarta.validation.constraints.DecimalMin
-import jakarta.validation.constraints.Size
 import org.balanceeat.domain.food.FoodDto
 import java.time.LocalDateTime
 
@@ -12,12 +8,12 @@ class FoodV1Request {
     data class Create(
         @field:NotNull(message = "UUID는 필수입니다")
         val uuid: String,
-        
+
         @field:NotNull(message = "name은 필수입니다")
         val name: String,
-        
-        @field:NotNull(message = "perCapitaIntake는 필수입니다")
-        val perCapitaIntake: Double,
+
+        @field:NotNull(message = "servingSize는 필수입니다")
+        val servingSize: Double,
 
         @field:NotNull(message = "unit은 필수입니다")
         val unit: String,
@@ -31,6 +27,9 @@ class FoodV1Request {
         @field:NotNull(message = "fat는 필수입니다")
         val fat: Double,
 
+        @field:NotNull(message = "perServingCalories는 필수입니다")
+        val perServingCalories: Double,
+
         @field:NotNull(message = "brand는 필수입니다")
         val brand: String
     )
@@ -40,7 +39,7 @@ class FoodV1Request {
         val name: String,
 
         @field:NotNull(message = "1회 기준 섭취량은 필수입니다")
-        val perCapitaIntake: Double,
+        val servingSize: Double,
 
         @field:NotNull(message = "단위는 필수입니다")
         val unit: String,
@@ -54,6 +53,9 @@ class FoodV1Request {
         @field:NotNull(message = "지방 함량은 필수입니다")
         val fat: Double,
 
+        @field:NotNull(message = "1회 제공량 기준 칼로리는 필수입니다")
+        val perServingCalories: Double,
+
         @field:NotNull(message = "브랜드는 필수입니다")
         val brand: String
     )
@@ -65,12 +67,13 @@ class FoodV1Request {
 }
 
 class FoodV1Response {
-    data class Info(
+    data class Details(
         val id: Long,
         val uuid: String,
         val name: String,
-        val perCapitaIntake: Double,
+        val servingSize: Double,
         val unit: String,
+        val perServingCalories: Double,
         val carbohydrates: Double,
         val protein: Double,
         val fat: Double,
@@ -78,12 +81,13 @@ class FoodV1Response {
         val createdAt: LocalDateTime
     ) {
         companion object {
-            fun from(food: FoodDto) = Info(
+            fun from(food: FoodDto) = Details(
                 id = food.id,
                 uuid = food.uuid,
                 name = food.name,
-                perCapitaIntake = food.perCapitaIntake,
+                servingSize = food.servingSize,
                 unit = food.unit,
+                perServingCalories = food.perServingCalories,
                 carbohydrates = food.carbohydrates,
                 protein = food.protein,
                 fat = food.fat,

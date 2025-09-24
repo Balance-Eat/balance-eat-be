@@ -52,7 +52,7 @@ class Food(
     val userId: Long,
 
     @Column(name = "per_capita_intake", nullable = false)
-    var perCapitaIntake: Double,
+    var servingSize: Double,
 
     @Column(name = "unit", length = 20, nullable = false)
     var unit: String,
@@ -91,7 +91,7 @@ class FoodCommand {
         val uuid: String,
         val userId: Long,
         val name: String,
-        val perCapitaIntake: Double,
+        val servingSize: Double,
         val unit: String,
         val carbohydrates: Double = 0.0,
         val protein: Double = 0.0,
@@ -102,7 +102,7 @@ class FoodCommand {
     data class Update(
         val id: Long,
         val name: String,
-        val perCapitaIntake: Double,
+        val servingSize: Double,
         val unit: String,
         val carbohydrates: Double = 0.0,
         val protein: Double = 0.0,
@@ -132,7 +132,7 @@ data class FoodDto(
     val uuid: String,
     val name: String,
     val userId: Long,
-    val perCapitaIntake: Double,
+    val servingSize: Double,
     val unit: String,
     val carbohydrates: Double,
     val protein: Double,
@@ -147,7 +147,7 @@ data class FoodDto(
                 uuid = food.uuid,
                 name = food.name,
                 userId = food.userId,
-                perCapitaIntake = food.perCapitaIntake,
+                servingSize = food.servingSize,
                 unit = food.unit,
                 carbohydrates = food.carbohydrates,
                 protein = food.protein,
@@ -171,7 +171,7 @@ data class FoodSearchResult(
     val uuid: String,
     val name: String,
     val userId: Long,
-    val perCapitaIntake: Double,
+    val servingSize: Double,
     val unit: String,
     val carbohydrates: Double,
     val protein: Double,
@@ -227,7 +227,7 @@ class FoodRepositoryCustomImpl(
                     food.uuid,
                     food.name,
                     food.userId,
-                    food.perCapitaIntake,
+                    food.servingSize,
                     food.unit,
                     food.carbohydrates,
                     food.protein,
@@ -323,7 +323,7 @@ class FoodDomainService(
             name = command.name,
             uuid = command.uuid,
             userId = command.userId,
-            perCapitaIntake = command.perCapitaIntake,
+            servingSize = command.servingSize,
             unit = command.unit,
             carbohydrates = command.carbohydrates,
             protein = command.protein,
@@ -340,7 +340,7 @@ class FoodDomainService(
             .orElseThrow { EntityNotFoundException(DomainStatus.FOOD_NOT_FOUND) }
         
         food.name = command.name
-        food.perCapitaIntake = command.perCapitaIntake
+        food.servingSize = command.servingSize
         food.unit = command.unit
         food.carbohydrates = command.carbohydrates
         food.protein = command.protein
@@ -398,7 +398,7 @@ class FoodService(
                 uuid = request.uuid,
                 userId = creatorId,
                 name = request.name,
-                perCapitaIntake = request.perCapitaIntake,
+                servingSize = request.servingSize,
                 unit = request.unit,
                 carbohydrates = request.carbohydrates,
                 protein = request.protein,
@@ -457,7 +457,7 @@ class FoodV1Request {
         @field:NotNull(message = "음식명은 필수입니다")
         val name: String,
         @field:NotNull(message = "1회 기준 섭취량은 필수입니다")
-        val perCapitaIntake: Double,
+        val servingSize: Double,
         @field:NotNull(message = "단위는 필수입니다")
         val unit: String,
         val carbohydrates: Double? = null,
@@ -469,7 +469,7 @@ class FoodV1Request {
         @field:NotNull(message = "음식명은 필수입니다")
         val name: String,
         @field:NotNull(message = "1회 기준 섭취량은 필수입니다")
-        val perCapitaIntake: Double,
+        val servingSize: Double,
         @field:NotNull(message = "단위는 필수입니다")
         val unit: String,
         val carbohydrates: Double? = null,
@@ -580,7 +580,7 @@ class FoodFixture(
     var name: String = "테스트 음식",
     var uuid: String = UUID.randomUUID().toString(),
     var userId: Long = 1L,
-    var perCapitaIntake: Double = 100.0,
+    var servingSize: Double = 100.0,
     var unit: String = "g",
     var carbohydrates: Double = 25.0,
     var protein: Double = 8.0,
@@ -593,7 +593,7 @@ class FoodFixture(
             name = name,
             uuid = uuid,
             userId = userId,
-            perCapitaIntake = perCapitaIntake,
+            servingSize = servingSize,
             unit = unit,
             carbohydrates = carbohydrates,
             protein = protein,
@@ -614,7 +614,7 @@ class FoodCommandFixture {
         var uuid: String = UUID.randomUUID().toString(),
         var userId: Long = 1L,
         var name: String = "테스트 음식",
-        var perCapitaIntake: Double = 100.0,
+        var servingSize: Double = 100.0,
         var unit: String = "g",
         var carbohydrates: Double = 25.0,
         var protein: Double = 8.0,
@@ -626,7 +626,7 @@ class FoodCommandFixture {
                 uuid = uuid,
                 userId = userId,
                 name = name,
-                perCapitaIntake = perCapitaIntake,
+                servingSize = servingSize,
                 unit = unit,
                 carbohydrates = carbohydrates,
                 protein = protein,
@@ -647,7 +647,7 @@ class FoodV1RequestFixture {
     data class Create(
         val uuid: String = UUID.randomUUID().toString(),
         val name: String = "테스트 음식",
-        val perCapitaIntake: Double = 100.0,
+        val servingSize: Double = 100.0,
         val unit: String = "g",
         val carbohydrates: Double = 25.0,
         val protein: Double = 8.0,
@@ -657,7 +657,7 @@ class FoodV1RequestFixture {
             return FoodV1Request.Create(
                 uuid = uuid,
                 name = name,
-                perCapitaIntake = perCapitaIntake,
+                servingSize = servingSize,
                 unit = unit,
                 carbohydrates = carbohydrates,
                 protein = protein,
@@ -773,7 +773,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
             return FoodV1Request.Create(
                 uuid = "test-uuid-456",
                 name = "새로운 음식",
-                perCapitaIntake = 150.0,
+                servingSize = 150.0,
                 unit = "ml"
             )
         }
@@ -802,7 +802,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
             uuid = "test-uuid-123",
             name = "테스트 음식",
             userId = 1L,
-            perCapitaIntake = 100.0,
+            servingSize = 100.0,
             unit = "g",
             carbohydrates = 25.0,
             protein = 8.0,
@@ -839,7 +839,7 @@ Content-Type: application/json
 {
   "uuid": "550e8400-e29b-41d4-a716-446655440000",
   "name": "김치찌개",
-  "perCapitaIntake": 200.0,
+  "servingSize": 200.0,
   "unit": "g",
   "carbohydrates": 15.0,
   "protein": 12.0,
@@ -855,7 +855,7 @@ Content-Type: application/json
 
 {
   "name": "수정된 김치찌개",
-  "perCapitaIntake": 250.0,
+  "servingSize": 250.0,
   "unit": "g",
   "carbohydrates": 18.0,
   "protein": 15.0,

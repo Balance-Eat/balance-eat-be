@@ -15,7 +15,7 @@ class FoodTest {
         fun success() {
             // given
             val food = FoodFixture(
-                perCapitaIntake = 100.0,
+                servingSize = 100.0,
                 unit = "g",
                 carbohydrates = 20.0,
                 protein = 5.0,
@@ -43,7 +43,7 @@ class FoodTest {
             val food = FoodFixture(
                 name = "수정 전 음식",
                 userId = originalUserId,
-                perCapitaIntake = 100.0,
+                servingSize = 100.0,
                 unit = "g",
                 carbohydrates = 20.0,
                 protein = 5.0,
@@ -54,7 +54,7 @@ class FoodTest {
             // when
             food.update(
                 name = "수정 후 음식",
-                perCapitaIntake = 150.0,
+                servingSize = 150.0,
                 unit = "ml",
                 carbohydrates = 30.0,
                 protein = 7.0,
@@ -64,7 +64,7 @@ class FoodTest {
 
             // then
             assertEquals("수정 후 음식", food.name)
-            assertEquals(150.0, food.perCapitaIntake)
+            assertEquals(150.0, food.servingSize)
             assertEquals("ml", food.unit)
             assertEquals(30.0, food.carbohydrates)
             assertEquals(7.0, food.protein)
@@ -79,14 +79,14 @@ class FoodTest {
             // given
             val food = FoodFixture(
                 name = "기존 음식",
-                perCapitaIntake = 100.0
+                servingSize = 100.0
             ).create()
 
             // when & then - 잘못된 값으로 업데이트 시도
             val ex = assertThrows(IllegalArgumentException::class.java) {
                 food.update(
                     name = "", // 빈 이름
-                    perCapitaIntake = food.perCapitaIntake,
+                    servingSize = food.servingSize,
                     unit = food.unit,
                     carbohydrates = food.carbohydrates,
                     protein = food.protein,

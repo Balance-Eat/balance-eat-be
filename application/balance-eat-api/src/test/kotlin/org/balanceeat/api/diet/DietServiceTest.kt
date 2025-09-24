@@ -47,7 +47,7 @@ class DietServiceTest : IntegrationTestContext() {
             val user = createEntity(UserFixture().create())
             val food1 = createEntity(FoodFixture(
                 name = "토스트",
-                perCapitaIntake = 30.0,
+                servingSize = 30.0,
                 unit = "g",
                 carbohydrates = 15.0,
                 protein = 2.5,
@@ -56,7 +56,7 @@ class DietServiceTest : IntegrationTestContext() {
             
             val food2 = createEntity(FoodFixture(
                 name = "우유",
-                perCapitaIntake = 200.0,
+                servingSize = 200.0,
                 unit = "ml",
                 carbohydrates = 9.0,
                 protein = 6.6,
@@ -65,7 +65,7 @@ class DietServiceTest : IntegrationTestContext() {
             
             val food3 = createEntity(FoodFixture(
                 name = "바나나",
-                perCapitaIntake = 100.0,
+                servingSize = 100.0,
                 unit = "g",
                 carbohydrates = 27.0,
                 protein = 1.3,

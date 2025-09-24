@@ -7,8 +7,9 @@ data class FoodDto(
     val uuid: String,
     val name: String,
     val userId: Long,
-    val perCapitaIntake: Double,
+    val servingSize: Double,
     val unit: String,
+    val perServingCalories: Double,
     val carbohydrates: Double,
     val protein: Double,
     val fat: Double,
@@ -16,29 +17,6 @@ data class FoodDto(
     val isAdminApproved: Boolean,
     val createdAt: LocalDateTime
 ) {
-    fun calculateNutrition(actualServingSize: Double): NutritionInfo {
-        val ratio = actualServingSize / perCapitaIntake
-        
-        return NutritionInfo(
-            calories = calculateCalories(ratio),
-            carbohydrates = carbohydrates * ratio,
-            protein = protein * ratio,
-            fat = fat * ratio
-        )
-    }
-    
-    private fun calculateCalories(ratio: Double): Double {
-        // 칼로리 계산: 탄수화물(4kcal/g) + 단백질(4kcal/g) + 지방(9kcal/g)
-        return (carbohydrates * 4 + protein * 4 + fat * 9) * ratio
-    }
-    
-    data class NutritionInfo(
-        val calories: Double,
-        val carbohydrates: Double,
-        val protein: Double,
-        val fat: Double
-    )
-    
     companion object {
         fun from(food: Food): FoodDto {
             return FoodDto(
@@ -46,8 +24,9 @@ data class FoodDto(
                 uuid = food.uuid,
                 name = food.name,
                 userId = food.userId,
-                perCapitaIntake = food.perCapitaIntake,
+                servingSize = food.servingSize,
                 unit = food.unit,
+                perServingCalories = food.perServingCalories,
                 carbohydrates = food.carbohydrates,
                 protein = food.protein,
                 fat = food.fat,

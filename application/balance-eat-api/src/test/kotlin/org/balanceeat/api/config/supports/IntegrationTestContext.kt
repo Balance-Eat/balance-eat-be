@@ -36,9 +36,10 @@ abstract class IntegrationTestContext {
     @AfterEach
     fun tearDown() {
         databaseCleanUp.all()
+        print("=== Database Cleaned Up ===")
     }
 
-    protected fun <T> createEntity(entity: T): T {
+    protected fun <T> createEntity(entity: T, withTransaction: Boolean = false): T {
         // BaseEntity의 경우 시간 필드를 수동으로 설정
         if (entity is BaseEntity) {
             val now = LocalDateTime.now()
@@ -46,13 +47,17 @@ abstract class IntegrationTestContext {
             entity.updatedAt = now
         }
 
-        val session = entityManager.unwrap<Session>(Session::class.java)
-        val statelessSession = session.sessionFactory.openStatelessSession()
-        val transaction = statelessSession.beginTransaction()
+        if (withTransaction) {
+            entityManager.persist(entity)
+        } else {
+            val session = entityManager.unwrap<Session>(Session::class.java)
+            val statelessSession = session.sessionFactory.openStatelessSession()
+            val transaction = statelessSession.beginTransaction()
 
-        statelessSession.insert(entity)
-        transaction.commit()
-        statelessSession.close()
+            statelessSession.insert(entity)
+            transaction.commit()
+            statelessSession.close()
+        }
 
         return entity
     }

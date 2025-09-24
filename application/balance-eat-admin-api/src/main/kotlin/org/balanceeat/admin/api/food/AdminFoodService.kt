@@ -16,19 +16,20 @@ class AdminFoodService(
     private val foodRepository: FoodRepository
 ) {
     @Transactional(readOnly = true)
-    fun getDetails(id: Long): FoodDto {
+    fun getDetails(id: Long): AdminFoodV1Response.Details {
         return foodRepository.findByIdOrNull(id)
             ?.let { FoodDto.from(it) }
+            ?.let { AdminFoodV1Response.Details.from(it) }
             ?: throw NotFoundException(FOOD_NOT_FOUND)
     }
 
     @Transactional
-    fun update(request: AdminFoodV1Request.Update, id: Long, adminId: Long): FoodDto {
-        return foodDomainService.update(
+    fun update(request: AdminFoodV1Request.Update, id: Long, adminId: Long): AdminFoodV1Response.Details {
+        val result =  foodDomainService.update(
             command = FoodCommand.Update(
                 id = id,
                 name = request.name,
-                perCapitaIntake = request.perCapitaIntake,
+                servingSize = request.servingSize,
                 unit = request.unit,
                 carbohydrates = request.carbohydrates,
                 protein = request.protein,
@@ -37,5 +38,7 @@ class AdminFoodService(
                 isAdminApproved = request.isAdminApproved
             )
         )
+
+        return AdminFoodV1Response.Details.from(result)
     }
 }

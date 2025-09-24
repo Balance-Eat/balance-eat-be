@@ -3,6 +3,7 @@ package org.balanceeat.domain.food
 import org.balanceeat.domain.common.DomainService
 import org.balanceeat.domain.common.DomainStatus
 import org.balanceeat.domain.common.exception.EntityNotFoundException
+import org.balanceeat.domain.common.utils.CalorieCalculator
 import org.springframework.transaction.annotation.Transactional
 
 @DomainService
@@ -22,7 +23,12 @@ class FoodDomainService(
             name = command.name,
             uuid = command.uuid,
             userId = command.userId,
-            perCapitaIntake = command.perCapitaIntake,
+            servingSize = command.servingSize,
+            perServingCalories = CalorieCalculator.calculate(
+                carbohydrates = command.carbohydrates,
+                protein = command.protein,
+                fat = command.fat
+            ),
             unit = command.unit,
             carbohydrates = command.carbohydrates,
             protein = command.protein,
@@ -42,7 +48,7 @@ class FoodDomainService(
 
         food.update(
             name = command.name,
-            perCapitaIntake = command.perCapitaIntake,
+            servingSize = command.servingSize,
             unit = command.unit,
             carbohydrates = command.carbohydrates,
             protein = command.protein,

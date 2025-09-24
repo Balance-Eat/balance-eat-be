@@ -82,6 +82,7 @@ subprojects {
         testImplementation("org.instancio:instancio-junit:${project.properties["instancioJUnitVersion"]}")
         testImplementation(testFixtures(project(":common")))
         testFixturesImplementation(testFixtures(project(":common")))
+        testFixturesImplementation("org.jetbrains.kotlin:kotlin-reflect")
         // validator
         implementation("commons-validator:commons-validator:1.7")
     }
@@ -94,7 +95,7 @@ subprojects {
             .availableProcessors()
             .div(2)
             .takeIf { it > 0 } ?: 1
-        
+
         // Optimize JVM settings for tests
         jvmArgs(
             "-XX:+UseG1GC",
@@ -102,10 +103,10 @@ subprojects {
             "-XX:+UseStringDeduplication",
             "-Xmx1g"
         )
-        
+
         // Set test execution timeout
         timeout.set(Duration.ofMinutes(5))
-        
+
         // Enable test result caching
         outputs.upToDateWhen { false }
     }

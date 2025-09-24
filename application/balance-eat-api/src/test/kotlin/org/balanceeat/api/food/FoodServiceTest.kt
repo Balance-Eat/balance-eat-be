@@ -7,14 +7,53 @@ import org.balanceeat.apibase.ApplicationStatus
 import org.balanceeat.apibase.exception.BadRequestException
 import org.balanceeat.domain.curation.CurationFoodFixture
 import org.balanceeat.domain.food.FoodFixture
+import org.balanceeat.domain.food.FoodSearchResultFixture
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
+import org.springframework.transaction.annotation.Transactional
 
 class FoodServiceTest: IntegrationTestContext() {
     @Autowired
     private lateinit var foodService: FoodService
+
+    @Nested
+    inner class GetDetailsTest {
+        @Test
+        fun `음식 ID로 음식 상세 정보를 조회할 수 있다`() {
+            // given
+            val food = createEntity(FoodFixture(name = "테스트 음식").create())
+
+            // when
+            val result = foodService.getDetails(food.id)
+
+            // then
+            assertThat(result).usingRecursiveComparison()
+                .isEqualTo(food)
+        }
+    }
+
+    @Nested
+    inner class CreateTest {
+        @Test
+        fun `음식을 성공적으로 생성할 수 있다`() {
+            // given
+            val creatorId = 100L
+            val request = FoodV1RequestFixture.Create(
+                name = "닭가슴살",
+                brand = "CJ 제일제당"
+            ).create()
+
+            // when
+            val result = foodService.create(request, creatorId)
+
+            // then
+            assertThat(result).usingRecursiveComparison()
+                .ignoringFields("id", "createdAt", "isAdminApproved", "userId")
+                .isEqualTo(request)
+        }
+    }
 
     @Nested
     inner class UpdateTest {
@@ -39,16 +78,40 @@ class FoodServiceTest: IntegrationTestContext() {
             assertThat(throwable).isInstanceOf(BadRequestException::class.java)
                 .hasFieldOrPropertyWithValue("status", ApplicationStatus.CANNOT_MODIFY_FOOD)
         }
+
+        @Test
+        fun `음식 생성자와 수정자가 동일할 경우 수정 성공`() {
+            // given
+            val userId = 1L
+            val food = createEntity(FoodFixture(userId = userId, name = "기존 음식").create())
+            val request = FoodV1RequestFixture.Update(
+                name = "수정된 음식",
+                brand = "수정된 브랜드"
+            ).create()
+
+            // when
+            val result = foodService.update(
+                request = request,
+                id = food.id,
+                modifierId = userId
+            )
+
+            // then
+            assertThat(result).usingRecursiveComparison()
+                .ignoringFields("id", "uuid", "createdAt", "isAdminApproved", "userId")
+                .isEqualTo(request)
+        }
     }
 
     @Nested
+    @Transactional
     inner class GetRecommendationsTest {
         @Test
         fun `추천 음식은 curation weight 내림차순으로 정렬되고 limit 만큼 반환`() {
             // given
-            val food1 = createEntity(FoodFixture(name = "닭가슴살").create())
-            val food2 = createEntity(FoodFixture(name = "고구마").create())
-            val food3 = createEntity(FoodFixture(name = "바나나").create())
+            val food1 = createEntity(FoodFixture(name = "닭가슴살").create(), withTransaction = true)
+            val food2 = createEntity(FoodFixture(name = "고구마").create(), withTransaction = true)
+            val food3 = createEntity(FoodFixture(name = "바나나").create(), withTransaction = true)
 
             // curation weights: food3 > food1 > food2
             createEntity(CurationFoodFixture(foodId = food1.id, weight = 150).create())
@@ -61,21 +124,25 @@ class FoodServiceTest: IntegrationTestContext() {
             // then
             assertThat(result).hasSize(2)
             // order: food3(200), food1(150)
-            assertThat(result.map { it.id }).containsExactly(food3.id, food1.id)
+            assertThat(result[0]).usingRecursiveComparison()
+                .isEqualTo(food3)
+            assertThat(result[1]).usingRecursiveComparison()
+                .isEqualTo(food1)
         }
     }
 
     @Nested
+    @Transactional
     inner class SearchTest {
+
         @Test
         fun `음식 이름으로 필터링이 정상 동작한다`() {
             // given
-            val userId = 900L
-            val apple = createEntity(FoodFixture(name = "사과", userId = userId).create())
-            val banana = createEntity(FoodFixture(name = "바나나", userId = userId).create())
-            val appleJuice = createEntity(FoodFixture(name = "사과주스", userId = userId).create())
+            val apple = createEntity(FoodFixture(name = "사과").create(), withTransaction = true)
+            val banana = createEntity(FoodFixture(name = "바나나").create(), withTransaction = true)
+            val appleJuice = createEntity(FoodFixture(name = "사과주스").create(), withTransaction = true)
 
-            val request = FoodV1RequestFixture.Search(foodName = "사과", userId = userId).create()
+            val request = FoodV1RequestFixture.Search(foodName = "사과").create()
             val pageable = PageRequest.of(0, 10)
 
             // when
@@ -83,7 +150,10 @@ class FoodServiceTest: IntegrationTestContext() {
 
             // then
             assertThat(result.items).hasSize(2)
-            assertThat(result.items.map { it.name }).containsExactlyInAnyOrder("사과", "사과주스")
+            assertThat(result.items[0]).usingRecursiveComparison()
+                .isEqualTo(appleJuice)
+            assertThat(result.items[1]).usingRecursiveComparison()
+                .isEqualTo(apple)
         }
 
         @Test
@@ -91,9 +161,9 @@ class FoodServiceTest: IntegrationTestContext() {
             // given
             val user1Id = 100L
             val user2Id = 200L
-            val user1Food1 = createEntity(FoodFixture(name = "유저1 음식1", userId = user1Id).create())
-            val user1Food2 = createEntity(FoodFixture(name = "유저1 음식2", userId = user1Id).create())
-            val user2Food = createEntity(FoodFixture(name = "유저2 음식", userId = user2Id).create())
+            val user1Food1 = createEntity(FoodFixture(name = "유저1 음식1", userId = user1Id).create(), withTransaction = true)
+            val user1Food2 = createEntity(FoodFixture(name = "유저1 음식2", userId = user1Id).create(), withTransaction = true)
+            val user2Food = createEntity(FoodFixture(name = "유저2 음식", userId = user2Id).create(), withTransaction = true)
 
             val request = FoodV1RequestFixture.Search(userId = user1Id).create()
             val pageable = PageRequest.of(0, 10)
@@ -103,18 +173,19 @@ class FoodServiceTest: IntegrationTestContext() {
 
             // then
             assertThat(result.items).hasSize(2)
-            assertThat(result.items.map { it.userId }).allMatch { it == user1Id }
-            assertThat(result.items.map { it.name }).containsExactlyInAnyOrder("유저1 음식1", "유저1 음식2")
+            assertThat(result.items[0]).usingRecursiveComparison()
+                .isEqualTo(user1Food2)
+            assertThat(result.items[1]).usingRecursiveComparison()
+                .isEqualTo(user1Food1)
         }
 
         @Test
-        fun `동일한 조건일 때 최신 음식(높은 ID)이 먼저 나온다`() {
+        fun `동일한 조건일 때 최신 음식이 먼저 나온다`() {
             // given
-            val oldFood = createEntity(FoodFixture(name = "테스트 음식").create())
-            Thread.sleep(10) // ID 차이를 보장하기 위한 짧은 대기
-            val newFood = createEntity(FoodFixture(name = "테스트 음식").create())
-
-            val request = FoodV1RequestFixture.Search(foodName = "테스트").create()
+            val uniqueName = "정렬테스트음식"
+            val oldFood = createEntity(FoodFixture(name = uniqueName).create(), withTransaction = true)
+            val newFood = createEntity(FoodFixture(name = uniqueName).create(), withTransaction = true)
+            val request = FoodV1RequestFixture.Search(foodName = uniqueName).create()
             val pageable = PageRequest.of(0, 10)
 
             // when
@@ -124,15 +195,17 @@ class FoodServiceTest: IntegrationTestContext() {
             assertThat(result.items).hasSize(2)
             // 첫 번째 결과가 더 높은 ID(최신)여야 함
             assertThat(result.items[0].id).isGreaterThan(result.items[1].id)
-            assertThat(result.items[0].id).isEqualTo(newFood.id)
-            assertThat(result.items[1].id).isEqualTo(oldFood.id)
+            assertThat(result.items[0]).usingRecursiveComparison()
+                .isEqualTo(newFood)
+            assertThat(result.items[1]).usingRecursiveComparison()
+                .isEqualTo(oldFood)
         }
 
         @Test
         fun `검색 조건에 맞는 결과가 없을 때 빈 페이지를 반환한다`() {
             // given
             val userId = 600L
-            createEntity(FoodFixture(name = "사과", userId = userId).create())
+            createEntity(FoodFixture(name = "사과", userId = userId).create(), withTransaction = true)
 
             val request = FoodV1RequestFixture.Search(foodName = "존재하지않는음식", userId = userId).create()
             val pageable = PageRequest.of(0, 10)
@@ -149,8 +222,8 @@ class FoodServiceTest: IntegrationTestContext() {
         fun `대소문자 구분 없이 음식 이름 검색이 동작한다`() {
             // given
             val userId = 800L
-            val apple = createEntity(FoodFixture(name = "Apple", userId = userId).create())
-            val banana = createEntity(FoodFixture(name = "BANANA", userId = userId).create())
+            val apple = createEntity(FoodFixture(name = "Apple", userId = userId).create(), withTransaction = true)
+            val banana = createEntity(FoodFixture(name = "BANANA", userId = userId).create(), withTransaction = true)
 
             val request = FoodV1RequestFixture.Search(foodName = "apple", userId = userId).create()
             val pageable = PageRequest.of(0, 10)
@@ -160,7 +233,8 @@ class FoodServiceTest: IntegrationTestContext() {
 
             // then
             assertThat(result.items).hasSize(1)
-            assertThat(result.items[0].name).isEqualTo("Apple")
+            assertThat(result.items[0]).usingRecursiveComparison()
+                .isEqualTo(apple)
         }
     }
 }

@@ -3,6 +3,7 @@ package org.balanceeat.domain.food
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.Wildcard
 import com.querydsl.jpa.impl.JPAQueryFactory
+import org.balanceeat.domain.common.repository.BaseQueryRepository
 import org.balanceeat.domain.food.QFood.Companion.food
 import org.springframework.data.domain.Page
 
@@ -34,8 +35,9 @@ class FoodRepositoryCustomImpl(
                     food.uuid,
                     food.name,
                     food.userId,
-                    food.perCapitaIntake,
+                    food.servingSize,
                     food.unit,
+                    food.perServingCalories,
                     food.carbohydrates,
                     food.protein,
                     food.fat,
@@ -45,7 +47,7 @@ class FoodRepositoryCustomImpl(
                     food.updatedAt
                 )
             )
-            .orderBy(food.id.desc())
+            .orderBy(food.createdAt.desc())
             .toPage(search.pageable, totalCount)
     }
 }

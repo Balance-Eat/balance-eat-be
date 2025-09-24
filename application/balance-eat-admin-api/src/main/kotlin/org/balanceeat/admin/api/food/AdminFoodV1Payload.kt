@@ -2,14 +2,15 @@ package org.balanceeat.admin.api.food
 
 import jakarta.validation.constraints.NotNull
 import org.balanceeat.domain.food.FoodDto
+import java.time.LocalDateTime
 
 class AdminFoodV1Request {
     data class Update(
         @field:NotNull(message = "name은 필수입니다")
         val name: String,
 
-        @field:NotNull(message = "perCapitaIntake은 필수입니다")
-        val perCapitaIntake: Double,
+        @field:NotNull(message = "servingSize은 필수입니다")
+        val servingSize: Double,
 
         @field:NotNull(message = "unit은 필수입니다")
         val unit: String,
@@ -32,30 +33,36 @@ class AdminFoodV1Request {
 }
 
 class AdminFoodV1Response {
-    data class Info(
+    data class Details(
         val id: Long,
         val uuid: String,
+        val userId: Long,
         val name: String,
-        val perCapitaIntake: Double,
+        val servingSize: Double,
+        val perServingCalories: Double,
         val unit: String,
         val carbohydrates: Double,
         val protein: Double,
         val fat: Double,
         val brand: String,
-        val isAdminApproved: Boolean
+        val isAdminApproved: Boolean,
+        val createdAt: LocalDateTime,
     ) {
         companion object {
-            fun from(food: FoodDto) = Info(
+            fun from(food: FoodDto) = Details(
                 id = food.id,
                 uuid = food.uuid,
+                userId = food.userId,
                 name = food.name,
-                perCapitaIntake = food.perCapitaIntake,
+                servingSize = food.servingSize,
+                perServingCalories = food.perServingCalories,
                 unit = food.unit,
                 carbohydrates = food.carbohydrates,
                 protein = food.protein,
                 fat = food.fat,
                 brand = food.brand,
-                isAdminApproved = food.isAdminApproved
+                isAdminApproved = food.isAdminApproved,
+                createdAt = food.createdAt,
             )
         }
     }

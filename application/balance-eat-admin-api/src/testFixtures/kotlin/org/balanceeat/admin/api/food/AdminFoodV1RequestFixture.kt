@@ -5,7 +5,7 @@ import org.balanceeat.common.TestFixture
 class AdminFoodV1RequestFixture {
     class Update(
         var name: String = "수정된 음식",
-        var perCapitaIntake: Double = 150.0,
+        var servingSize: Double = 150.0,
         var unit: String = "g",
         var carbohydrates: Double = 30.0,
         var protein: Double = 10.0,
@@ -16,7 +16,7 @@ class AdminFoodV1RequestFixture {
         override fun create(): AdminFoodV1Request.Update {
             return AdminFoodV1Request.Update(
                 name = name,
-                perCapitaIntake = perCapitaIntake,
+                servingSize = servingSize,
                 unit = unit,
                 carbohydrates = carbohydrates,
                 protein = protein,

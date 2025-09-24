@@ -374,7 +374,7 @@ requestFields(
 requestFields(
     "uuid" type STRING means "음식 UUID",
     "name" type STRING means "음식명",
-    "perCapitaIntake" type NUMBER means "1회 기준 섭취량",
+    "servingSize" type NUMBER means "1회 기준 섭취량",
     "unit" type STRING means "단위 (예: g, ml 등)",
     "carbohydrates" type NUMBER means "탄수화물 함량 (g, 선택)" isOptional true,
     "protein" type NUMBER means "단백질 함량 (g, 선택)" isOptional true,
@@ -567,7 +567,7 @@ import org.springframework.restdocs.request.RequestDocumentation.queryParameters
 private fun mockFoodDto(): FoodDto {
     return FoodDto(
         name = "백미밥",
-        perCapitaIntake = 210.0,
+        servingSize = 210.0,
         unit = "g",
         carbohydrates = 77.0,
         protein = 7.4,

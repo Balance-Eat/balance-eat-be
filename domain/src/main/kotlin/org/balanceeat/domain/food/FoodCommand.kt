@@ -8,7 +8,7 @@ sealed class FoodCommand {
         val uuid: String,
         val name: String,
         val userId: Long,
-        val perCapitaIntake: Double,
+        val servingSize: Double,
         val unit: String,
         val carbohydrates: Double = 0.0,
         val protein: Double = 0.0,
@@ -20,7 +20,7 @@ sealed class FoodCommand {
     data class Update(
         val id: Long,
         val name: String,
-        val perCapitaIntake: Double,
+        val servingSize: Double,
         val unit: String,
         val carbohydrates: Double,
         val protein: Double,

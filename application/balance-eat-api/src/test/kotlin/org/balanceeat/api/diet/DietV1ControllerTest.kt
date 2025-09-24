@@ -16,6 +16,7 @@ import org.springframework.restdocs.payload.JsonFieldType.*
 import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.queryParameters
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @WebMvcTest(DietV1Controller::class)
@@ -51,6 +52,7 @@ class DietV1ControllerTest: ControllerTestContext() {
                                 "data" type ARRAY means "식사 기록 목록",
                                 "data[].dietId" type NUMBER means "식사 기록 고유 ID",
                                 "data[].mealType" type STRING means "식사 유형" withEnum Diet.MealType::class,
+                                "data[].consumeDate" type STRING means "섭취 날짜 (yyyy-MM-dd)",
                                 "data[].consumedAt" type STRING means "섭취 시간",
                                 "data[].items" type ARRAY means "해당 식사에 포함된 음식 목록",
                                 "data[].items[].foodId" type NUMBER means "음식 ID",
@@ -189,6 +191,7 @@ class DietV1ControllerTest: ControllerTestContext() {
             DietV1Response.DietResponse(
                 dietId = 1L,
                 mealType = Diet.MealType.BREAKFAST,
+                consumeDate = LocalDate.now(),
                 consumedAt = LocalDateTime.now(),
                 items = listOf(
                     DietV1Response.DietFoodResponse(
@@ -216,6 +219,7 @@ class DietV1ControllerTest: ControllerTestContext() {
             DietV1Response.DietResponse(
                 dietId = 2L,
                 mealType = Diet.MealType.LUNCH,
+                consumeDate = LocalDate.now(),
                 consumedAt = LocalDateTime.now(),
                 items = listOf(
                     DietV1Response.DietFoodResponse(

@@ -12,6 +12,7 @@ import org.balanceeat.domain.diet.DietFood
 import org.balanceeat.domain.diet.DietFoodDto
 import org.balanceeat.domain.diet.NutritionInfo
 import org.balanceeat.domain.food.Food
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class DietV1Request {
@@ -52,6 +53,7 @@ class DietV1Response {
 
     data class DietResponse(
         val dietId: Long,
+        val consumeDate: LocalDate,
         val consumedAt: LocalDateTime,
         val mealType: MealType,
         val items: List<DietFoodResponse>
@@ -60,6 +62,7 @@ class DietV1Response {
             fun of(diet: Diet, foodMap: Map<Long, Food>): DietResponse {
                 return DietResponse(
                     dietId = diet.id,
+                    consumeDate = diet.consumedAt.toLocalDate(),
                     consumedAt = diet.consumedAt,
                     mealType = diet.mealType,
                     items = diet.dietFoods.map { dietFood ->

@@ -5,7 +5,7 @@ Content-Type: application/json
 
 {
   "name": "관리자 승인 김치찌개",
-  "perCapitaIntake": 200.0,
+  "servingSize": 200.0,
   "unit": "g",
   "carbohydrates": 15.0,
   "protein": 12.0,
