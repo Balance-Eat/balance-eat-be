@@ -103,16 +103,11 @@ class Food(
         val ratio = intake / servingSize
         
         return NutritionInfo(
-            calories = calculateCalories(ratio),
+            calories = perServingCalories * ratio,
             carbohydrates = carbohydrates * ratio,
             protein = protein * ratio,
             fat = fat * ratio
         )
-    }
-    
-    private fun calculateCalories(ratio: Double): Double {
-        // 칼로리 계산: 탄수화물(4kcal/g) + 단백질(4kcal/g) + 지방(9kcal/g)
-        return (carbohydrates * 4 + protein * 4 + fat * 9) * ratio
     }
     
     data class NutritionInfo(
