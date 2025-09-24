@@ -8,9 +8,9 @@ sealed class DietCommand {
         val userId: Long,
         val mealType: Diet.MealType,
         val consumedAt: LocalDateTime,
-        val foods: List<Food> = emptyList()
+        val dietFoods: List<DietFood> = emptyList()
     ) {
-        data class Food(
+        data class DietFood(
             val foodId: Long,
             val intake: Int
         )

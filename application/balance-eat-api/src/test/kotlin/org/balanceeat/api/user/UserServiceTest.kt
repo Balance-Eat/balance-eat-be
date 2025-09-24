@@ -23,10 +23,9 @@ class UserServiceTest: IntegrationTestContext() {
             val result = userService.create(request)
 
             // then
-            assertThat(result)
+            assertThat(request)
                 .usingRecursiveComparison()
-                .ignoringFields("id")
-                .isEqualTo(request)
+                .isEqualTo(result)
         }
 
         @Test
@@ -52,10 +51,9 @@ class UserServiceTest: IntegrationTestContext() {
             val result = userService.create(request)
 
             // then
-            assertThat(result)
+            assertThat(request)
                 .usingRecursiveComparison()
-                .ignoringFields("id")
-                .isEqualTo(request)
+                .isEqualTo(result)
         }
     }
 
@@ -71,10 +69,9 @@ class UserServiceTest: IntegrationTestContext() {
             val result = userService.update(user.id, request)
 
             // then
-            assertThat(result)
+            assertThat(request)
                 .usingRecursiveComparison()
-                .ignoringFields("id", "uuid", "providerType", "providerId")
-                .isEqualTo(request)
+                .isEqualTo(result)
         }
     }
 

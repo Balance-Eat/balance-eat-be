@@ -2,7 +2,6 @@ package org.balanceeat.domain.diet
 
 import org.balanceeat.domain.config.TestFixture
 import org.balanceeat.domain.config.NEW_ID
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 class DietFixture(

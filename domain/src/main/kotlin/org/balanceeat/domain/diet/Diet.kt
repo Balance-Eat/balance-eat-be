@@ -4,7 +4,6 @@ import jakarta.persistence.*
 import org.balanceeat.domain.config.BaseEntity
 import org.balanceeat.domain.config.NEW_ID
 import org.balanceeat.domain.food.Food
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Entity
@@ -39,8 +38,8 @@ class Diet(
     }
     
     fun addFood(food: Food, intake: Int) {
-        val newFood = DietFood(food, intake)
-        dietFoods.add(newFood)
+        val newDietFood = DietFood(food, intake)
+        dietFoods.add(newDietFood)
     }
     
     enum class MealType {

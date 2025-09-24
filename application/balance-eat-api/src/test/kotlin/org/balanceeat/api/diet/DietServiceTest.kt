@@ -21,22 +21,8 @@ import java.time.LocalDateTime
 class DietServiceTest : IntegrationTestContext() {
     @Autowired
     private lateinit var dietService: DietService
-
     @Autowired
     private lateinit var dietRepository: DietRepository
-
-    @Autowired
-    private lateinit var foodRepository: FoodRepository
-
-    @Autowired
-    private lateinit var userRepository: UserRepository
-
-    @BeforeEach
-    fun setUp() {
-        dietRepository.deleteAll()
-        foodRepository.deleteAll()
-        userRepository.deleteAll()
-    }
 
     @Nested
     @DisplayName("식단 생성 테스트")
@@ -72,9 +58,7 @@ class DietServiceTest : IntegrationTestContext() {
                 fat = 0.2
             ).create())
             
-            val request = DietV1Request.Create(
-                mealType = "BREAKFAST",
-                consumedAt = LocalDateTime.of(2025, 1, 15, 8, 0),
+            val request = DietV1RequestFixture.Create(
                 dietFoods = listOf(
                     DietV1Request.Create.DietFood(
                         foodId = food1.id,
@@ -89,25 +73,25 @@ class DietServiceTest : IntegrationTestContext() {
                         intake = 1
                     )
                 )
-            )
+            ).create()
 
             // when
             val result = dietService.create(request, user.id)
 
             // then
-            assertThat(result.mealType).isEqualTo(Diet.MealType.BREAKFAST)
-            assertThat(result.consumedAt).isEqualTo(LocalDateTime.of(2025, 1, 15, 8, 0))
-            assertThat(result.dietFoods).hasSize(3)
-            
+            assertThat(request)
+                .usingRecursiveComparison()
+                .isEqualTo(result)
+
             // 각 음식의 섭취량 검증
             val toastFood = result.dietFoods.find { it.foodId == food1.id }!!
             assertThat(toastFood.intake).isEqualTo(2)
             assertThat(toastFood.foodName).isEqualTo("토스트")
-            
+
             val milkFood = result.dietFoods.find { it.foodId == food2.id }!!
             assertThat(milkFood.intake).isEqualTo(1)
             assertThat(milkFood.foodName).isEqualTo("우유")
-            
+
             val bananaFood = result.dietFoods.find { it.foodId == food3.id }!!
             assertThat(bananaFood.intake).isEqualTo(1)
             assertThat(bananaFood.foodName).isEqualTo("바나나")
@@ -156,7 +140,6 @@ class DietServiceTest : IntegrationTestContext() {
             assertThat(foodItem.intake).isEqualTo(dietFood.intake)
         }
 
-        // 식단이 여러개 있을때 먹은 시간 오름차순으로 정렬되는지 검증
         @Test
         fun `식단이 여러개 있을때 먹은 시간 오름차순으로 정렬된다`() {
             // given

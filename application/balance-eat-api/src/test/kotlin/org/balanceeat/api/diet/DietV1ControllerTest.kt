@@ -128,20 +128,7 @@ class DietV1ControllerTest: ControllerTestContext() {
         }
         
         private fun mockCreateDietRequest(): DietV1Request.Create {
-            return DietV1Request.Create(
-                mealType = "DINNER",
-                consumedAt = LocalDateTime.of(2025, 1, 15, 19, 30),
-                dietFoods = listOf(
-                    DietV1Request.Create.DietFood(
-                        foodId = 1L,
-                        intake = 1
-                    ),
-                    DietV1Request.Create.DietFood(
-                        foodId = 2L,
-                        intake = 2
-                    )
-                )
-            )
+            return DietV1RequestFixture.Create().create()
         }
     }
     
@@ -186,9 +173,9 @@ class DietV1ControllerTest: ControllerTestContext() {
         )
     }
 
-    private fun mockDietResponseList(): List<DietV1Response.DietResponse> {
+    private fun mockDietResponseList(): List<DietV1Response.Summary> {
         return listOf(
-            DietV1Response.DietResponse(
+            DietV1Response.Summary(
                 dietId = 1L,
                 mealType = Diet.MealType.BREAKFAST,
                 consumeDate = LocalDate.now(),
@@ -216,7 +203,7 @@ class DietV1ControllerTest: ControllerTestContext() {
                     )
                 )
             ),
-            DietV1Response.DietResponse(
+            DietV1Response.Summary(
                 dietId = 2L,
                 mealType = Diet.MealType.LUNCH,
                 consumeDate = LocalDate.now(),

@@ -261,20 +261,54 @@ val command = fixture.create()
 - Test method names: Korean backtick format (`` `테스트 내용` ``)
 
 ### 6. Integration with Tests
+
+#### 테스트 검증 패턴
+
+**표준 검증 방식**: `usingRecursiveComparison()` 패턴을 사용하여 객체 전체를 비교하고, 필요한 필드만 제외
+
 ```kotlin
 @Test
 fun `사용자를 생성할 수 있다`() {
     // given
-    val user = userRepository.save(
-        UserFixture(
-            name = "테스트 사용자",
-            email = "test@example.com"
-        ).create()
-    )
-    
-    // when & then
-    assertThat(user.id).isGreaterThan(0L)
-    assertThat(user.name).isEqualTo("테스트 사용자")
+    val command = UserCommandFixture.Create(
+        name = "테스트 사용자",
+        email = "test@example.com"
+    ).create()
+
+    // when
+    val result = userDomainService.create(command)
+
+    // then
+    assertThat(command)
+        .usingRecursiveComparison()
+        .ignoringFields("id", "createdAt", "updatedAt")
+        .isEqualTo(result =)
+}
+```
+
+**검증 패턴 원칙**:
+- **전체 객체 비교**: `usingRecursiveComparison()` 사용
+- **필드 제외**: 자동 생성되는 필드나 비교 불가능한 필드는 `ignoringFields()` 사용
+- **개별 검증**: 특별한 검증이 필요한 필드만 별도로 검증
+
+**일반적인 제외 필드**:
+- 계산 필드: `perServingCalories` 등
+
+```kotlin
+// 도메인 서비스 테스트 예시
+@Test
+fun `음식을 생성할 수 있다`() {
+    // given
+    val command = FoodCommandFixture.Create().create()
+
+    // when
+    val result = foodDomainService.create(command)
+
+    // then
+    assertThat(result)
+        .usingRecursiveComparison()
+        .ignoringFields("id", "createdAt", "perServingCalories")
+        .isEqualTo(command)
 }
 ```
 

@@ -1,6 +1,5 @@
 package org.balanceeat.api.diet
 
-import org.balanceeat.domain.diet.Diet
 import org.balanceeat.domain.diet.DietCommand
 import org.balanceeat.domain.diet.DietDomainService
 import org.balanceeat.domain.diet.DietRepository
@@ -23,10 +22,10 @@ class DietService(
 
         val command = DietCommand.Create(
             userId = userId,
-            mealType = Diet.MealType.valueOf(request.mealType),
+            mealType = request.mealType,
             consumedAt = request.consumedAt,
-            foods = request.dietFoods.map { dietFood ->
-                DietCommand.Create.Food(
+            dietFoods = request.dietFoods.map { dietFood ->
+                DietCommand.Create.DietFood(
                     foodId = dietFood.foodId,
                     intake = dietFood.intake
                 )
@@ -39,7 +38,7 @@ class DietService(
     }
 
     @Transactional(readOnly = true)
-    fun getDailyDiets(userId: Long, date: LocalDate): List<DietV1Response.DietResponse> {
+    fun getDailyDiets(userId: Long, date: LocalDate): List<DietV1Response.Summary> {
         val diets = dietRepository.findDailyDiets(userId, date)
         val foodMap = diets.flatMap { it.dietFoods }
             .map { it.foodId }
@@ -48,7 +47,7 @@ class DietService(
             .associateBy { it.id }
 
         return diets.map {
-            DietV1Response.DietResponse.of(it, foodMap)
+            DietV1Response.Summary.of(it, foodMap)
         }
     }
 }

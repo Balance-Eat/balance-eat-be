@@ -18,7 +18,7 @@ import java.time.LocalDateTime
 class DietV1Request {
     data class Create(
         @field:NotNull(message = "식사 유형은 필수입니다")
-        val mealType: String,
+        val mealType: MealType,
         
         @field:NotNull(message = "섭취 시간은 필수입니다")
         val consumedAt: LocalDateTime,
@@ -38,20 +38,7 @@ class DietV1Request {
 }
 
 class DietV1Response {
-
-    data class DailyDietInfo(
-        val dailyTotal: DailyTotal,
-        val diets: List<Diet>
-    )
-
-    data class DailyTotal(
-        val totalCalorie: Int,
-        val totalCarbohydrates: Int,
-        val totalProtein: Int,
-        val totalFat: Int
-    )
-
-    data class DietResponse(
+    data class Summary(
         val dietId: Long,
         val consumeDate: LocalDate,
         val consumedAt: LocalDateTime,
@@ -59,8 +46,8 @@ class DietV1Response {
         val items: List<DietFoodResponse>
     ) {
         companion object {
-            fun of(diet: Diet, foodMap: Map<Long, Food>): DietResponse {
-                return DietResponse(
+            fun of(diet: Diet, foodMap: Map<Long, Food>): Summary {
+                return Summary(
                     dietId = diet.id,
                     consumeDate = diet.consumedAt.toLocalDate(),
                     consumedAt = diet.consumedAt,

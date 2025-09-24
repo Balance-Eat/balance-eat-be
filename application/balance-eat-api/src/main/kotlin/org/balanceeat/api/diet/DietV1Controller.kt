@@ -16,7 +16,7 @@ class DietV1Controller(
     fun getDailyDiets(
         @RequestHeader("X-USER-ID") userId: Long,
         @RequestParam date: LocalDate,
-    ): ApiResponse<List<DietV1Response.DietResponse>> {
+    ): ApiResponse<List<DietV1Response.Summary>> {
         return ApiResponse.success(
             dietService.getDailyDiets(userId, date)
         )

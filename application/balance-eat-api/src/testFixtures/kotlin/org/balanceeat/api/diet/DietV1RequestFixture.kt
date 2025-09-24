@@ -1,11 +1,12 @@
 package org.balanceeat.api.diet
 
 import org.balanceeat.common.TestFixture
+import org.balanceeat.domain.diet.Diet
 import java.time.LocalDateTime
 
 class DietV1RequestFixture {
-    data class CreateDiet(
-        val mealType: String = "BREAKFAST",
+    data class Create(
+        val mealType: Diet.MealType = Diet.MealType.BREAKFAST,
         val consumedAt: LocalDateTime = LocalDateTime.now(),
         val dietFoods: List<DietV1Request.Create.DietFood> = listOf(
             DietV1Request.Create.DietFood(foodId = 1L, intake = 2),

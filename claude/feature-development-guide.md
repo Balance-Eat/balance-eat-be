@@ -678,7 +678,7 @@ class FoodV1RequestFixture {
 class FoodDomainServiceTest : IntegrationTestContext() {
     @Autowired
     private lateinit var foodDomainService: FoodDomainService
-    
+
     @Test
     fun `음식을 생성할 수 있다`() {
         // given
@@ -686,16 +686,22 @@ class FoodDomainServiceTest : IntegrationTestContext() {
             name = "김치찌개",
             isAdminApproved = true
         ).create()
-        
+
         // when
         val result = foodDomainService.create(command)
-        
+
         // then
-        assertThat(result.name).isEqualTo("김치찌개")
-        assertThat(result.isAdminApproved).isTrue()
+        assertThat(command)
+            .usingRecursiveComparison()
+            .isEqualTo(result)
     }
 }
 ```
+
+**테스트 검증 패턴**:
+- **표준 검증 방식**: `usingRecursiveComparison()` 사용하여 전체 객체 비교
+- **필드 제외**: 자동 생성 필드나 계산 필드는 `ignoringFields()` 로 제외
+- **멀티라인 형식**: 가독성을 위해 assertion을 여러 줄로 구성
 
 **테스트 포커스**:
 - **CUD 로직 검증**: Create, Update, Delete 기능의 정확성
@@ -711,7 +717,25 @@ class FoodDomainServiceTest : IntegrationTestContext() {
 class FoodServiceTest : IntegrationTestContext() {
     @Autowired
     private lateinit var foodService: FoodService
-    
+
+    @Test
+    fun `음식을 성공적으로 생성할 수 있다`() {
+        // given
+        val request = FoodV1RequestFixture.Create(
+            name = "새로운 음식",
+            servingSize = 150.0
+        ).create()
+        val creatorId = 1L
+
+        // when
+        val result = foodService.create(request, creatorId)
+
+        // then
+        assertThat(request)
+            .usingRecursiveComparison()
+            .isEqualTo(result)
+    }
+
     @Test
     fun `권한이 없는 사용자가 음식을 수정하려 할 때 실패한다`() {
         // given
@@ -719,12 +743,12 @@ class FoodServiceTest : IntegrationTestContext() {
         val modifierId = 2L
         val food = createEntity(FoodFixture(userId = creatorId).create())
         val request = FoodV1RequestFixture.Update().create()
-        
+
         // when
         val throwable = catchThrowable {
             foodService.update(request, food.id, modifierId)
         }
-        
+
         // then
         assertThat(throwable).isInstanceOf(BadRequestException::class.java)
     }

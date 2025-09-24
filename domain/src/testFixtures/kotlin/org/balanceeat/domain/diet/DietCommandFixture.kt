@@ -9,8 +9,8 @@ class DietCommandFixture {
         var userId: Long = 1L,
         var mealType: Diet.MealType = Diet.MealType.BREAKFAST,
         var consumedAt: LocalDateTime = LocalDateTime.now(),
-        var foods: List<DietCommand.Create.Food> = mutableListOf(
-            DietCommand.Create.Food(
+        var dietFoods: List<DietCommand.Create.DietFood> = mutableListOf(
+            DietCommand.Create.DietFood(
                 foodId = 1L,
                 intake = 2
             )
@@ -21,7 +21,7 @@ class DietCommandFixture {
                 userId = userId,
                 mealType = mealType,
                 consumedAt = consumedAt,
-                foods = foods
+                dietFoods = dietFoods
             )
         }
     }
