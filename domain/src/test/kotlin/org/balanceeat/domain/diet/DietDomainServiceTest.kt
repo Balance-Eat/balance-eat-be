@@ -1,6 +1,10 @@
 package org.balanceeat.domain.diet
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.catchThrowable
+import org.balanceeat.domain.common.DomainStatus
+import org.balanceeat.domain.common.DomainStatus.DIET_MEAL_TYPE_ALREADY_EXISTS
+import org.balanceeat.domain.common.exception.DomainException
 import org.balanceeat.domain.config.supports.IntegrationTestContext
 import org.balanceeat.domain.food.FoodFixture
 import org.balanceeat.domain.food.FoodRepository
@@ -85,6 +89,25 @@ class DietDomainServiceTest : IntegrationTestContext() {
             val dietFood2 = createdDiet.dietFoods.find { it.foodId == food2.id }!!
             assertThat(dietFood2.intake).isEqualTo(1)
             assertThat(dietFood2.foodName).isEqualTo("우유")
+        }
+
+        @Test
+        fun `같은 날짜, 같은 사용자, 같은 MealType으로 식단을 생성하면 실패한다`() {
+            // given
+            val alreadySavedDiet = dietRepository.save(DietFixture().create())
+            val command = DietCommandFixture.Create(
+                userId = alreadySavedDiet.userId,
+                mealType = alreadySavedDiet.mealType,
+                consumedAt = alreadySavedDiet.consumedAt,
+            ).create()
+
+            // when
+            val throwable = catchThrowable { dietDomainService.create(command) }
+
+            // then
+            assertThat(throwable).isInstanceOf(DomainException::class.java)
+                .hasFieldOrPropertyWithValue("status", DIET_MEAL_TYPE_ALREADY_EXISTS)
+                .hasMessage(DIET_MEAL_TYPE_ALREADY_EXISTS.message)
         }
     }
 }

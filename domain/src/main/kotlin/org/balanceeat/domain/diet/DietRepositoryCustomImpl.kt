@@ -35,4 +35,18 @@ class DietRepositoryCustomImpl(
             .orderBy(diet.consumedAt.asc())
             .fetch()
     }
+
+    override fun existsByUserIdAndDateAndMealType(userId: Long, date: LocalDate, mealType: Diet.MealType): Boolean {
+        return jpaQueryFactory
+            .selectOne()
+            .from(diet)
+            .where(
+                diet.userId.eq(userId)
+                    .and(diet.consumedAt.dayOfMonth().eq(date.dayOfMonth))
+                    .and(diet.consumedAt.month().eq(date.monthValue))
+                    .and(diet.consumedAt.year().eq(date.year))
+                    .and(diet.mealType.eq(mealType))
+            )
+            .fetchFirst() != null
+    }
 }

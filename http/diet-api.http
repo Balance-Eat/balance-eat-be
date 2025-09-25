@@ -22,7 +22,7 @@ X-USER-ID: 1
 
 {
   "mealType": "BREAKFAST",
-  "consumedAt": "2025-08-04T08:30:00",
+  "consumedAt": "2025-09-25T08:30:00",
   "dietFoods": [
     {
       "foodId": 1,
@@ -31,6 +31,42 @@ X-USER-ID: 1
     {
       "foodId": 2,
       "intake": 1
+    }
+  ]
+}
+
+###
+
+### 같은 날짜 아침 식단 중복 생성 테스트 (실패해야 함)
+POST {{baseUrl}}/{{apiVersion}}/diets
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "mealType": "BREAKFAST",
+  "consumedAt": "2025-09-25T09:30:00",
+  "dietFoods": [
+    {
+      "foodId": 1,
+      "intake": 1
+    }
+  ]
+}
+
+###
+
+### 같은 날짜 점심 식단 생성 (성공해야 함)
+POST {{baseUrl}}/{{apiVersion}}/diets
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "mealType": "LUNCH",
+  "consumedAt": "2025-09-25T12:30:00",
+  "dietFoods": [
+    {
+      "foodId": 1,
+      "intake": 3
     }
   ]
 }

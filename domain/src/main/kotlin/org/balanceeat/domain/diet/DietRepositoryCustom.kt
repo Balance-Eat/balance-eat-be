@@ -6,4 +6,5 @@ import java.time.YearMonth
 interface DietRepositoryCustom {
     fun findDailyDiets(userId: Long, date: LocalDate): List<Diet>
     fun findMonthlyDiets(userId: Long, yearMonth: YearMonth): List<Diet>
+    fun existsByUserIdAndDateAndMealType(userId: Long, date: LocalDate, mealType: Diet.MealType): Boolean
 }
