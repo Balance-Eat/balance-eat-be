@@ -30,7 +30,7 @@ class DietV1ControllerTest: ControllerTestContext() {
         @Test
         fun success() {
             // given
-            every { dietService.getDailyDiets(any(), any()) } returns mockDietResponseList()
+            every { dietService.getDailyDiets(any(), any()) } returns mockSummaryResponse()
 
             given()
                 .header("X-USER-ID", "1")
@@ -70,7 +70,54 @@ class DietV1ControllerTest: ControllerTestContext() {
                 .status(HttpStatus.OK)
         }
     }
-    
+
+    @Nested
+    @DisplayName("GET /v1/diets/monthly - 월별 식단 조회")
+    inner class GetDietsByMonthTest {
+        @Test
+        fun success() {
+            // given
+            every { dietService.getMonthlyDiets(any(), any()) } returns mockSummaryResponse()
+
+            given()
+                .header("X-USER-ID", "1")
+                .params("yearMonth", "2024-03")
+                .get("/v1/diets/monthly")
+                .then()
+                .log().all()
+                .apply(
+                    document(
+                        identifier("GetDietsByMonthTest"),
+                        ResourceSnippetParametersBuilder()
+                            .tag(Tags.DIET.tagName)
+                            .description(Tags.DIET.descriptionWith("월별 식단 조회")),
+                        queryParameters(
+                            "yearMonth" queryMeans "조회할 연월 (yyyy-MM)"
+                        ),
+                        responseFields(
+                            fieldsWithBasic(
+                                "data" type ARRAY means "식사 기록 목록",
+                                "data[].dietId" type NUMBER means "식사 기록 고유 ID",
+                                "data[].mealType" type STRING means "식사 유형" withEnum Diet.MealType::class,
+                                "data[].consumeDate" type STRING means "섭취 날짜 (yyyy-MM-dd)",
+                                "data[].consumedAt" type STRING means "섭취 시간",
+                                "data[].items" type ARRAY means "해당 식사에 포함된 음식 목록",
+                                "data[].items[].foodId" type NUMBER means "음식 ID",
+                                "data[].items[].foodName" type STRING means "음식 이름",
+                                "data[].items[].intake" type NUMBER means "섭취량",
+                                "data[].items[].unit" type STRING means "섭취량 단위",
+                                "data[].items[].calories" type NUMBER means "해당 섭취량의 칼로리 (계산된 값)",
+                                "data[].items[].carbohydrates" type NUMBER means "해당 섭취량의 탄수화물 (계산된 값)",
+                                "data[].items[].protein" type NUMBER means "해당 섭취량의 단백질 (계산된 값)",
+                                "data[].items[].fat" type NUMBER means "해당 섭취량의 지방 (계산된 값)"
+                            )
+                        )
+                    )
+                )
+                .status(HttpStatus.OK)
+        }
+    }
+
     @Nested
     @DisplayName("POST /v1/diets - 식단 생성")
     inner class CreateDietTest {
@@ -78,7 +125,7 @@ class DietV1ControllerTest: ControllerTestContext() {
         fun success() {
             // given
             val request = mockCreateDietRequest()
-            every { dietService.create(any(), any()) } returns mockDietResponse()
+            every { dietService.create(any(), any()) } returns mockDetailsResponse()
             
             given()
                 .header("X-USER-ID", "1")
@@ -104,6 +151,7 @@ class DietV1ControllerTest: ControllerTestContext() {
                                 "data.dietId" type NUMBER means "생성된 식단 ID",
                                 "data.userId" type NUMBER means "사용자 ID",
                                 "data.mealType" type STRING means "식사 유형" withEnum Diet.MealType::class,
+                                "data.consumeDate" type STRING means "섭취 날짜 (yyyy-MM-dd)",
                                 "data.consumedAt" type STRING means "섭취 시간",
                                 "data.totalNutrition" type OBJECT means "총 영양성분",
                                 "data.totalNutrition.calories" type NUMBER means "총 칼로리 (kcal)",
@@ -131,12 +179,13 @@ class DietV1ControllerTest: ControllerTestContext() {
             return DietV1RequestFixture.Create().create()
         }
     }
-    
-    private fun mockDietResponse(): DietV1Response.Details {
+
+    private fun mockDetailsResponse(): DietV1Response.Details {
         return DietV1Response.Details(
             dietId = 1L,
             userId = 1L,
             mealType = Diet.MealType.DINNER,
+            consumeDate = LocalDate.of(2025, 1, 15),
             consumedAt = LocalDateTime.of(2025, 1, 15, 19, 30),
             totalNutrition = NutritionInfo(
                 calories = 245.0,
@@ -173,7 +222,7 @@ class DietV1ControllerTest: ControllerTestContext() {
         )
     }
 
-    private fun mockDietResponseList(): List<DietV1Response.Summary> {
+    private fun mockSummaryResponse(): List<DietV1Response.Summary> {
         return listOf(
             DietV1Response.Summary(
                 dietId = 1L,

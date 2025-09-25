@@ -5,6 +5,7 @@ import org.balanceeat.apibase.response.ApiResponse
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
+import java.time.YearMonth
 
 @RestController
 @RequestMapping("/v1/diets")
@@ -19,6 +20,16 @@ class DietV1Controller(
     ): ApiResponse<List<DietV1Response.Summary>> {
         return ApiResponse.success(
             dietService.getDailyDiets(userId, date)
+        )
+    }
+
+    @GetMapping("/monthly")
+    fun getMonthlyDiets(
+        @RequestHeader("X-USER-ID") userId: Long,
+        @RequestParam yearMonth: YearMonth,
+    ): ApiResponse<List<DietV1Response.Summary>> {
+        return ApiResponse.success(
+            dietService.getMonthlyDiets(userId, yearMonth)
         )
     }
 

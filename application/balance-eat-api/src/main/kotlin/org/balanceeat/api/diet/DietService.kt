@@ -1,13 +1,16 @@
 package org.balanceeat.api.diet
 
+import org.balanceeat.domain.diet.Diet
 import org.balanceeat.domain.diet.DietCommand
 import org.balanceeat.domain.diet.DietDomainService
 import org.balanceeat.domain.diet.DietRepository
+import org.balanceeat.domain.food.Food
 import org.balanceeat.domain.food.FoodRepository
 import org.balanceeat.domain.user.UserDomainService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.time.YearMonth
 
 @Service
 class DietService(
@@ -40,14 +43,28 @@ class DietService(
     @Transactional(readOnly = true)
     fun getDailyDiets(userId: Long, date: LocalDate): List<DietV1Response.Summary> {
         val diets = dietRepository.findDailyDiets(userId, date)
-        val foodMap = diets.flatMap { it.dietFoods }
-            .map { it.foodId }
-            .distinct()
-            .let { foodRepository.findAllById(it) }
-            .associateBy { it.id }
+        val foodMap = getFoodMap(diets)
 
         return diets.map {
             DietV1Response.Summary.of(it, foodMap)
         }
+    }
+
+    @Transactional(readOnly = true)
+    fun getMonthlyDiets(userId: Long, yearMonth: YearMonth): List<DietV1Response.Summary> {
+        val diets = dietRepository.findMonthlyDiets(userId, yearMonth)
+        val foodMap = getFoodMap(diets)
+
+        return diets.map {
+            DietV1Response.Summary.of(it, foodMap)
+        }
+    }
+
+    private fun getFoodMap(diets: List<Diet>): Map<Long, Food> {
+        return diets.flatMap { it.dietFoods }
+            .map { it.foodId }
+            .distinct()
+            .let { foodRepository.findAllById(it) }
+            .associateBy { it.id }
     }
 }

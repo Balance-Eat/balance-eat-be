@@ -96,6 +96,7 @@ class DietV1Response {
         val dietId: Long,
         val userId: Long,
         val mealType: MealType,
+        val consumeDate: LocalDate,
         val consumedAt: LocalDateTime,
         val totalNutrition: NutritionInfo,
         val dietFoods: List<DietFood>
@@ -106,6 +107,7 @@ class DietV1Response {
                     dietId = dietDto.id,
                     userId = dietDto.userId,
                     mealType = dietDto.mealType,
+                    consumeDate = dietDto.consumedAt.toLocalDate(),
                     consumedAt = dietDto.consumedAt,
                     totalNutrition = dietDto.totalNutrition,
                     dietFoods = dietDto.dietFoods.map { DietFood.from(it) }

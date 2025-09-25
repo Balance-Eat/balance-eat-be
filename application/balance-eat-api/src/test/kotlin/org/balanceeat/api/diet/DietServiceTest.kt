@@ -1,22 +1,20 @@
 package org.balanceeat.api.diet
 
+import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.balanceeat.api.config.supports.IntegrationTestContext
-import org.balanceeat.domain.diet.Diet
 import org.balanceeat.domain.diet.DietFixture
 import org.balanceeat.domain.diet.DietFoodFixture
 import org.balanceeat.domain.diet.DietRepository
 import org.balanceeat.domain.food.FoodFixture
-import org.balanceeat.domain.food.FoodRepository
 import org.balanceeat.domain.user.UserFixture
-import org.balanceeat.domain.user.UserRepository
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.YearMonth
 
 class DietServiceTest : IntegrationTestContext() {
     @Autowired
@@ -103,14 +101,15 @@ class DietServiceTest : IntegrationTestContext() {
     }
 
     @Nested
+    @Transactional
     @DisplayName("일일 식단 조회 테스트")
-    inner class GetDailyDietsTest {
+    open inner class GetDailyDietsTest {
         @Test
         fun `특정 날짜의 사용자 식단을 조회할 수 있다`() {
             // given
             val userId = 1L
             val targetDateTime = LocalDateTime.now()
-            val food = createEntity(FoodFixture(name = "김치찌개").create())
+            val food = createEntity(FoodFixture(name = "김치찌개").create(), withTransaction = true)
             val dietFoods = mutableListOf(
                 DietFoodFixture(foodId = food.id).create()
             )
@@ -146,8 +145,8 @@ class DietServiceTest : IntegrationTestContext() {
             val userId = 1L
             val targetDate = LocalDate.now()
             val targetDateTime = LocalDateTime.now()
-            val food1 = createEntity(FoodFixture(name = "김치찌개").create())
-            val food2 = createEntity(FoodFixture(name = "된장찌개").create())
+            val food1 = createEntity(FoodFixture(name = "김치찌개").create(), withTransaction = true)
+            val food2 = createEntity(FoodFixture(name = "된장찌개").create(), withTransaction = true)
             val diet1 = dietRepository.save(
                 DietFixture(
                     userId = userId,
@@ -170,6 +169,154 @@ class DietServiceTest : IntegrationTestContext() {
             assertThat(result).hasSize(2)
             assertThat(result[0].dietId).isEqualTo(diet2.id)
             assertThat(result[1].dietId).isEqualTo(diet1.id)
+        }
+    }
+
+    @Nested
+    @Transactional
+    @DisplayName("월별 식단 조회 테스트")
+    open inner class GetMonthlyDietsTest {
+        @Test
+        fun `특정 월의 사용자 식단을 조회할 수 있다`() {
+            // given
+            val userId = 1L
+            val targetYearMonth = YearMonth.of(2024, 3)
+            val targetDateTime = targetYearMonth.atDay(15).atTime(12, 0)
+            val food = createEntity(FoodFixture(name = "김치찌개").create(), withTransaction = true)
+            val dietFoods = mutableListOf(
+                DietFoodFixture(foodId = food.id).create()
+            )
+            val diet = dietRepository.save(
+                DietFixture(
+                    userId = userId,
+                    consumedAt = targetDateTime,
+                    dietFoods = dietFoods
+                ).create()
+            )
+
+            // when
+            val result = dietService.getMonthlyDiets(userId, targetYearMonth)
+
+            // then
+            assertThat(result).hasSize(1)
+            assertThat(result[0].dietId).isEqualTo(diet.id)
+            assertThat(result[0].mealType).isEqualTo(diet.mealType)
+            assertThat(result[0].consumedAt).isEqualTo(diet.consumedAt)
+            assertThat(result[0].items).hasSize(1)
+
+            // 음식 정보 검증
+            val foodItem = result[0].items[0]
+            val dietFood = dietFoods[0]
+            assertThat(foodItem.foodId).isEqualTo(dietFood.foodId)
+            assertThat(foodItem.foodName).isEqualTo(food.name)
+            assertThat(foodItem.intake).isEqualTo(dietFood.intake)
+        }
+
+        @Test
+        fun `같은 월에 있는 여러 식단을 시간 오름차순으로 정렬한다`() {
+            // given
+            val userId = 1L
+            val targetYearMonth = YearMonth.of(2024, 3)
+            val food1 = createEntity(FoodFixture(name = "김치찌개").create(), withTransaction = true)
+            val food2 = createEntity(FoodFixture(name = "된장찌개").create(), withTransaction = true)
+            val diet1 = dietRepository.save(
+                DietFixture(
+                    userId = userId,
+                    consumedAt = targetYearMonth.atDay(20).atTime(20, 0),
+                    dietFoods = mutableListOf(DietFoodFixture(foodId = food1.id).create())
+                ).create()
+            )
+            val diet2 = dietRepository.save(
+                DietFixture(
+                    userId = userId,
+                    consumedAt = targetYearMonth.atDay(10).atTime(8, 0),
+                    dietFoods = mutableListOf(DietFoodFixture(foodId = food2.id).create())
+                ).create()
+            )
+
+            // when
+            val result = dietService.getMonthlyDiets(userId, targetYearMonth)
+
+            // then
+            assertThat(result).hasSize(2)
+            assertThat(result[0].dietId).isEqualTo(diet2.id) // 3월 10일이 먼저
+            assertThat(result[1].dietId).isEqualTo(diet1.id) // 3월 20일이 나중
+        }
+
+        @Test
+        fun `다른 월의 식단은 조회되지 않는다`() {
+            // given
+            val userId = 1L
+            val targetYearMonth = YearMonth.of(2024, 3)
+            val food = createEntity(FoodFixture(name = "김치찌개").create(), withTransaction = true)
+
+            // 2월 데이터 생성
+            dietRepository.save(
+                DietFixture(
+                    userId = userId,
+                    consumedAt = YearMonth.of(2024, 2).atDay(15).atTime(12, 0),
+                    dietFoods = mutableListOf(DietFoodFixture(foodId = food.id).create())
+                ).create()
+            )
+
+            // 4월 데이터 생성
+            dietRepository.save(
+                DietFixture(
+                    userId = userId,
+                    consumedAt = YearMonth.of(2024, 4).atDay(15).atTime(12, 0),
+                    dietFoods = mutableListOf(DietFoodFixture(foodId = food.id).create())
+                ).create()
+            )
+
+            // 3월 데이터 생성
+            val targetDiet = dietRepository.save(
+                DietFixture(
+                    userId = userId,
+                    consumedAt = targetYearMonth.atDay(15).atTime(12, 0),
+                    dietFoods = mutableListOf(DietFoodFixture(foodId = food.id).create())
+                ).create()
+            )
+
+            // when
+            val result = dietService.getMonthlyDiets(userId, targetYearMonth)
+
+            // then
+            assertThat(result).hasSize(1)
+            assertThat(result[0].dietId).isEqualTo(targetDiet.id)
+        }
+
+        @Test
+        fun `다른 사용자의 식단은 조회되지 않는다`() {
+            // given
+            val userId = 1L
+            val otherUserId = 2L
+            val targetYearMonth = YearMonth.of(2024, 3)
+            val food = createEntity(FoodFixture(name = "김치찌개").create(), withTransaction = true)
+
+            // 다른 사용자의 데이터 생성
+            dietRepository.save(
+                DietFixture(
+                    userId = otherUserId,
+                    consumedAt = targetYearMonth.atDay(15).atTime(12, 0),
+                    dietFoods = mutableListOf(DietFoodFixture(foodId = food.id).create())
+                ).create()
+            )
+
+            // 해당 사용자의 데이터 생성
+            val targetDiet = dietRepository.save(
+                DietFixture(
+                    userId = userId,
+                    consumedAt = targetYearMonth.atDay(15).atTime(12, 0),
+                    dietFoods = mutableListOf(DietFoodFixture(foodId = food.id).create())
+                ).create()
+            )
+
+            // when
+            val result = dietService.getMonthlyDiets(userId, targetYearMonth)
+
+            // then
+            assertThat(result).hasSize(1)
+            assertThat(result[0].dietId).isEqualTo(targetDiet.id)
         }
     }
 }
