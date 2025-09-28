@@ -15,7 +15,6 @@ class DietFood(
     @Column(name = "food_id", nullable = false)
     val foodId: Long,
 
-    // 섭취량 ex) 3 -> 3개
     @Column(name = "intake", nullable = false)
     var intake: Int
 ) : BaseEntity() {
@@ -27,6 +26,6 @@ class DietFood(
     override fun guard() {
         require(foodId > 0) { "음식 ID는 0보다 큰 값이어야 합니다" }
         require(intake > 0) { "섭취량은 0보다 큰 값이어야 합니다" }
-        require(intake <= 100) { "섭취량은 100개를 초과할 수 없습니다" }
+        require(intake <= 1_000_000) { "섭취량은 1,000,000 이하의 값이어야 합니다" }
     }
 }
