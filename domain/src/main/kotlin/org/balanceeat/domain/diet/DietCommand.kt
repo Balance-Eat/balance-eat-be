@@ -16,6 +16,18 @@ sealed class DietCommand {
         )
     }
 
+    data class Update(
+        val id: Long,
+        val mealType: Diet.MealType,
+        val consumedAt: LocalDateTime,
+        val dietFoods: List<DietFood>
+    ) {
+        data class DietFood(
+            val foodId: Long,
+            val intake: Int
+        )
+    }
+
     data class FindDailyDiets(
         val userId: Long,
         val date: LocalDate

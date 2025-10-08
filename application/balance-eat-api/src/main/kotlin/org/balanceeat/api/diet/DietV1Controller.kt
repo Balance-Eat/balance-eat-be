@@ -35,10 +35,19 @@ class DietV1Controller(
 
     @PostMapping
     @ResponseStatus(CREATED)
-    fun createDiet(
+    fun create(
         @RequestHeader("X-USER-ID") userId: Long,
         @RequestBody @Valid request: DietV1Request.Create
     ): ApiResponse<DietV1Response.Details> {
         return ApiResponse.success(dietService.create(request, userId))
+    }
+
+    @PutMapping("/{dietId}")
+    fun update(
+        @RequestHeader("X-USER-ID") userId: Long,
+        @PathVariable dietId: Long,
+        @RequestBody @Valid request: DietV1Request.Update
+    ): ApiResponse<DietV1Response.Details> {
+        return ApiResponse.success(dietService.update(request, dietId, userId))
     }
 }

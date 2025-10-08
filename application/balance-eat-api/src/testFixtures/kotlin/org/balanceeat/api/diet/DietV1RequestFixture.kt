@@ -21,4 +21,21 @@ class DietV1RequestFixture {
             )
         }
     }
+
+    data class Update(
+        val mealType: Diet.MealType = Diet.MealType.DINNER,
+        val consumedAt: LocalDateTime = LocalDateTime.now(),
+        val dietFoods: List<DietV1Request.Update.DietFood> = listOf(
+            DietV1Request.Update.DietFood(foodId = 1L, intake = 3),
+            DietV1Request.Update.DietFood(foodId = 3L, intake = 2)
+        )
+    ) : TestFixture<DietV1Request.Update> {
+        override fun create(): DietV1Request.Update {
+            return DietV1Request.Update(
+                mealType = mealType,
+                consumedAt = consumedAt,
+                dietFoods = dietFoods
+            )
+        }
+    }
 }

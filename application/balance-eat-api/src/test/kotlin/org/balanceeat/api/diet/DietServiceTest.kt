@@ -2,7 +2,11 @@ package org.balanceeat.api.diet
 
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.catchThrowable
 import org.balanceeat.api.config.supports.IntegrationTestContext
+import org.balanceeat.apibase.ApplicationStatus.CANNOT_MODIFY_FOOD
+import org.balanceeat.apibase.exception.BadRequestException
+import org.balanceeat.domain.diet.Diet
 import org.balanceeat.domain.diet.DietFixture
 import org.balanceeat.domain.diet.DietFoodFixture
 import org.balanceeat.domain.diet.DietRepository
@@ -318,5 +322,67 @@ class DietServiceTest : IntegrationTestContext() {
             assertThat(result).hasSize(1)
             assertThat(result[0].dietId).isEqualTo(targetDiet.id)
         }
+    }
+
+    @Nested
+    @DisplayName("식단 수정 테스트")
+    inner class UpdateTest {
+        @Test
+        fun `식단을 성공적으로 수정할 수 있다`() {
+            // given
+            val user = createEntity(UserFixture().create())
+            val food1 = createEntity(FoodFixture(name = "사과").create())
+            val food2 = createEntity(FoodFixture(name = "치킨").create())
+            val food3 = createEntity(FoodFixture(name = "피자").create())
+
+            val existingDiet = dietRepository.save(
+                DietFixture(
+                    userId = user.id,
+                    mealType = Diet.MealType.BREAKFAST,
+                    dietFoods = mutableListOf(
+                        DietFoodFixture(foodId = food1.id, intake = 1).create(),
+                        DietFoodFixture(foodId = food2.id, intake = 2).create(),
+                        DietFoodFixture(foodId = food3.id, intake = 3).create()
+                    )
+                ).create()
+            )
+
+            val request = DietV1RequestFixture.Update(
+                mealType = Diet.MealType.DINNER,
+                consumedAt = LocalDateTime.now(),
+                dietFoods = listOf(
+                    DietV1Request.Update.DietFood(foodId = food1.id, intake = 4),
+                    DietV1Request.Update.DietFood(foodId = food2.id, intake = 5)
+                )
+            ).create()
+
+            // when
+            val result = dietService.update(request,existingDiet.id, user.id)
+
+            // then
+            assertThat(request)
+                .usingRecursiveComparison()
+                .isEqualTo(result)
+        }
+    }
+
+    @Test
+    fun `다른 사용자의 식단을 수정하려 하면 실패한다`() {
+        // given
+        val user = createEntity(UserFixture().create())
+        val otherUser = createEntity(UserFixture(name = "otherUser").create())
+        val existingDiet = dietRepository.save(
+            DietFixture(userId = user.id).create()
+        )
+
+        val request = DietV1RequestFixture.Update().create()
+
+        // when
+        val throwable = catchThrowable { dietService.update(request, existingDiet.id, otherUser.id) }
+
+        // then
+        assertThat(throwable).isInstanceOf(BadRequestException::class.java)
+            .hasFieldOrPropertyWithValue("status", CANNOT_MODIFY_FOOD)
+            .hasMessage(CANNOT_MODIFY_FOOD.message)
     }
 }

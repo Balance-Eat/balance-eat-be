@@ -18,8 +18,8 @@ class Diet(
     
     @Column(name = "meal_type", nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
-    val mealType: MealType,
-    
+    var mealType: MealType,
+
     @Column(name = "consumed_at", nullable = false)
     var consumedAt: LocalDateTime,
 
@@ -41,7 +41,17 @@ class Diet(
         val newDietFood = DietFood(food, intake)
         dietFoods.add(newDietFood)
     }
-    
+
+    fun update(mealType: MealType, consumedAt: LocalDateTime) {
+        this.mealType = mealType
+        this.consumedAt = consumedAt
+    }
+
+    fun updateFoods(dietFoods: List<DietFood>) {
+        this.dietFoods.clear()
+        this.dietFoods.addAll(dietFoods)
+    }
+
     enum class MealType {
         BREAKFAST,
         LUNCH,

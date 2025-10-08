@@ -2,7 +2,6 @@ package org.balanceeat.domain.diet
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
-import org.balanceeat.domain.common.DomainStatus
 import org.balanceeat.domain.common.DomainStatus.DIET_MEAL_TYPE_ALREADY_EXISTS
 import org.balanceeat.domain.common.exception.DomainException
 import org.balanceeat.domain.config.supports.IntegrationTestContext
@@ -103,6 +102,89 @@ class DietDomainServiceTest : IntegrationTestContext() {
 
             // when
             val throwable = catchThrowable { dietDomainService.create(command) }
+
+            // then
+            assertThat(throwable).isInstanceOf(DomainException::class.java)
+                .hasFieldOrPropertyWithValue("status", DIET_MEAL_TYPE_ALREADY_EXISTS)
+                .hasMessage(DIET_MEAL_TYPE_ALREADY_EXISTS.message)
+        }
+    }
+
+    @Nested
+    @DisplayName("식단 수정 테스트")
+    inner class UpdateTest {
+        @Test
+        fun `식단 수정 성공`() {
+            // given
+            val food1 = foodRepository.save(FoodFixture(name = "사과").create())
+            val food2 = foodRepository.save(FoodFixture(name = "바나나").create())
+            val food3 = foodRepository.save(FoodFixture(name = "당근").create())
+            val food4 = foodRepository.save(FoodFixture(name = "토마토").create())
+
+            val existingDiet = dietRepository.save(
+                DietFixture(
+                    dietFoods = mutableListOf(
+                        DietFoodFixture(foodId = food1.id, intake = 1).create(),
+                        DietFoodFixture(foodId = food2.id, intake = 1).create(),
+                        DietFoodFixture(foodId = food4.id, intake = 1).create(),
+                    )
+                ).create()
+            )
+
+            val command = DietCommandFixture.Update(
+                id = existingDiet.id,
+                mealType = Diet.MealType.DINNER,
+                consumedAt = LocalDateTime.now(),
+                dietFoods = listOf(
+                    DietCommand.Update.DietFood(
+                        foodId = food1.id,
+                        intake = 10
+                    ),
+                    DietCommand.Update.DietFood(
+                        foodId = food2.id,
+                        intake = 10
+                    ),
+                    DietCommand.Update.DietFood(
+                        foodId = food3.id,
+                        intake = 1
+                    )
+                )
+            ).create()
+
+            // when
+            val result = dietDomainService.update(command)
+
+            // then
+            assertThat(command)
+                .usingRecursiveComparison()
+                .isEqualTo(result)
+        }
+
+        @Test
+        fun `수정 시 같은 날짜, 같은 MealType의 다른 식단이 있으면 실패한다`() {
+            // given
+            val existingDiet1 = dietRepository.save(
+                DietFixture(
+                    mealType = Diet.MealType.BREAKFAST,
+                    consumedAt = LocalDateTime.now()
+                ).create()
+            )
+
+            val existingDiet2 = dietRepository.save(
+                DietFixture(
+                    mealType = Diet.MealType.LUNCH,
+                    consumedAt = LocalDateTime.now()
+                ).create()
+            )
+
+            val updateCommand = DietCommandFixture.Update(
+                id = existingDiet2.id,
+                mealType = Diet.MealType.BREAKFAST, // 이미 존재하는 MealType으로 변경
+                consumedAt = existingDiet2.consumedAt,
+            ).create()
+
+            // when
+            val throwable = catchThrowable { dietDomainService.update(updateCommand) }
 
             // then
             assertThat(throwable).isInstanceOf(DomainException::class.java)

@@ -26,6 +26,27 @@ class DietCommandFixture {
         }
     }
 
+    class Update(
+        var id: Long = 1L,
+        var mealType: Diet.MealType = Diet.MealType.DINNER,
+        var consumedAt: LocalDateTime = LocalDateTime.now(),
+        var dietFoods: List<DietCommand.Update.DietFood> = mutableListOf(
+            DietCommand.Update.DietFood(
+                foodId = 1L,
+                intake = 3
+            )
+        )
+    ) : TestFixture<DietCommand.Update> {
+        override fun create(): DietCommand.Update {
+            return DietCommand.Update(
+                id = id,
+                mealType = mealType,
+                consumedAt = consumedAt,
+                dietFoods = dietFoods
+            )
+        }
+    }
+
     class FindDailyDiets(
         var userId: Long = 1L,
         var date: LocalDate = LocalDate.now()

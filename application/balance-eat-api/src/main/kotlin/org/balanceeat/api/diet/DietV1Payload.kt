@@ -35,6 +35,26 @@ class DietV1Request {
             val intake: Int
         )
     }
+
+    data class Update(
+        @field:NotNull(message = "식사 유형은 필수입니다")
+        val mealType: MealType,
+
+        @field:NotNull(message = "섭취 시간은 필수입니다")
+        val consumedAt: LocalDateTime,
+
+        @field:NotEmpty(message = "음식 목록은 최소 1개 이상이어야 합니다")
+        @field:Valid
+        val dietFoods: List<DietFood>
+    ) {
+        data class DietFood(
+            @field:NotNull(message = "음식 ID는 필수입니다")
+            val foodId: Long,
+
+            @field:NotNull(message = "섭취량은 필수입니다")
+            val intake: Int
+        )
+    }
 }
 
 class DietV1Response {

@@ -1,5 +1,10 @@
 package org.balanceeat.api.diet
 
+import org.balanceeat.apibase.ApplicationStatus
+import org.balanceeat.apibase.exception.BadRequestException
+import org.balanceeat.apibase.exception.NotFoundException
+import org.balanceeat.domain.common.DomainStatus
+import org.balanceeat.domain.common.exception.DomainException
 import org.balanceeat.domain.diet.Diet
 import org.balanceeat.domain.diet.DietCommand
 import org.balanceeat.domain.diet.DietDomainService
@@ -7,6 +12,7 @@ import org.balanceeat.domain.diet.DietRepository
 import org.balanceeat.domain.food.Food
 import org.balanceeat.domain.food.FoodRepository
 import org.balanceeat.domain.user.UserDomainService
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -37,6 +43,34 @@ class DietService(
         
         return DietV1Response.Details.from(
             dietDomainService.create(command)
+        )
+    }
+
+    @Transactional
+    fun update(request: DietV1Request.Update, dietId: Long, userId: Long): DietV1Response.Details {
+        userDomainService.validateExistsUser(userId)
+
+        val diet = dietRepository.findByIdOrNull(dietId)
+            ?: throw NotFoundException(ApplicationStatus.DIET_NOT_FOUND)
+
+        if (diet.userId != userId) {
+            throw BadRequestException(ApplicationStatus.CANNOT_MODIFY_FOOD)
+        }
+
+        val command = DietCommand.Update(
+            id = dietId,
+            mealType = request.mealType,
+            consumedAt = request.consumedAt,
+            dietFoods = request.dietFoods.map { dietFood ->
+                DietCommand.Update.DietFood(
+                    foodId = dietFood.foodId,
+                    intake = dietFood.intake
+                )
+            }
+        )
+
+        return DietV1Response.Details.from(
+            dietDomainService.update(command)
         )
     }
 
