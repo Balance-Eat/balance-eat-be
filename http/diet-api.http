@@ -39,7 +39,7 @@ X-USER-ID: 1
 
 ### 식단 수정
 @dietId = 1
-POST {{baseUrl}}/{{apiVersion}}/diets/{{dietId}}
+PUT {{baseUrl}}/{{apiVersion}}/diets/{{dietId}}
 Content-Type: application/json
 X-USER-ID: 1
 
@@ -53,3 +53,10 @@ X-USER-ID: 1
     }
   ]
 }
+
+###
+
+### 식단 삭제
+@dietIdToDelete = 1
+DELETE {{baseUrl}}/{{apiVersion}}/diets/{{dietIdToDelete}}
+X-USER-ID: 1

@@ -50,4 +50,13 @@ class DietV1Controller(
     ): ApiResponse<DietV1Response.Details> {
         return ApiResponse.success(dietService.update(request, dietId, userId))
     }
+
+    @DeleteMapping("/{dietId}")
+    fun delete(
+        @RequestHeader("X-USER-ID") userId: Long,
+        @PathVariable dietId: Long
+    ): ApiResponse<Void> {
+        dietService.delete(dietId, userId)
+        return ApiResponse.success()
+    }
 }

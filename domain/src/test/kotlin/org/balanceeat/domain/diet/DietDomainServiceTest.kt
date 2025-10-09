@@ -192,4 +192,20 @@ class DietDomainServiceTest : IntegrationTestContext() {
                 .hasMessage(DIET_MEAL_TYPE_ALREADY_EXISTS.message)
         }
     }
+
+    @Nested
+    @DisplayName("식단 삭제 테스트")
+    inner class DeleteTest {
+        @Test
+        fun `성공`() {
+            // given
+            val diet = dietRepository.save(DietFixture().create())
+
+            // when
+            dietDomainService.delete(diet.id)
+
+            // then
+            assertThat(dietRepository.existsById(diet.id)).isFalse()
+        }
+    }
 }

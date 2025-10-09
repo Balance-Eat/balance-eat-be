@@ -69,6 +69,12 @@ class DietDomainService(
         return DietDto.from(savedDiet, foodMap)
     }
 
+    @Transactional
+    fun delete(id: Long) {
+        dietRepository.findById(id)
+            .ifPresent { dietRepository.delete(it) }
+    }
+
     private fun checkDuplication(
         userId: Long,
         consumedAt: LocalDateTime,

@@ -238,6 +238,36 @@ class DietV1ControllerTest: ControllerTestContext() {
         }
     }
 
+    @Nested
+    @DisplayName("DELETE /v1/diets/{dietId} - 식단 삭제")
+    inner class DeleteTest {
+        @Test
+        fun success() {
+            // given
+            every { dietService.delete(any(), any()) } returns Unit
+
+            given()
+                .header("X-USER-ID", "1")
+                .delete("/v1/diets/{dietId}", 1L)
+                .then()
+                .log().all()
+                .apply(
+                    document(
+                        identifier("DeleteDietTest"),
+                        ResourceSnippetParametersBuilder()
+                            .tag(Tags.DIET.tagName)
+                            .description(Tags.DIET.descriptionWith("삭제")),
+                        responseFields(
+                            fieldsWithBasic(
+                                "data" type NULL means "결과 데이터"
+                            )
+                        )
+                    )
+                )
+                .status(HttpStatus.OK)
+        }
+    }
+
     private fun mockDetailsResponse(): DietV1Response.Details {
         return DietV1Response.Details(
             dietId = 1L,

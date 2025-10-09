@@ -74,6 +74,21 @@ class DietService(
         )
     }
 
+    @Transactional
+    fun delete(id: Long, userId: Long) {
+        userDomainService.validateExistsUser(userId)
+
+        val diet = dietRepository.findByIdOrNull(id)
+
+        if (diet == null) return
+
+        if (diet.userId != userId) {
+            throw BadRequestException(ApplicationStatus.CANNOT_MODIFY_DIET)
+        }
+
+        dietDomainService.delete(id)
+    }
+
     @Transactional(readOnly = true)
     fun getDailyDiets(userId: Long, date: LocalDate): List<DietV1Response.Summary> {
         val diets = dietRepository.findDailyDiets(userId, date)

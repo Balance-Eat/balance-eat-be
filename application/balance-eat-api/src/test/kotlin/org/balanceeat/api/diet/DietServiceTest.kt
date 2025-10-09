@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import org.balanceeat.api.config.supports.IntegrationTestContext
+import org.balanceeat.apibase.ApplicationStatus
+import org.balanceeat.apibase.ApplicationStatus.CANNOT_MODIFY_DIET
 import org.balanceeat.apibase.ApplicationStatus.CANNOT_MODIFY_FOOD
 import org.balanceeat.apibase.exception.BadRequestException
 import org.balanceeat.domain.diet.Diet
@@ -384,5 +386,55 @@ class DietServiceTest : IntegrationTestContext() {
         assertThat(throwable).isInstanceOf(BadRequestException::class.java)
             .hasFieldOrPropertyWithValue("status", CANNOT_MODIFY_FOOD)
             .hasMessage(CANNOT_MODIFY_FOOD.message)
+    }
+
+    @Nested
+    @DisplayName("식단 삭제 테스트")
+    inner class DeleteTest {
+        @Test
+        fun `식단을 성공적으로 삭제할 수 있다`() {
+            // given
+            val user = createEntity(UserFixture().create())
+            val existingDiet = dietRepository.save(
+                DietFixture(userId = user.id).create()
+            )
+
+            // when
+            dietService.delete(existingDiet.id, user.id)
+
+            // then
+            assertThat(dietRepository.existsById(existingDiet.id)).isFalse()
+        }
+
+        @Test
+        fun `존재하지 않는 식단을 삭제해도 예외가 발생하지 않는다`() {
+            // given
+            val user = createEntity(UserFixture().create())
+            val nonExistentDietId = 999L
+
+            // when
+            val throwable = catchThrowable { dietService.delete(nonExistentDietId, user.id) }
+
+            // then
+            assertThat(throwable).isNull()
+        }
+
+        @Test
+        fun `다른 사용자의 식단을 삭제하려 하면 실패한다`() {
+            // given
+            val user = createEntity(UserFixture().create())
+            val otherUser = createEntity(UserFixture(name = "otherUser").create())
+            val existingDiet = dietRepository.save(
+                DietFixture(userId = user.id).create()
+            )
+
+            // when
+            val throwable = catchThrowable { dietService.delete(existingDiet.id, otherUser.id) }
+
+            // then
+            assertThat(throwable).isInstanceOf(BadRequestException::class.java)
+                .hasFieldOrPropertyWithValue("status", CANNOT_MODIFY_DIET)
+                .hasMessage(CANNOT_MODIFY_DIET.message)
+        }
     }
 }
