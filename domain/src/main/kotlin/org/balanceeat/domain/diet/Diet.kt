@@ -52,6 +52,12 @@ class Diet(
         this.dietFoods.addAll(dietFoods)
     }
 
+    fun removeFood(dietFoodId: Long) {
+        val dietFood = dietFoods.find { it.id == dietFoodId }
+            ?: throw IllegalArgumentException("식단 음식을 찾을 수 없습니다")
+        dietFoods.remove(dietFood)
+    }
+
     enum class MealType {
         BREAKFAST,
         LUNCH,

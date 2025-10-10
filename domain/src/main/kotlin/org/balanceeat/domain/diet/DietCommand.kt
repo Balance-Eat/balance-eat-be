@@ -32,4 +32,9 @@ sealed class DietCommand {
         val userId: Long,
         val date: LocalDate
     )
+
+    data class DeleteDietFood(
+        val dietId: Long,
+        val dietFoodId: Long
+    )
 }

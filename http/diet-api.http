@@ -60,3 +60,11 @@ X-USER-ID: 1
 @dietIdToDelete = 1
 DELETE {{baseUrl}}/{{apiVersion}}/diets/{{dietIdToDelete}}
 X-USER-ID: 1
+
+###
+
+### 식단 음식 삭제
+@dietIdForFoodDelete = 1
+@dietFoodIdToDelete = 1
+DELETE {{baseUrl}}/{{apiVersion}}/diets/{{dietIdForFoodDelete}}/diet-foods/{{dietFoodIdToDelete}}
+X-USER-ID: 1

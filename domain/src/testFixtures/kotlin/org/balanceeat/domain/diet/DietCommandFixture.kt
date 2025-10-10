@@ -58,4 +58,16 @@ class DietCommandFixture {
             )
         }
     }
+
+    class DeleteDietFood(
+        var dietId: Long = 1L,
+        var dietFoodId: Long = 1L
+    ) : TestFixture<DietCommand.DeleteDietFood> {
+        override fun create(): DietCommand.DeleteDietFood {
+            return DietCommand.DeleteDietFood(
+                dietId = dietId,
+                dietFoodId = dietFoodId
+            )
+        }
+    }
 }

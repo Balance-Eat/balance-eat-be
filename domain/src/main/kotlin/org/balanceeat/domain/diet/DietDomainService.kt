@@ -75,6 +75,15 @@ class DietDomainService(
             .ifPresent { dietRepository.delete(it) }
     }
 
+    @Transactional
+    fun deleteDietFood(command: DietCommand.DeleteDietFood) {
+        val diet = dietRepository.findByIdOrNull(command.dietId)
+            ?: throw EntityNotFoundException(DomainStatus.DIET_NOT_FOUND)
+
+        diet.removeFood(command.dietFoodId)
+        dietRepository.save(diet)
+    }
+
     private fun checkDuplication(
         userId: Long,
         consumedAt: LocalDateTime,

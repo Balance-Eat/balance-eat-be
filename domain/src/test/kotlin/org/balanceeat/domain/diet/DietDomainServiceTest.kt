@@ -1,5 +1,6 @@
 package org.balanceeat.domain.diet
 
+import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import org.balanceeat.domain.common.DomainStatus.DIET_MEAL_TYPE_ALREADY_EXISTS
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalDateTime
 
+@Transactional
 class DietDomainServiceTest : IntegrationTestContext() {
     @Autowired
     private lateinit var dietDomainService: DietDomainService
@@ -206,6 +208,88 @@ class DietDomainServiceTest : IntegrationTestContext() {
 
             // then
             assertThat(dietRepository.existsById(diet.id)).isFalse()
+        }
+    }
+
+    @Nested
+    @DisplayName("식단 음식 삭제 테스트")
+    inner class DeleteDietFoodTest {
+        @Test
+        fun `식단 음식 삭제 성공`() {
+            // given
+            val food1 = foodRepository.save(FoodFixture(name = "사과").create())
+            val food2 = foodRepository.save(FoodFixture(name = "바나나").create())
+            val food3 = foodRepository.save(FoodFixture(name = "포도").create())
+
+            val savedDiet = dietRepository.save(
+                DietFixture(
+                    dietFoods = mutableListOf(
+                        DietFoodFixture(foodId = food1.id, intake = 2).create(),
+                        DietFoodFixture(foodId = food2.id, intake = 3).create(),
+                        DietFoodFixture(foodId = food3.id, intake = 1).create()
+                    )
+                ).create()
+            )
+
+            // dietFoods를 미리 로드하여 ID 저장
+            val dietFoodIds = savedDiet.dietFoods.map { it.id }
+            val dietFoodIdToDelete = dietFoodIds[1] // 바나나 삭제
+
+            val command = DietCommandFixture.DeleteDietFood(
+                dietId = savedDiet.id,
+                dietFoodId = dietFoodIdToDelete
+            ).create()
+
+            // when
+            dietDomainService.deleteDietFood(command)
+
+            // then
+            val updatedDiet = dietRepository.findById(savedDiet.id).get()
+            assertThat(updatedDiet.dietFoods).hasSize(2)
+            assertThat(updatedDiet.dietFoods.map { it.id })
+                .doesNotContain(dietFoodIdToDelete)
+            assertThat(updatedDiet.dietFoods.map { it.foodId })
+                .containsExactlyInAnyOrder(food1.id, food3.id)
+        }
+
+        @Test
+        fun `존재하지 않는 식단으로 삭제 시도하면 실패한다`() {
+            // given
+            val command = DietCommandFixture.DeleteDietFood(
+                dietId = 999L,
+                dietFoodId = 1L
+            ).create()
+
+            // when
+            val throwable = catchThrowable { dietDomainService.deleteDietFood(command) }
+
+            // then
+            assertThat(throwable).isInstanceOf(org.balanceeat.domain.common.exception.EntityNotFoundException::class.java)
+        }
+
+        @Test
+        fun `존재하지 않는 식단 음식 ID로 삭제 시도하면 실패한다`() {
+            // given
+            val food = foodRepository.save(FoodFixture(name = "사과").create())
+            val diet = dietRepository.save(
+                DietFixture(
+                    dietFoods = mutableListOf(
+                        DietFoodFixture(foodId = food.id, intake = 2).create()
+                    )
+                ).create()
+            )
+
+            val command = DietCommandFixture.DeleteDietFood(
+                dietId = diet.id,
+                dietFoodId = 999L // 존재하지 않는 dietFoodId
+            ).create()
+
+            // when
+            val throwable = catchThrowable { dietDomainService.deleteDietFood(command) }
+
+            // then
+            assertThat(throwable).isInstanceOf(IllegalArgumentException::class.java)
+                .hasMessage("식단 음식을 찾을 수 없습니다")
         }
     }
 }
