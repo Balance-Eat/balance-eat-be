@@ -1,6 +1,8 @@
 package org.balanceeat.domain.diet
 
 import jakarta.persistence.*
+import org.balanceeat.domain.common.DomainStatus
+import org.balanceeat.domain.common.exception.DomainException
 import org.balanceeat.domain.config.BaseEntity
 import org.balanceeat.domain.config.NEW_ID
 import org.balanceeat.domain.food.Food
@@ -52,10 +54,19 @@ class Diet(
         this.dietFoods.addAll(dietFoods)
     }
 
+    fun getFood(dietFoodId: Long): DietFood {
+        return dietFoods.find { it.id == dietFoodId }
+            ?: throw DomainException(DomainStatus.DIET_FOOD_NOT_FOUND)
+    }
+
     fun removeFood(dietFoodId: Long) {
-        val dietFood = dietFoods.find { it.id == dietFoodId }
-            ?: throw IllegalArgumentException("식단 음식을 찾을 수 없습니다")
+        val dietFood = getFood(dietFoodId)
         dietFoods.remove(dietFood)
+    }
+
+    fun updateFood(dietFoodId: Long, newIntake: Int) {
+        val dietFood = getFood(dietFoodId)
+        dietFood.intake = newIntake
     }
 
     enum class MealType {

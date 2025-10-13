@@ -108,6 +108,32 @@ class DietService(
         dietDomainService.deleteDietFood(command)
     }
 
+    @Transactional
+    fun updateDietFood(
+        dietId: Long,
+        dietFoodId: Long,
+        request: DietV1Request.UpdateDietFood,
+        userId: Long
+    ): DietV1Response.Details {
+        userDomainService.validateExistsUser(userId)
+
+        val diet = dietRepository.findByIdOrNull(dietId)
+            ?: throw NotFoundException(ApplicationStatus.DIET_NOT_FOUND)
+
+        if (diet.userId != userId) {
+            throw BadRequestException(ApplicationStatus.CANNOT_MODIFY_DIET)
+        }
+
+        val command = DietCommand.UpdateDietFood(
+            dietId = dietId,
+            dietFoodId = dietFoodId,
+            intake = request.intake
+        )
+
+        val result = dietDomainService.updateDietFood(command)
+        return DietV1Response.Details.from(result)
+    }
+
     @Transactional(readOnly = true)
     fun getDailyDiets(userId: Long, date: LocalDate): List<DietV1Response.Summary> {
         val diets = dietRepository.findDailyDiets(userId, date)

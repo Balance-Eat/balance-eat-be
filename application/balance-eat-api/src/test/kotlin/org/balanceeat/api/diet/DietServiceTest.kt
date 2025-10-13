@@ -522,4 +522,87 @@ class DietServiceTest : IntegrationTestContext() {
                 .hasMessage(ApplicationStatus.DIET_NOT_FOUND.message)
         }
     }
+
+    @Nested
+    @Transactional
+    @DisplayName("식단 음식 섭취량 수정 테스트")
+    open inner class UpdateDietFoodTest {
+        @Test
+        fun `식단 음식 섭취량을 성공적으로 수정할 수 있다`() {
+            // given
+            val user = createEntity(UserFixture().create())
+            val food = createEntity(FoodFixture(name = "사과", servingSize = 100.0, unit = "g").create())
+
+            val savedDiet = dietRepository.save(
+                DietFixture(
+                    userId = user.id,
+                    dietFoods = mutableListOf(
+                        DietFoodFixture(foodId = food.id, intake = 100).create()
+                    )
+                ).create()
+            )
+
+            val dietFoodId = savedDiet.dietFoods.first().id
+            val request = DietV1Request.UpdateDietFood(intake = 150)
+
+            // when
+            val result = dietService.updateDietFood(savedDiet.id, dietFoodId, request, user.id)
+
+            // then
+            assertThat(result.dietId).isEqualTo(savedDiet.id)
+            assertThat(result.dietFoods).hasSize(1)
+            val updatedDietFood = result.dietFoods.first()
+            assertThat(updatedDietFood.intake).isEqualTo(150)
+            assertThat(updatedDietFood.foodName).isEqualTo("사과")
+        }
+
+        @Test
+        fun `다른 사용자의 식단 음식 섭취량을 수정하려 하면 실패한다`() {
+            // given
+            val user = createEntity(UserFixture().create())
+            val otherUser = createEntity(UserFixture(name = "otherUser").create())
+            val food = createEntity(FoodFixture(name = "사과").create())
+
+            val existingDiet = dietRepository.save(
+                DietFixture(
+                    userId = user.id,
+                    dietFoods = mutableListOf(
+                        DietFoodFixture(foodId = food.id, intake = 100).create()
+                    )
+                ).create()
+            )
+
+            val dietFoodId = existingDiet.dietFoods[0].id
+            val request = DietV1Request.UpdateDietFood(intake = 150)
+
+            // when
+            val throwable = catchThrowable {
+                dietService.updateDietFood(existingDiet.id, dietFoodId, request, otherUser.id)
+            }
+
+            // then
+            assertThat(throwable).isInstanceOf(BadRequestException::class.java)
+                .hasFieldOrPropertyWithValue("status", CANNOT_MODIFY_DIET)
+                .hasMessage(CANNOT_MODIFY_DIET.message)
+        }
+
+        @Test
+        fun `존재하지 않는 식단의 음식 섭취량을 수정하려 하면 실패한다`() {
+            // given
+            val user = createEntity(UserFixture().create())
+            val nonExistentDietId = 999L
+            val dietFoodId = 1L
+            val request = DietV1Request.UpdateDietFood(intake = 150)
+
+            // when
+            val throwable = catchThrowable {
+                dietService.updateDietFood(nonExistentDietId, dietFoodId, request, user.id)
+            }
+
+            // then
+            assertThat(throwable).isInstanceOf(org.balanceeat.apibase.exception.NotFoundException::class.java)
+                .hasFieldOrPropertyWithValue("status", ApplicationStatus.DIET_NOT_FOUND)
+                .hasMessage(ApplicationStatus.DIET_NOT_FOUND.message)
+        }
+    }
 }

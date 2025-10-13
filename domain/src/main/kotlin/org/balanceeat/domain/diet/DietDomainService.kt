@@ -84,6 +84,19 @@ class DietDomainService(
         dietRepository.save(diet)
     }
 
+    @Transactional
+    fun updateDietFood(command: DietCommand.UpdateDietFood): DietDto {
+        val diet = dietRepository.findByIdOrNull(command.dietId)
+            ?: throw EntityNotFoundException(DomainStatus.DIET_NOT_FOUND)
+
+        diet.updateFood(command.dietFoodId, command.intake)
+        val savedDiet = dietRepository.save(diet)
+        val foodIds = savedDiet.dietFoods.map { it.foodId }
+        val foodMap = foodRepository.findAllById(foodIds).associateBy { it.id }
+
+        return DietDto.from(savedDiet, foodMap)
+    }
+
     private fun checkDuplication(
         userId: Long,
         consumedAt: LocalDateTime,

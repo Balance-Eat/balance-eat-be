@@ -68,3 +68,14 @@ X-USER-ID: 1
 @dietFoodIdToDelete = 1
 DELETE {{baseUrl}}/{{apiVersion}}/diets/{{dietIdForFoodDelete}}/diet-foods/{{dietFoodIdToDelete}}
 X-USER-ID: 1
+
+###
+
+### 식단 음식 섭취량 수정
+PUT {{baseUrl}}/{{apiVersion}}/diets/1/diet-foods/1
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "intake": 150
+}

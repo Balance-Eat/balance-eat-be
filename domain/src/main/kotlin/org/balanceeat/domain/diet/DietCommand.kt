@@ -37,4 +37,10 @@ sealed class DietCommand {
         val dietId: Long,
         val dietFoodId: Long
     )
+
+    data class UpdateDietFood(
+        val dietId: Long,
+        val dietFoodId: Long,
+        val intake: Int
+    )
 }

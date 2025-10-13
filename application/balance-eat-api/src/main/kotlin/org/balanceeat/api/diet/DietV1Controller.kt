@@ -69,4 +69,15 @@ class DietV1Controller(
         dietService.deleteDietFood(dietId, dietFoodId, userId)
         return ApiResponse.success()
     }
+
+    @PutMapping("/{dietId}/diet-foods/{dietFoodId}")
+    fun updateDietFood(
+        @RequestHeader("X-USER-ID") userId: Long,
+        @PathVariable dietId: Long,
+        @PathVariable dietFoodId: Long,
+        @RequestBody @Valid request: DietV1Request.UpdateDietFood
+    ): ApiResponse<DietV1Response.Details> {
+        val result = dietService.updateDietFood(dietId, dietFoodId, request, userId)
+        return ApiResponse.success(result)
+    }
 }

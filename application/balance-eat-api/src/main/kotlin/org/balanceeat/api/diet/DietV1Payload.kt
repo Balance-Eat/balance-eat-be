@@ -55,6 +55,11 @@ class DietV1Request {
             val intake: Int
         )
     }
+
+    data class UpdateDietFood(
+        @field:NotNull(message = "섭취량은 필수입니다")
+        val intake: Int
+    )
 }
 
 class DietV1Response {

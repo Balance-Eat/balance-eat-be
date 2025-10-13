@@ -298,6 +298,60 @@ class DietV1ControllerTest: ControllerTestContext() {
         }
     }
 
+    @Nested
+    @DisplayName("PUT /v1/diets/{dietId}/diet-foods/{dietFoodId} - 식단 음식 수정")
+    inner class UpdateDietFoodTest {
+        @Test
+        fun success() {
+            // given
+            val request = DietV1RequestFixture.UpdateDietFood().create()
+            every { dietService.updateDietFood(any(), any(), any(), any()) } returns mockDetailsResponse()
+
+            given()
+                .header("X-USER-ID", "1")
+                .body(JsonUtils.stringify(request))
+                .put("/v1/diets/{dietId}/diet-foods/{dietFoodId}", 1L, 1L)
+                .then()
+                .log().all()
+                .apply(
+                    document(
+                        identifier("UpdateDietFoodTest"),
+                        ResourceSnippetParametersBuilder()
+                            .tag(Tags.DIET.tagName)
+                            .description(Tags.DIET.descriptionWith("식단 음식 수정")),
+                        requestFields(
+                            "intake" type NUMBER means "섭취량"
+                        ),
+                        responseFields(
+                            fieldsWithBasic(
+                                "data.dietId" type NUMBER means "식단 ID",
+                                "data.userId" type NUMBER means "사용자 ID",
+                                "data.mealType" type STRING means "식사 유형" withEnum Diet.MealType::class,
+                                "data.consumeDate" type STRING means "섭취 날짜 (yyyy-MM-dd)",
+                                "data.consumedAt" type STRING means "섭취 시간",
+                                "data.totalNutrition" type OBJECT means "총 영양성분",
+                                "data.totalNutrition.calories" type NUMBER means "총 칼로리 (kcal)",
+                                "data.totalNutrition.carbohydrates" type NUMBER means "총 탄수화물 (g)",
+                                "data.totalNutrition.protein" type NUMBER means "총 단백질 (g)",
+                                "data.totalNutrition.fat" type NUMBER means "총 지방 (g)",
+                                "data.dietFoods" type ARRAY means "섭취한 음식 목록",
+                                "data.dietFoods[].id" type NUMBER means "식단 음식 ID",
+                                "data.dietFoods[].foodId" type NUMBER means "음식 ID",
+                                "data.dietFoods[].foodName" type STRING means "음식 이름",
+                                "data.dietFoods[].intake" type NUMBER means "섭취량",
+                                "data.dietFoods[].nutrition" type OBJECT means "개별 음식의 영양성분",
+                                "data.dietFoods[].nutrition.calories" type NUMBER means "칼로리 (kcal)",
+                                "data.dietFoods[].nutrition.carbohydrates" type NUMBER means "탄수화물 (g)",
+                                "data.dietFoods[].nutrition.protein" type NUMBER means "단백질 (g)",
+                                "data.dietFoods[].nutrition.fat" type NUMBER means "지방 (g)"
+                            )
+                        )
+                    )
+                )
+                .status(HttpStatus.OK)
+        }
+    }
+
     private fun mockDetailsResponse(): DietV1Response.Details {
         return DietV1Response.Details(
             dietId = 1L,

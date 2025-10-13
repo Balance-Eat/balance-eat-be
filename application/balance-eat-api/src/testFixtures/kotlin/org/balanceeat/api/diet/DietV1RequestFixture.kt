@@ -38,4 +38,14 @@ class DietV1RequestFixture {
             )
         }
     }
+
+    data class UpdateDietFood(
+        val intake: Int = 3
+    ) : TestFixture<DietV1Request.UpdateDietFood> {
+        override fun create(): DietV1Request.UpdateDietFood {
+            return DietV1Request.UpdateDietFood(
+                intake = intake
+            )
+        }
+    }
 }

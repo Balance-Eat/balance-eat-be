@@ -70,4 +70,18 @@ class DietCommandFixture {
             )
         }
     }
+
+    class UpdateDietFood(
+        var dietId: Long = 1L,
+        var dietFoodId: Long = 1L,
+        var intake: Int = 150
+    ) : TestFixture<DietCommand.UpdateDietFood> {
+        override fun create(): DietCommand.UpdateDietFood {
+            return DietCommand.UpdateDietFood(
+                dietId = dietId,
+                dietFoodId = dietFoodId,
+                intake = intake
+            )
+        }
+    }
 }
