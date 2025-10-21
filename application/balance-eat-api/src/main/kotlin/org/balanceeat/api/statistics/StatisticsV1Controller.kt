@@ -31,8 +31,7 @@ class StatisticsV1Controller {
                 totalCalories = 2000.5,
                 totalCarbohydrates = 250.5,
                 totalProtein = 150.5,
-                totalFat = 70.5,
-                weight = 70.5
+                totalFat = 70.5
             ),
             StatisticsV1Response.Statistics(
                 type = StatisticsType.DAILY,
@@ -40,8 +39,7 @@ class StatisticsV1Controller {
                 totalCalories = 1800.0,
                 totalCarbohydrates = 220.0,
                 totalProtein = 130.0,
-                totalFat = 60.0,
-                weight = 70.0
+                totalFat = 60.0
             )
         )
     }
@@ -54,8 +52,7 @@ class StatisticsV1Controller {
                 totalCalories = 2000.5,
                 totalCarbohydrates = 250.5,
                 totalProtein = 150.5,
-                totalFat = 70.5,
-                weight = 70.5
+                totalFat = 70.5
             ),
             StatisticsV1Response.Statistics(
                 type = StatisticsType.WEEKLY,
@@ -63,8 +60,7 @@ class StatisticsV1Controller {
                 totalCalories = 1800.0,
                 totalCarbohydrates = 220.0,
                 totalProtein = 130.0,
-                totalFat = 60.0,
-                weight = 70.0
+                totalFat = 60.0
             )
         )
     }
@@ -77,8 +73,7 @@ class StatisticsV1Controller {
                 totalCalories = 2000.5,
                 totalCarbohydrates = 250.5,
                 totalProtein = 150.5,
-                totalFat = 70.5,
-                weight = 70.5
+                totalFat = 70.5
             ),
             StatisticsV1Response.Statistics(
                 type = StatisticsType.MONTHLY,
@@ -86,8 +81,7 @@ class StatisticsV1Controller {
                 totalCalories = 1800.0,
                 totalCarbohydrates = 220.0,
                 totalProtein = 130.0,
-                totalFat = 60.0,
-                weight = 70.0
+                totalFat = 60.0
             )
         )
     }

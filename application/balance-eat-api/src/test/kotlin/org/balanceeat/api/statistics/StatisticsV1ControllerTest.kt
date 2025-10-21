@@ -45,8 +45,7 @@ class StatisticsV1ControllerTest : ControllerTestContext() {
                                 "data[].totalCalories" type NUMBER means "총 칼로리 (kcal)",
                                 "data[].totalCarbohydrates" type NUMBER means "총 탄수화물 (g)",
                                 "data[].totalProtein" type NUMBER means "총 단백질 (g)",
-                                "data[].totalFat" type NUMBER means "총 지방 (g)",
-                                "data[].weight" type NUMBER means "체중 (kg)"
+                                "data[].totalFat" type NUMBER means "총 지방 (g)"
                             )
                         )
                     )

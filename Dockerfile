@@ -15,7 +15,6 @@ COPY build.gradle.kts ./
 
 # 각 모듈의 build.gradle.kts 파일들 복사
 COPY application/balance-eat-api/build.gradle.kts ./application/balance-eat-api/
-COPY application/balance-eat-admin-api/build.gradle.kts ./application/balance-eat-admin-api/
 COPY application/api-base/build.gradle.kts ./application/api-base/
 COPY common/build.gradle.kts ./common/
 COPY domain/build.gradle.kts ./domain/

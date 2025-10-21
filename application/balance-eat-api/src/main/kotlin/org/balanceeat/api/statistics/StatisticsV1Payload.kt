@@ -9,8 +9,7 @@ class StatisticsV1Response {
         val totalCalories: Double,
         val totalCarbohydrates: Double,
         val totalProtein: Double,
-        val totalFat: Double,
-        val weight: Double
+        val totalFat: Double
     )
 
     enum class StatisticsType {
