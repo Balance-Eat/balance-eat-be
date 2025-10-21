@@ -1,0 +1,7 @@
+### Statistics API 테스트 파일
+
+### 통계 조회
+@type=DAILY
+GET {{baseUrl}}/{{apiVersion}}/stats?type=DAILY
+Accept: application/json
+X-USER-ID: 1

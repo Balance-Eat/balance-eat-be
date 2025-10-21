@@ -108,6 +108,7 @@ abstract class ControllerTestContext {
         FOOD("음식"),
         USER("사용자"),
         DIET("식단"),
+        STATS("통계")
         ;
 
         fun tagName(): String {
