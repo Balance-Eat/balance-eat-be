@@ -42,6 +42,7 @@ data class DietFoodDto(
     val foodId: Long,
     val foodName: String,
     val intake: Int,
+    val servingSize: Double,
     val nutrition: NutritionInfo
 ) {
     companion object {
@@ -52,6 +53,7 @@ data class DietFoodDto(
                 foodId = dietFood.foodId,
                 foodName = food.name,
                 intake = dietFood.intake,
+                servingSize = food.servingSize,
                 nutrition = NutritionInfo(
                     calories = nutrition.calories,
                     carbohydrates = nutrition.carbohydrates,

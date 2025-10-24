@@ -91,6 +91,7 @@ class DietV1Response {
         val foodId: Long,
         val foodName: String,
         val intake: Int,
+        val servingSize: Double,
         val unit: String,
         val calories: Double,
         val carbohydrates: Double,
@@ -107,6 +108,7 @@ class DietV1Response {
                     foodId = dietFood.foodId,
                     foodName = food.name,
                     intake = dietFood.intake,
+                    servingSize = food.servingSize,
                     unit = food.unit,
                     calories = info.calories,
                     carbohydrates = info.carbohydrates,
@@ -145,6 +147,7 @@ class DietV1Response {
             val foodId: Long,
             val foodName: String,
             val intake: Int,
+            val servingSize: Double,
             val nutrition: NutritionInfo
         ) {
             companion object {
@@ -154,6 +157,7 @@ class DietV1Response {
                         foodId = dietFood.foodId,
                         foodName = dietFood.foodName,
                         intake = dietFood.intake,
+                        servingSize = dietFood.servingSize,
                         nutrition = dietFood.nutrition
                     )
                 }
