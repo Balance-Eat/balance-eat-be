@@ -1,40 +1,40 @@
-package org.balanceeat.api.statistics
+package org.balanceeat.api.stats
 
-import org.balanceeat.api.statistics.StatisticsV1Response.StatisticsType
+import org.balanceeat.api.stats.StatsV1Response.StatsType
 import org.balanceeat.apibase.response.ApiResponse
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
 
 @RestController
 @RequestMapping("/v1/stats")
-class StatisticsV1Controller {
+class StatsV1Controller {
 
     @GetMapping
-    fun getStatistics(
+    fun getStats(
         @RequestHeader("X-USER-ID") userId: Long,
-        @RequestParam type: StatisticsType
-    ): ApiResponse<List<StatisticsV1Response.Statistics>> {
+        @RequestParam type: StatsType
+    ): ApiResponse<List<StatsV1Response.DietStats>> {
         val mockData = when (type) {
-            StatisticsType.DAILY -> generateDailyMockData()
-            StatisticsType.WEEKLY -> generateWeeklyMockData()
-            StatisticsType.MONTHLY -> generateMonthlyMockData()
+            StatsType.DAILY -> generateDailyMockData()
+            StatsType.WEEKLY -> generateWeeklyMockData()
+            StatsType.MONTHLY -> generateMonthlyMockData()
         }
 
         return ApiResponse.success(mockData)
     }
 
-    private fun generateDailyMockData(): List<StatisticsV1Response.Statistics> {
+    private fun generateDailyMockData(): List<StatsV1Response.DietStats> {
         return listOf(
-            StatisticsV1Response.Statistics(
-                type = StatisticsType.DAILY,
+            StatsV1Response.DietStats(
+                type = StatsType.DAILY,
                 date = LocalDate.of(2025, 9, 23),
                 totalCalories = 2000.5,
                 totalCarbohydrates = 250.5,
                 totalProtein = 150.5,
                 totalFat = 70.5
             ),
-            StatisticsV1Response.Statistics(
-                type = StatisticsType.DAILY,
+            StatsV1Response.DietStats(
+                type = StatsType.DAILY,
                 date = LocalDate.of(2025, 9, 24),
                 totalCalories = 1800.0,
                 totalCarbohydrates = 220.0,
@@ -44,18 +44,18 @@ class StatisticsV1Controller {
         )
     }
 
-    private fun generateWeeklyMockData(): List<StatisticsV1Response.Statistics> {
+    private fun generateWeeklyMockData(): List<StatsV1Response.DietStats> {
         return listOf(
-            StatisticsV1Response.Statistics(
-                type = StatisticsType.WEEKLY,
+            StatsV1Response.DietStats(
+                type = StatsType.WEEKLY,
                 date = LocalDate.of(2025, 9, 7),
                 totalCalories = 2000.5,
                 totalCarbohydrates = 250.5,
                 totalProtein = 150.5,
                 totalFat = 70.5
             ),
-            StatisticsV1Response.Statistics(
-                type = StatisticsType.WEEKLY,
+            StatsV1Response.DietStats(
+                type = StatsType.WEEKLY,
                 date = LocalDate.of(2025, 9, 14),
                 totalCalories = 1800.0,
                 totalCarbohydrates = 220.0,
@@ -65,18 +65,18 @@ class StatisticsV1Controller {
         )
     }
 
-    private fun generateMonthlyMockData(): List<StatisticsV1Response.Statistics> {
+    private fun generateMonthlyMockData(): List<StatsV1Response.DietStats> {
         return listOf(
-            StatisticsV1Response.Statistics(
-                type = StatisticsType.MONTHLY,
+            StatsV1Response.DietStats(
+                type = StatsType.MONTHLY,
                 date = LocalDate.of(2025, 8, 1),
                 totalCalories = 2000.5,
                 totalCarbohydrates = 250.5,
                 totalProtein = 150.5,
                 totalFat = 70.5
             ),
-            StatisticsV1Response.Statistics(
-                type = StatisticsType.MONTHLY,
+            StatsV1Response.DietStats(
+                type = StatsType.MONTHLY,
                 date = LocalDate.of(2025, 9, 1),
                 totalCalories = 1800.0,
                 totalCarbohydrates = 220.0,

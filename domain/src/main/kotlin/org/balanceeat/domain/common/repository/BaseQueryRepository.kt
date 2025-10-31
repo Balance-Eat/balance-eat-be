@@ -9,6 +9,10 @@ import org.springframework.data.support.PageableExecutionUtils
 abstract class BaseQueryRepository(
     protected val queryFactory: JPAQueryFactory
 ) {
+    companion object {
+        const val BULK_SIZE_LIMIT = 1000
+    }
+
     fun <T> JPQLQuery<T>.toPage(
         pageable: Pageable,
         totalCount: Long
@@ -25,3 +29,7 @@ abstract class BaseQueryRepository(
         return PageableExecutionUtils.getPage<T>(content, pageable) { totalCount }
     }
 }
+
+class ExceededBulkLimitException(
+    size: Int = 1000
+) : RuntimeException("Bulk insert $size exceeds the limit")

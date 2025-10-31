@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 import org.testcontainers.junit.jupiter.Testcontainers
+import jakarta.persistence.criteria.CriteriaQuery
 
 @Tag("integration")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -60,6 +61,14 @@ abstract class IntegrationTestContext {
         }
 
         return entity
+    }
+
+    protected fun <T> getAllEntities(entityClass: Class<T>): List<T> {
+        val builder = entityManager.criteriaBuilder
+        val query: CriteriaQuery<T> = builder.createQuery(entityClass)
+        val root = query.from(entityClass)
+        query.select(root)
+        return entityManager.createQuery(query).resultList
     }
 }
 

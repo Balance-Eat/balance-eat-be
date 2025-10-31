@@ -1,5 +1,6 @@
 package org.balanceeat.domain.food
 
+import org.balanceeat.domain.common.utils.CalorieCalculator
 import org.balanceeat.domain.config.TestFixture
 import org.balanceeat.domain.config.NEW_ID
 import org.balanceeat.domain.config.UuidGenerator
@@ -9,12 +10,12 @@ class FoodFixture(
     var uuid: String = UuidGenerator.generateUuidV7().toString(),
     var name: String = "테스트 음식",
     var userId: Long = 1L,
-    var servingSize: Double = 1.0,
+    var servingSize: Double = 100.0,
     var unit: String = "g",
     var carbohydrates: Double = 20.0,
     var protein: Double = 5.0,
     var fat: Double = 2.0,
-    var perServingCalories: Double = 118.0, // 20*4 + 5*4 + 2*9 = 118
+    var perServingCalories: Double = CalorieCalculator.calculate(20.0, 5.0, 2.0),
     var brand: String = "테스트 브랜드",
     var isAdminApproved: Boolean = false
 ) : TestFixture<Food> {

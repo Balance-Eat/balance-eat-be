@@ -1,8 +1,8 @@
-package org.balanceeat.api.statistics
+package org.balanceeat.api.stats
 
 import com.epages.restdocs.apispec.ResourceSnippetParametersBuilder
 import org.balanceeat.api.config.supports.ControllerTestContext
-import org.balanceeat.api.statistics.StatisticsV1Response.StatisticsType
+import org.balanceeat.api.stats.StatsV1Response.StatsType
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -12,7 +12,7 @@ import org.springframework.restdocs.payload.JsonFieldType.*
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.queryParameters
 
-@WebMvcTest(StatisticsV1Controller::class)
+@WebMvcTest(StatsV1Controller::class)
 class StatisticsV1ControllerTest : ControllerTestContext() {
 
     @Nested
@@ -35,12 +35,12 @@ class StatisticsV1ControllerTest : ControllerTestContext() {
                             .tag(Tags.STATS.tagName)
                             .description(Tags.STATS.descriptionWith("조회")),
                         queryParameters(
-                            "type" queryMeans "통계 유형" withEnum StatisticsType::class
+                            "type" queryMeans "통계 유형" withEnum StatsType::class
                         ),
                         responseFields(
                             fieldsWithBasic(
                                 "data" type ARRAY means "통계 목록",
-                                "data[].type" type STRING means "통계 유형" withEnum StatisticsType::class,
+                                "data[].type" type STRING means "통계 유형" withEnum StatsType::class,
                                 "data[].date" type STRING means "기준 날짜 (yyyy-MM-dd)",
                                 "data[].totalCalories" type NUMBER means "총 칼로리 (kcal)",
                                 "data[].totalCarbohydrates" type NUMBER means "총 탄수화물 (g)",
