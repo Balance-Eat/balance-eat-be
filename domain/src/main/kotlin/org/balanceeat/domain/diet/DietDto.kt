@@ -71,3 +71,9 @@ data class NutritionInfo(
     val protein: Double,
     val fat: Double
 )
+
+enum class StatsType {
+    DAILY,
+    WEEKLY,
+    MONTHLY
+}

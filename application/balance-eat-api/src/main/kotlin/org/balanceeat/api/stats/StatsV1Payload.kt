@@ -1,5 +1,6 @@
 package org.balanceeat.api.stats
 
+import org.balanceeat.domain.diet.StatsType
 import java.time.LocalDate
 
 class StatsV1Response {
@@ -11,10 +12,4 @@ class StatsV1Response {
         val totalProtein: Double,
         val totalFat: Double
     )
-
-    enum class StatsType {
-        DAILY,
-        WEEKLY,
-        MONTHLY
-    }
 }

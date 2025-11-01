@@ -2,7 +2,7 @@ package org.balanceeat.api.stats
 
 import com.epages.restdocs.apispec.ResourceSnippetParametersBuilder
 import org.balanceeat.api.config.supports.ControllerTestContext
-import org.balanceeat.api.stats.StatsV1Response.StatsType
+import org.balanceeat.domain.diet.StatsType
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -13,7 +13,7 @@ import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.queryParameters
 
 @WebMvcTest(StatsV1Controller::class)
-class StatisticsV1ControllerTest : ControllerTestContext() {
+class StatsV1ControllerTest : ControllerTestContext() {
 
     @Nested
     @DisplayName("GET /v1/stats - 통계 조회")
