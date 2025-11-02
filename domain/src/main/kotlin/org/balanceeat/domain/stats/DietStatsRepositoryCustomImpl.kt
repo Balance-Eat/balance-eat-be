@@ -3,6 +3,8 @@ package org.balanceeat.domain.stats
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.balanceeat.domain.common.repository.BaseQueryRepository
 import org.balanceeat.domain.common.repository.ExceededBulkLimitException
+import org.balanceeat.domain.diet.StatsType
+import org.springframework.jdbc.core.DataClassRowMapper
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
@@ -68,5 +70,44 @@ class DietStatsRepositoryCustomImpl(
             .toTypedArray()
 
         batchInsert.executeBatch(*batch)
+    }
+
+    override fun getStats(
+        userId: Long,
+        type: StatsType,
+        from: LocalDate,
+        to: LocalDate
+    ): List<DietStatsAggregateResult> {
+        val extractField = when (type) {
+            StatsType.DAILY -> "DAY"
+            StatsType.WEEKLY -> "WEEK"
+            StatsType.MONTHLY -> "MONTH"
+        }
+
+        val sql = """
+            SELECT user_id,
+                   EXTRACT($extractField FROM stats_date) as group_key,
+                   MIN(stats_date) as stats_date,
+                   SUM(total_calories) as total_calories,
+                   SUM(total_carbohydrates) as total_carbohydrates,
+                   SUM(total_protein) as total_protein,
+                   SUM(total_fat) as total_fat
+            FROM diet_stats
+            WHERE user_id = :userId
+            AND stats_date BETWEEN :from AND :to
+            GROUP BY user_id, group_key
+            ORDER BY stats_date DESC
+        """.trimIndent()
+
+        val params = MapSqlParameterSource()
+            .addValue("userId", userId)
+            .addValue("from", from)
+            .addValue("to", to)
+
+        return jdbcTemplate.query(
+            sql,
+            params,
+            DataClassRowMapper.newInstance(DietStatsAggregateResult::class.java)
+        )
     }
 }

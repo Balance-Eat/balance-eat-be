@@ -37,7 +37,6 @@ abstract class IntegrationTestContext {
     @AfterEach
     fun tearDown() {
         databaseCleanUp.all()
-        print("=== Database Cleaned Up ===")
     }
 
     protected fun <T> createEntity(entity: T, withTransaction: Boolean = false): T {

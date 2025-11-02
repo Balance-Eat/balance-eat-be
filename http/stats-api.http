@@ -2,6 +2,6 @@
 
 ### 통계 조회
 @type=DAILY
-GET {{baseUrl}}/{{apiVersion}}/stats?type=DAILY
+GET {{baseUrl}}/{{apiVersion}}/stats?type=WEEKLY
 Accept: application/json
 X-USER-ID: 1
