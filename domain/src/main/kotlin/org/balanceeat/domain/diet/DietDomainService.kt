@@ -5,6 +5,7 @@ import org.balanceeat.domain.common.DomainStatus
 import org.balanceeat.domain.common.exception.DomainException
 import org.balanceeat.domain.common.exception.EntityNotFoundException
 import org.balanceeat.domain.food.FoodRepository
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -12,7 +13,8 @@ import java.time.LocalDateTime
 @DomainService
 class DietDomainService(
     private val dietRepository: DietRepository,
-    private val foodRepository: FoodRepository
+    private val foodRepository: FoodRepository,
+    private val eventPublisher: ApplicationEventPublisher
 ) {
     @Transactional
     fun create(command: DietCommand.Create): DietDto {
@@ -38,6 +40,8 @@ class DietDomainService(
         }
         
         val savedDiet = dietRepository.save(diet)
+
+        eventPublisher.publishEvent(DietCreatedEvent(savedDiet.id))
 
         return DietDto.from(savedDiet, foodMap)
     }
@@ -66,13 +70,19 @@ class DietDomainService(
         diet.updateFoods(newDietFoods)
 
         val savedDiet = dietRepository.save(diet)
+
+        eventPublisher.publishEvent(DietUpdatedEvent(savedDiet.id))
+
         return DietDto.from(savedDiet, foodMap)
     }
 
     @Transactional
     fun delete(id: Long) {
         dietRepository.findById(id)
-            .ifPresent { dietRepository.delete(it) }
+            .ifPresent {
+                eventPublisher.publishEvent(DietDeletedEvent(it.id))
+                dietRepository.delete(it)
+            }
     }
 
     @Transactional
@@ -82,6 +92,7 @@ class DietDomainService(
 
         diet.removeFood(command.dietFoodId)
         dietRepository.save(diet)
+        eventPublisher.publishEvent(DietUpdatedEvent(diet.id))
     }
 
     @Transactional
@@ -93,6 +104,8 @@ class DietDomainService(
         val savedDiet = dietRepository.save(diet)
         val foodIds = savedDiet.dietFoods.map { it.foodId }
         val foodMap = foodRepository.findAllById(foodIds).associateBy { it.id }
+
+        eventPublisher.publishEvent(DietUpdatedEvent(diet.id))
 
         return DietDto.from(savedDiet, foodMap)
     }

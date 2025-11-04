@@ -20,6 +20,10 @@ class DietStatsRepositoryCustomImpl(
         .withTableName("diet_stats")
         .usingGeneratedKeyColumns("id")
 
+    override fun aggregate(statsDate: LocalDate, userId: Long): DietStats {
+        return aggregate(statsDate, listOf(userId)).first()
+    }
+
     override fun aggregate(statsDate: LocalDate, userIds: List<Long>): List<DietStats> {
         val sql = """
             SELECT

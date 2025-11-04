@@ -10,5 +10,7 @@ interface DietStatsRepository : JpaRepository<DietStats, Long>, DietStatsReposit
     @Modifying
     @Query("DELETE FROM DietStats ds WHERE ds.statsDate = :statsDate")
     fun deleteByStatsDate(@Param("statsDate") statsDate: LocalDate): Int
+
+    fun findByUserIdAndStatsDate(userId: Long, statsDate: LocalDate): DietStats?
 }
 

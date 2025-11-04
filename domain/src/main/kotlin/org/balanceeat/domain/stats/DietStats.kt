@@ -19,16 +19,16 @@ class DietStats(
     val statsDate: LocalDate,
 
     @Column(name = "total_calories", nullable = false)
-    val totalCalories: Double,
+    var totalCalories: Double,
 
     @Column(name = "total_carbohydrates", nullable = false)
-    val totalCarbohydrates: Double,
+    var totalCarbohydrates: Double,
 
     @Column(name = "total_protein", nullable = false)
-    val totalProtein: Double,
+    var totalProtein: Double,
 
     @Column(name = "total_fat", nullable = false)
-    val totalFat: Double
+    var totalFat: Double
 ) : BaseEntity() {
     override fun guard() {
         require(userId > 0) { "사용자 ID는 0보다 큰 값이어야 합니다" }
@@ -36,5 +36,12 @@ class DietStats(
         require(totalCarbohydrates >= 0) { "총 탄수화물은 0 이상이어야 합니다" }
         require(totalProtein >= 0) { "총 단백질은 0 이상이어야 합니다" }
         require(totalFat >= 0) { "총 지방은 0 이상이어야 합니다" }
+    }
+
+    fun update(newDietStats: DietStats) {
+        totalCalories = newDietStats.totalCalories
+        totalCarbohydrates = newDietStats.totalCarbohydrates
+        totalProtein = newDietStats.totalProtein
+        totalFat = newDietStats.totalFat
     }
 }
