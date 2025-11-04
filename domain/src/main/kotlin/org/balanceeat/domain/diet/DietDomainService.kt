@@ -80,7 +80,7 @@ class DietDomainService(
     fun delete(id: Long) {
         dietRepository.findById(id)
             .ifPresent {
-                eventPublisher.publishEvent(DietDeletedEvent(it.id))
+                eventPublisher.publishEvent(DietDeletedEvent(it))
                 dietRepository.delete(it)
             }
     }

@@ -17,6 +17,7 @@ class DietStatsEventListener(
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     fun handleDietDeletedEvent(event: DietDeletedEvent) {
-        dietStatsDomainService.upsert(event.dietId)
+        val (diet) = event
+        dietStatsDomainService.upsert(diet.userId, diet.consumedAt.toLocalDate())
     }
 }

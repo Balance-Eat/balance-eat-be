@@ -30,6 +30,19 @@ class DietStats(
     @Column(name = "total_fat", nullable = false)
     var totalFat: Double
 ) : BaseEntity() {
+    companion object {
+        fun empty(userId: Long, statsDate: LocalDate): DietStats {
+            return DietStats(
+                userId = userId,
+                statsDate = statsDate,
+                totalCalories = 0.0,
+                totalCarbohydrates = 0.0,
+                totalProtein = 0.0,
+                totalFat = 0.0
+            )
+        }
+    }
+
     override fun guard() {
         require(userId > 0) { "사용자 ID는 0보다 큰 값이어야 합니다" }
         require(totalCalories >= 0) { "총 칼로리는 0 이상이어야 합니다" }

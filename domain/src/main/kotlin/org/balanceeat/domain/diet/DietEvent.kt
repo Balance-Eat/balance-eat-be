@@ -13,7 +13,7 @@ data class DietUpdatedEvent(
 ) : DietChangedEvent
 
 data class DietDeletedEvent(
-    val dietId: Long
+    val diet: Diet
 )
 
 

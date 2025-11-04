@@ -6,6 +6,7 @@ import org.balanceeat.domain.common.exception.EntityNotFoundException
 import org.balanceeat.domain.diet.DietRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 
 @DomainService
 class DietStatsDomainService(
@@ -17,8 +18,14 @@ class DietStatsDomainService(
         val diet = dietRepository.findByIdOrNull(dietId)
             ?: throw EntityNotFoundException(DIET_NOT_FOUND)
         val statsDate = diet.consumedAt.toLocalDate()
-        val existingStats = dietStatsRepository.findByUserIdAndStatsDate(diet.userId, statsDate)
-        val newDietStats = dietStatsRepository.aggregate(statsDate, diet.userId)
+        upsert(diet.userId, statsDate)
+    }
+
+    @Transactional
+    fun upsert(userId: Long, statsDate: LocalDate) {
+        val existingStats = dietStatsRepository.findByUserIdAndStatsDate(userId, statsDate)
+        val newDietStats = dietStatsRepository.aggregate(statsDate, userId)
+            ?: DietStats.empty(userId, statsDate)
 
         if (existingStats != null) {
             existingStats.update(newDietStats)
