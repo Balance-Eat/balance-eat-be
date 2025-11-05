@@ -8,6 +8,7 @@ import org.balanceeat.domain.diet.DietFoodFixture
 import org.balanceeat.domain.diet.DietRepository
 import org.balanceeat.domain.food.FoodFixture
 import org.balanceeat.domain.food.FoodRepository
+import org.balanceeat.domain.user.UserFixture
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -32,10 +33,11 @@ class DietStatsDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `새로운 통계 생성 성공`() {
             // given
+            val user = createEntity(UserFixture().create())
             val food = createEntity(FoodFixture().create())
             val breakfast = dietRepository.save(
                 DietFixture(
-                    userId = 1L,
+                    userId = user.id,
                     mealType = Diet.MealType.BREAKFAST,
                     dietFoods = mutableListOf(
                         DietFoodFixture(
@@ -47,7 +49,7 @@ class DietStatsDomainServiceTest : IntegrationTestContext() {
             )
             val lunch = dietRepository.save(
                 DietFixture(
-                    userId = 1L,
+                    userId = user.id,
                     mealType = Diet.MealType.LUNCH,
                     consumedAt = breakfast.consumedAt.plusHours(4),
                     dietFoods = mutableListOf(
@@ -77,10 +79,11 @@ class DietStatsDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `기존 통계를 업데이트 성공`() {
             // given
+            val user = createEntity(UserFixture().create())
             val food = createEntity(FoodFixture().create())
             val diet = dietRepository.save(
                 DietFixture(
-                    userId = 1L,
+                    userId = user.id,
                     dietFoods = mutableListOf(
                         DietFoodFixture(
                             foodId = food.id,

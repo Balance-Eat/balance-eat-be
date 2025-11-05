@@ -132,6 +132,31 @@ class StatsServiceTest : IntegrationTestContext() {
                     stat.totalFat == expectedTotalFat
                 }
         }
+
+        @Test
+        fun `집계할 식단 데이터가 없으면 0으로 비어있는 통계데이터가 생성된다`() {
+            // given
+            val statsDate = LocalDate.now()
+            val user1 = createEntity(UserFixture().create())
+            val user2 = createEntity(UserFixture().create())
+
+            // when
+            statsService.aggregateStats(statsDate)
+
+            // then
+            val stats = getAllEntities(DietStats::class.java)
+
+            assertThat(stats)
+                .hasSize(2)
+                .allMatch { stat ->
+                    stat.userId != 0L &&
+                    stat.statsDate == statsDate &&
+                    stat.totalCalories == 0.0 &&
+                    stat.totalCarbohydrates == 0.0 &&
+                    stat.totalProtein == 0.0 &&
+                    stat.totalFat == 0.0
+                }
+        }
     }
 
     @Transactional

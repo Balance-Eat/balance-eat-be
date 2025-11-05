@@ -25,7 +25,6 @@ class DietStatsDomainService(
     fun upsert(userId: Long, statsDate: LocalDate) {
         val existingStats = dietStatsRepository.findByUserIdAndStatsDate(userId, statsDate)
         val newDietStats = dietStatsRepository.aggregate(statsDate, userId)
-            ?: DietStats.empty(userId, statsDate)
 
         if (existingStats != null) {
             existingStats.update(newDietStats)

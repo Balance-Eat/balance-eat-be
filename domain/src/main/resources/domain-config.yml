@@ -47,6 +47,9 @@ spring:
   config:
     activate:
       on-profile: local
+  datasource:
+    hikari:
+      maximum-pool-size: 1
 
 logging:
   level:

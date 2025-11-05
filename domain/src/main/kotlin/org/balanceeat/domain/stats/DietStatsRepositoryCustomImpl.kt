@@ -20,25 +20,25 @@ class DietStatsRepositoryCustomImpl(
         .withTableName("diet_stats")
         .usingGeneratedKeyColumns("id")
 
-    override fun aggregate(statsDate: LocalDate, userId: Long): DietStats? {
-        return aggregate(statsDate, listOf(userId)).firstOrNull()
+    override fun aggregate(statsDate: LocalDate, userId: Long): DietStats {
+        return aggregate(statsDate, listOf(userId)).first()
     }
 
     override fun aggregate(statsDate: LocalDate, userIds: List<Long>): List<DietStats> {
         val sql = """
             SELECT
-                d.user_id,
-                :statsDate as stats_date,
-                SUM(f.per_serving_calories * df.intake / f.serving_size) as total_calories,
-                SUM(f.carbohydrates * df.intake / f.serving_size) as total_carbohydrates,
-                SUM(f.protein * df.intake / f.serving_size) as total_protein,
-                SUM(f.fat * df.intake / f.serving_size) as total_fat
-            FROM diet d
-            INNER JOIN diet_food df ON d.id = df.diet_id
-            INNER JOIN food f ON df.food_id = f.id
-            WHERE d.user_id IN (:userIds)
-            AND DATE(d.consumed_at) = :statsDate
-            GROUP BY d.user_id
+                u.id AS user_id,
+                :statsDate AS stats_date,
+                COALESCE(SUM(f.per_serving_calories * df.intake / f.serving_size), 0) AS total_calories,
+                COALESCE(SUM(f.carbohydrates * df.intake / f.serving_size), 0) AS total_carbohydrates,
+                COALESCE(SUM(f.protein * df.intake / f.serving_size), 0) AS total_protein,
+                COALESCE(SUM(f.fat * df.intake / f.serving_size), 0) AS total_fat
+            FROM "user" u
+            LEFT JOIN diet d ON u.id = d.user_id AND DATE(d.consumed_at) = :statsDate
+            LEFT JOIN diet_food df ON d.id = df.diet_id
+            LEFT JOIN food f ON df.food_id = f.id
+            WHERE u.id IN (:userIds)
+            GROUP BY u.id;
         """.trimIndent()
 
         val params = MapSqlParameterSource()

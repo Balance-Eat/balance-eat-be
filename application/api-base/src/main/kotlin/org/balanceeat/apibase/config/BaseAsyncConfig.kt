@@ -1,4 +1,4 @@
-package org.balanceeat.api.config
+package org.balanceeat.apibase.config
 
 import org.slf4j.LoggerFactory
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler
@@ -13,7 +13,7 @@ import java.util.concurrent.Executor
 
 @EnableAsync
 @Configuration
-class AsyncConfig : AsyncConfigurer {
+class BaseAsyncConfig : AsyncConfigurer {
 
     @Bean
     fun asyncExecutor(): TaskExecutor {
@@ -26,7 +26,7 @@ class AsyncConfig : AsyncConfigurer {
 
         executor.corePoolSize = corePoolSize
         executor.maxPoolSize = maxPoolSize
-        executor.setQueueCapacity(queueCapacity())
+        executor.queueCapacity = queueCapacity()
         executor.setThreadNamePrefix("Async-Executor-")
         executor.initialize()
         return executor
@@ -53,8 +53,16 @@ class AsyncConfig : AsyncConfigurer {
 
     class AsyncExceptionHandler : AsyncUncaughtExceptionHandler {
         private val log = LoggerFactory.getLogger(AsyncExceptionHandler::class.java)
+
         override fun handleUncaughtException(ex: Throwable, method: Method, vararg params: Any) {
-            log.error("[Async] {}", ex.message, ex)
+            log.error(
+                "Async execution error in message: {} / method: {}.{}() with params: {}",
+                ex.message,
+                method.declaringClass.simpleName,
+                method.name,
+                params.contentToString(),
+                ex
+            )
         }
     }
 }

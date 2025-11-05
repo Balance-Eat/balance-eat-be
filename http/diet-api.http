@@ -22,15 +22,15 @@ X-USER-ID: 1
 
 {
   "mealType": "BREAKFAST",
-  "consumedAt": "2025-09-25T08:30:00",
+  "consumedAt": "2025-01-02T08:30:00",
   "dietFoods": [
     {
       "foodId": 1,
-      "intake": 2
+      "intake": 100
     },
     {
       "foodId": 2,
-      "intake": 1
+      "intake": 200
     }
   ]
 }
@@ -38,18 +38,18 @@ X-USER-ID: 1
 ###
 
 ### 식단 수정
-@dietId = 1
+@dietId = 49
 PUT {{baseUrl}}/{{apiVersion}}/diets/{{dietId}}
 Content-Type: application/json
 X-USER-ID: 1
 
 {
   "mealType": "BREAKFAST",
-  "consumedAt": "2025-09-25T09:30:00",
+  "consumedAt": "2025-01-01T09:30:00",
   "dietFoods": [
     {
       "foodId": 1,
-      "intake": 10
+      "intake": 1000
     }
   ]
 }
@@ -72,10 +72,10 @@ X-USER-ID: 1
 ###
 
 ### 식단 음식 섭취량 수정
-PUT {{baseUrl}}/{{apiVersion}}/diets/1/diet-foods/1
+PUT {{baseUrl}}/{{apiVersion}}/diets/49/diet-foods/65
 Content-Type: application/json
 X-USER-ID: 1
 
 {
-  "intake": 150
+  "intake": 1000
 }
