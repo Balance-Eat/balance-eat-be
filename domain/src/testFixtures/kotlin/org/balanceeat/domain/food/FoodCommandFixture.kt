@@ -58,3 +58,11 @@ class FoodCommandFixture {
         }
     }
 }
+
+fun foodCommandCreate(block: FoodCommandFixture.Create.() -> Unit = {}): FoodCommand.Create {
+    return FoodCommandFixture.Create().apply(block).create()
+}
+
+fun foodCommandUpdate(block: FoodCommandFixture.Update.() -> Unit = {}): FoodCommand.Update {
+    return FoodCommandFixture.Update().apply(block).create()
+}

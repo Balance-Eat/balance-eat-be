@@ -16,3 +16,7 @@ class CurationFoodFixture(
         )
     }
 }
+
+fun curationFoodFixture(block: CurationFoodFixture.() -> Unit = {}): CurationFood {
+    return CurationFoodFixture().apply(block).create()
+}

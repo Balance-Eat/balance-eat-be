@@ -24,3 +24,7 @@ class DietFixture(
         )
     }
 }
+
+fun dietFixture(block: DietFixture.() -> Unit = {}): Diet {
+    return DietFixture().apply(block).create()
+}

@@ -29,11 +29,7 @@ class UserDomainServiceTest : IntegrationTestContext() {
         fun `사용자를 생성할 수 있다`() {
             // given
             val uuid = UUID.randomUUID().toString()
-            val createCommand = UserCommandFixture.Create(
-                uuid = uuid,
-                name = "테스트 사용자",
-                email = "test@example.com"
-            ).create()
+            val createCommand = UserCommandFixture.Create().create()
 
             // when
             val result = userDomainService.create(createCommand)

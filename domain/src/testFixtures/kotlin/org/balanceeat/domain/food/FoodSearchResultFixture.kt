@@ -39,3 +39,7 @@ class FoodSearchResultFixture(
         )
     }
 }
+
+fun foodSearchResultFixture(block: FoodSearchResultFixture.() -> Unit = {}): FoodSearchResult {
+    return FoodSearchResultFixture().apply(block).create()
+}

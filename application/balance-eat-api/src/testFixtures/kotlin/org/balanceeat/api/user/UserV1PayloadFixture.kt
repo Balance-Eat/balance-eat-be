@@ -148,3 +148,15 @@ class UserV1ResponseFixture {
         }
     }
 }
+
+fun userV1RequestCreate(block: UserV1RequestFixture.Create.() -> Unit = {}): UserV1Request.Create {
+    return UserV1RequestFixture.Create().apply(block).create()
+}
+
+fun userV1RequestUpdate(block: UserV1RequestFixture.Update.() -> Unit = {}): UserV1Request.Update {
+    return UserV1RequestFixture.Update().apply(block).create()
+}
+
+fun userV1ResponseDetails(block: UserV1ResponseFixture.Details.() -> Unit = {}): UserV1Response.Details {
+    return UserV1ResponseFixture.Details().apply(block).create()
+}

@@ -99,3 +99,11 @@ class AdminUserV1ResponseFixture {
         }
     }
 }
+
+fun adminUserV1RequestUpdate(block: AdminUserV1RequestFixture.Update.() -> Unit = {}): AdminUserV1Request.Update {
+    return AdminUserV1RequestFixture.Update().apply(block).create()
+}
+
+fun adminUserV1ResponseDetails(block: AdminUserV1ResponseFixture.Details.() -> Unit = {}): AdminUserV1Response.Details {
+    return AdminUserV1ResponseFixture.Details().apply(block).create()
+}

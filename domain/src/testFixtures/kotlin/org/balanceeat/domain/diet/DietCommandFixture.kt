@@ -85,3 +85,23 @@ class DietCommandFixture {
         }
     }
 }
+
+fun dietCommandCreate(block: DietCommandFixture.Create.() -> Unit = {}): DietCommand.Create {
+    return DietCommandFixture.Create().apply(block).create()
+}
+
+fun dietCommandUpdate(block: DietCommandFixture.Update.() -> Unit = {}): DietCommand.Update {
+    return DietCommandFixture.Update().apply(block).create()
+}
+
+fun dietCommandFindDailyDiets(block: DietCommandFixture.FindDailyDiets.() -> Unit = {}): DietCommand.FindDailyDiets {
+    return DietCommandFixture.FindDailyDiets().apply(block).create()
+}
+
+fun dietCommandDeleteDietFood(block: DietCommandFixture.DeleteDietFood.() -> Unit = {}): DietCommand.DeleteDietFood {
+    return DietCommandFixture.DeleteDietFood().apply(block).create()
+}
+
+fun dietCommandUpdateDietFood(block: DietCommandFixture.UpdateDietFood.() -> Unit = {}): DietCommand.UpdateDietFood {
+    return DietCommandFixture.UpdateDietFood().apply(block).create()
+}

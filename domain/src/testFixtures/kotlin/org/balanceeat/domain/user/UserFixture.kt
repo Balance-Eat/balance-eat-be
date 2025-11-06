@@ -53,3 +53,7 @@ class UserFixture(
         )
     }
 }
+
+fun userFixture(block: UserFixture.() -> Unit = {}): User {
+    return UserFixture().apply(block).create()
+}

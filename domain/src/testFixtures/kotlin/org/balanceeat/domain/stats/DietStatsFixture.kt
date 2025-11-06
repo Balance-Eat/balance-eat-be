@@ -22,3 +22,7 @@ class DietStatsFixture(
         )
     }
 }
+
+fun dietStatsFixture(block: DietStatsFixture.() -> Unit = {}): DietStats {
+    return DietStatsFixture().apply(block).create()
+}

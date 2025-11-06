@@ -36,3 +36,7 @@ class FoodFixture(
         )
     }
 }
+
+fun foodFixture(block: FoodFixture.() -> Unit = {}): Food {
+    return FoodFixture().apply(block).create()
+}
