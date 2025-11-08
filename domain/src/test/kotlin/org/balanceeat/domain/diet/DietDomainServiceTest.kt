@@ -97,11 +97,11 @@ class DietDomainServiceTest : IntegrationTestContext() {
         fun `같은 날짜, 같은 사용자, 같은 MealType으로 식단을 생성하면 실패한다`() {
             // given
             val alreadySavedDiet = dietRepository.save(DietFixture().create())
-            val command = DietCommandFixture.Create(
-                userId = alreadySavedDiet.userId,
-                mealType = alreadySavedDiet.mealType,
-                consumedAt = alreadySavedDiet.consumedAt,
-            ).create()
+            val command = dietCreateCommandFixture {
+                userId = alreadySavedDiet.userId
+                mealType = alreadySavedDiet.mealType
+                consumedAt = alreadySavedDiet.consumedAt
+            }
 
             // when
             val throwable = catchThrowable { dietDomainService.create(command) }
@@ -134,10 +134,10 @@ class DietDomainServiceTest : IntegrationTestContext() {
                 ).create()
             )
 
-            val command = DietCommandFixture.Update(
-                id = existingDiet.id,
-                mealType = Diet.MealType.DINNER,
-                consumedAt = LocalDateTime.now(),
+            val command = dietUpdateCommandFixture {
+                id = existingDiet.id
+                mealType = Diet.MealType.DINNER
+                consumedAt = LocalDateTime.now()
                 dietFoods = listOf(
                     DietCommand.Update.DietFood(
                         foodId = food1.id,
@@ -152,7 +152,7 @@ class DietDomainServiceTest : IntegrationTestContext() {
                         intake = 1
                     )
                 )
-            ).create()
+            }
 
             // when
             val result = dietDomainService.update(command)

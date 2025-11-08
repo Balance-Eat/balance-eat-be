@@ -68,14 +68,14 @@ class FoodV1RequestFixture {
     }
 }
 
-fun foodV1RequestCreate(block: FoodV1RequestFixture.Create.() -> Unit = {}): FoodV1Request.Create {
+fun foodCreateV1RequestFixture(block: FoodV1RequestFixture.Create.() -> Unit = {}): FoodV1Request.Create {
     return FoodV1RequestFixture.Create().copy().apply(block).create()
 }
 
-fun foodV1RequestUpdate(block: FoodV1RequestFixture.Update.() -> Unit = {}): FoodV1Request.Update {
+fun foodUpdateV1RequestFixture(block: FoodV1RequestFixture.Update.() -> Unit = {}): FoodV1Request.Update {
     return FoodV1RequestFixture.Update().copy().apply(block).create()
 }
 
-fun foodV1RequestSearch(block: FoodV1RequestFixture.Search.() -> Unit = {}): FoodV1Request.Search {
+fun foodSearchV1RequestFixture(block: FoodV1RequestFixture.Search.() -> Unit = {}): FoodV1Request.Search {
     return FoodV1RequestFixture.Search().copy().apply(block).create()
 }

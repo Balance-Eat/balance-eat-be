@@ -23,7 +23,7 @@ class FoodDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `음식을 생성할 수 있다`() {
             // given
-            val command = FoodCommandFixture.Create().create()
+            val command = foodCreateCommandFixture()
 
             // when
             val result = foodDomainService.create(command)
@@ -74,15 +74,15 @@ class FoodDomainServiceTest : IntegrationTestContext() {
                 isAdminApproved = false
             ).create())
 
-            val updateCommand = FoodCommandFixture.Update(
-                foodId = food.id,
-                name = "수정 후 음식",
-                servingSize = 150.0,
-                unit = "mg",
-                carbohydrates = 30.0,
-                protein = 10.0,
+            val updateCommand = foodUpdateCommandFixture {
+                foodId = food.id
+                name = "수정 후 음식"
+                servingSize = 150.0
+                unit = "mg"
+                carbohydrates = 30.0
+                protein = 10.0
                 fat = 11.0
-            ).create()
+            }
 
             // when
             val result = foodDomainService.update(updateCommand)
@@ -99,15 +99,15 @@ class FoodDomainServiceTest : IntegrationTestContext() {
             val userId = 1L
             val food = foodRepository.save(FoodFixture().create())
 
-            val updateCommand = FoodCommandFixture.Update(
-                foodId = food.id,
-                name = "새로운 이름만 변경",
-                unit = food.unit,
-                servingSize = food.servingSize,
-                carbohydrates = 30.0,
-                protein = 10.0,
+            val updateCommand = foodUpdateCommandFixture {
+                foodId = food.id
+                name = "새로운 이름만 변경"
+                unit = food.unit
+                servingSize = food.servingSize
+                carbohydrates = 30.0
+                protein = 10.0
                 fat = food.fat
-            ).create()
+            }
 
             // when
             val result = foodDomainService.update(updateCommand)

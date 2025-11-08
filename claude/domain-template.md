@@ -178,7 +178,7 @@ class Example(
 ```kotlin
 package org.balanceeat.domain.example
 
-sealed class ExampleCommand {
+class ExampleCommand {
 
     data class Create(
         val name: String,
@@ -197,7 +197,6 @@ sealed class ExampleCommand {
 ```
 
 **핵심 패턴**:
-- sealed class 사용
 - Create/Update/Delete 등 data class로 정의
 - 필수값과 선택값 구분
 
@@ -367,12 +366,12 @@ class ExampleRepositoryCustomImpl(
 package org.balanceeat.domain.example
 
 import org.balanceeat.domain.common.DomainStatus
+import org.balanceeat.domain.common.DomainService
 import org.balanceeat.domain.common.exception.DomainException
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-@Service
+@DomainService
 @Transactional(readOnly = true)
 class ExampleDomainService(
     private val exampleRepository: ExampleRepository
@@ -380,7 +379,7 @@ class ExampleDomainService(
 
     @Transactional
     fun create(command: ExampleCommand.Create): Example {
-        validateDuplicateName(command.userId, command.name)
+        validateCreation(command)
 
         val example = Example(
             name = command.name,
@@ -394,31 +393,28 @@ class ExampleDomainService(
 
     @Transactional
     fun update(command: ExampleCommand.Update): Example {
-        val example = getById(command.id)
+        val example = findById(command.id)
 
-        example.updateName(command.name)
-        example.updateStatus(command.status)
-        command.description?.let { example.description = it }
+        example.update(
+            name = command.name,
+            description = command.description
+        )
 
         return example
     }
 
     @Transactional
     fun delete(id: Long) {
-        val example = getById(id)
+        val example = findById(id)
         exampleRepository.delete(example)
     }
 
-    fun getById(id: Long): Example {
+    private fun findById(id: Long): Example {
         return exampleRepository.findByIdOrNull(id)
             ?: throw DomainException(DomainStatus.EXAMPLE_NOT_FOUND)
     }
 
-    fun getAllByUserId(userId: Long): List<Example> {
-        return exampleRepository.findByUserId(userId)
-    }
-
-    private fun validateDuplicateName(userId: Long, name: String) {
+    private fun validateCreation(command: ExampleCommand.Create) {
         if (exampleRepository.existsByUserIdAndName(userId, name)) {
             throw DomainException(DomainStatus.EXAMPLE_ALREADY_EXISTS)
         }
@@ -427,7 +423,7 @@ class ExampleDomainService(
 ```
 
 **핵심 패턴**:
-- `@Service` 어노테이션
+- `@DomainService` 어노테이션
 - `@Transactional(readOnly = true)` 클래스 레벨 적용
 - 쓰기 메서드에만 `@Transactional` 오버라이드
 - 검증 로직은 private 메서드로 분리
@@ -504,7 +500,7 @@ class ExampleCommandFixture {
         var userId: Long = 1L,
         var status: Example.Status = Example.Status.ACTIVE,
         var description: String? = null
-    ): TestFixture {
+    ) : TestFixture<ExampleCommand.Create> {
         override fun create(): ExampleCommand.Create {
             return ExampleCommand.Create(
                 name = name,
@@ -520,7 +516,7 @@ class ExampleCommandFixture {
         var name: String = "수정된 예제",
         var status: Example.Status = Example.Status.INACTIVE,
         var description: String? = null
-    ): TestFixture {
+    ) : TestFixture<ExampleCommand.Update> {
         override fun create(): ExampleCommand.Update {
             return ExampleCommand.Update(
                 id = id,
@@ -531,11 +527,21 @@ class ExampleCommandFixture {
         }
     }
 }
+
+fun exampleCreateCommandFixture(block: ExampleCommandFixture.Create.() -> Unit = {}): ExampleCommand.Create {
+    return ExampleCommandFixture.Create().apply(block).create()
+}
+
+fun exampleUpdateCommandFixture(block: ExampleCommandFixture.Update.() -> Unit = {}): ExampleCommand.Update {
+    return ExampleCommandFixture.Update().apply(block).create()
+}
 ```
 
 **핵심 패턴**:
 - Command별 Fixture 클래스 중첩
-- 각 Fixture는 `TestFixture` 구현
+- 각 Fixture는 `TestFixture<T>` 구현 (제네릭 타입 명시)
+- 최상위 함수로 DSL 스타일 픽스처 생성 함수 제공
+- 함수명 패턴: `{domain}{Command}CommandFixture`
 
 ---
 
@@ -707,7 +713,7 @@ class ExampleDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `예제를 생성할 수 있다`() {
             // given
-            val command = ExampleCommandFixture.Create().create()
+            val command = exampleCreateCommandFixture()
 
             // when
             val result = exampleDomainService.create(command)
@@ -728,10 +734,10 @@ class ExampleDomainServiceTest : IntegrationTestContext() {
                 ).create()
             )
 
-            val command = ExampleCommandFixture.Create(
-                name = "중복 이름",
+            val command = exampleCreateCommandFixture {
+                name = "중복 이름"
                 userId = 1L
-            ).create()
+            }
 
             // when & then
             assertThatThrownBy { exampleDomainService.create(command) }
@@ -755,12 +761,12 @@ class ExampleDomainServiceTest : IntegrationTestContext() {
                 ).create()
             )
 
-            val command = ExampleCommandFixture.Update(
-                id = example.id,
-                name = "수정 후 이름",
-                status = Example.Status.INACTIVE,
+            val command = exampleUpdateCommandFixture {
+                id = example.id
+                name = "수정 후 이름"
+                status = Example.Status.INACTIVE
                 description = "수정 후 설명"
-            ).create()
+            }
 
             // when
             val result = exampleDomainService.update(command)
@@ -776,12 +782,12 @@ class ExampleDomainServiceTest : IntegrationTestContext() {
             // given
             val example = exampleRepository.save(ExampleFixture().create())
 
-            val command = ExampleCommandFixture.Update(
-                id = example.id,
-                name = "새로운 이름만 변경",
-                status = example.status,
+            val command = exampleUpdateCommandFixture {
+                id = example.id
+                name = "새로운 이름만 변경"
+                status = example.status
                 description = example.description
-            ).create()
+            }
 
             // when
             val result = exampleDomainService.update(command)
@@ -819,7 +825,10 @@ class ExampleDomainServiceTest : IntegrationTestContext() {
 - **@ParameterizedTest + @CsvSource**: 반복적인 상태 변경 테스트를 파라미터화
 - **비즈니스 로직 중심**: 성공 케이스와 비즈니스 요구사항 검증
 - **한글 테스트명**: 백틱(`)을 사용한 자연어 설명
-- **Fixture 활용**: `ExampleFixture().create()`, `ExampleCommandFixture.Create().create()`
+- **Fixture 활용**:
+  - Entity Fixture: `ExampleFixture().create()`
+  - Command Fixture: `exampleCreateCommandFixture { }`, `exampleUpdateCommandFixture { }`
+  - 람다 블록 내에서 `this` 키워드 사용 금지 (변수 섀도잉 방지)
 
 **작성 가이드**:
 1. **성공 케이스 우선**: 각 기능의 정상 동작을 먼저 테스트
@@ -828,6 +837,10 @@ class ExampleDomainServiceTest : IntegrationTestContext() {
 4. **ParameterizedTest**: 반복적인 패턴(상태 변경 등)은 파라미터화
 5. **예외 케이스**: 비즈니스 규칙 위반 시나리오만 포함 (중복 생성 등)
 6. **엔티티 없음 테스트 지양**: 단순 Not Found 예외는 비즈니스 가치 없음
+7. **Fixture 사용시 주의사항**:
+   - Command Fixture는 DSL 스타일 함수 사용 (`exampleCreateCommandFixture { }`)
+   - 람다 블록 내에서 `this` 키워드 사용 금지 (변수 섀도잉 방지)
+   - 외부 변수와 동일한 이름의 속성 설정 시 변수명 변경 필요
 
 ---
 

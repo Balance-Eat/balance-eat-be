@@ -28,14 +28,14 @@ class UserDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `사용자를 생성할 수 있다`() {
             // given
-            val uuid = UUID.randomUUID().toString()
-            val createCommand = UserCommandFixture.Create().create()
+            val testUuid = UUID.randomUUID().toString()
+            val createCommand = userCreateCommandFixture { uuid = testUuid }
 
             // when
             val result = userDomainService.create(createCommand)
 
             // then
-            val savedUser = userRepository.findByUuid(uuid)
+            val savedUser = userRepository.findByUuid(testUuid)
             assertThat(result)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
@@ -46,14 +46,14 @@ class UserDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `중복된 UUID로 사용자 생성시 예외가 발생한다`() {
             // given
-            val uuid = UUID.randomUUID().toString()
-            val alreadySavedUser = userRepository.save(UserFixture(uuid=uuid).create())
+            val testUuid = UUID.randomUUID().toString()
+            val alreadySavedUser = userRepository.save(UserFixture(uuid=testUuid).create())
 
-            val duplicateCommand = UserCommandFixture.Create(
-                uuid = uuid,
-                name = "중복 사용자",
+            val duplicateCommand = userCreateCommandFixture {
+                uuid = testUuid
+                name = "중복 사용자"
                 email = "duplicate@example.com"
-            ).create()
+            }
 
             // when & then
             assertThatThrownBy { userDomainService.create(duplicateCommand) }
@@ -94,9 +94,9 @@ class UserDomainServiceTest : IntegrationTestContext() {
         fun `사용자 정보를 수정할 수 있다`() {
             // given
             val user = userRepository.save(UserFixture().create())
-            val command = UserCommandFixture.Update(
+            val command = userUpdateCommandFixture {
                 id = user.id
-            ).create()
+            }
 
             // when
             val result = userDomainService.update(command)

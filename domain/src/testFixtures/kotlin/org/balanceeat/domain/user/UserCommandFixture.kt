@@ -97,10 +97,10 @@ class UserCommandFixture {
     }
 }
 
-fun userCommandCreate(block: UserCommandFixture.Create.() -> Unit = {}): UserCommand.Create {
+fun userCreateCommandFixture(block: UserCommandFixture.Create.() -> Unit = {}): UserCommand.Create {
     return UserCommandFixture.Create().apply(block).create()
 }
 
-fun userCommandUpdate(block: UserCommandFixture.Update.() -> Unit = {}): UserCommand.Update {
+fun userUpdateCommandFixture(block: UserCommandFixture.Update.() -> Unit = {}): UserCommand.Update {
     return UserCommandFixture.Update().apply(block).create()
 }

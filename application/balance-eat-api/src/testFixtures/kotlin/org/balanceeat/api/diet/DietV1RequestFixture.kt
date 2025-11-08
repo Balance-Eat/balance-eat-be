@@ -50,14 +50,14 @@ class DietV1RequestFixture {
     }
 }
 
-fun dietV1RequestCreate(block: DietV1RequestFixture.Create.() -> Unit = {}): DietV1Request.Create {
+fun dietCreateV1RequestFixture(block: DietV1RequestFixture.Create.() -> Unit = {}): DietV1Request.Create {
     return DietV1RequestFixture.Create().copy().apply(block).create()
 }
 
-fun dietV1RequestUpdate(block: DietV1RequestFixture.Update.() -> Unit = {}): DietV1Request.Update {
+fun dietUpdateV1RequestFixture(block: DietV1RequestFixture.Update.() -> Unit = {}): DietV1Request.Update {
     return DietV1RequestFixture.Update().copy().apply(block).create()
 }
 
-fun dietV1RequestUpdateDietFood(block: DietV1RequestFixture.UpdateDietFood.() -> Unit = {}): DietV1Request.UpdateDietFood {
+fun dietUpdateDietFoodV1RequestFixture(block: DietV1RequestFixture.UpdateDietFood.() -> Unit = {}): DietV1Request.UpdateDietFood {
     return DietV1RequestFixture.UpdateDietFood().copy().apply(block).create()
 }

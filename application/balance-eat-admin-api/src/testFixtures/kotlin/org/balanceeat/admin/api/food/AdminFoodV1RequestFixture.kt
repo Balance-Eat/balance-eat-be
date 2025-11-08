@@ -28,6 +28,6 @@ class AdminFoodV1RequestFixture {
     }
 }
 
-fun adminFoodV1RequestUpdate(block: AdminFoodV1RequestFixture.Update.() -> Unit = {}): AdminFoodV1Request.Update {
+fun adminFoodUpdateV1RequestFixture(block: AdminFoodV1RequestFixture.Update.() -> Unit = {}): AdminFoodV1Request.Update {
     return AdminFoodV1RequestFixture.Update().apply(block).create()
 }
