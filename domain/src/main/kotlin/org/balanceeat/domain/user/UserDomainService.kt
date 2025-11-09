@@ -66,13 +66,13 @@ class UserDomainService(
     fun update(command: UserCommand.Update): UserDto {
         val user = findById(command.id)
         user.apply {
-            command.name?.let { name = it }
+            command.name.let { name = it }
             command.email?.let { email = it }
-            command.gender?.let { gender = it }
-            command.age?.let { age = it }
-            command.weight?.let { weight = it }
-            command.height?.let { height = it }
-            command.goalType?.let { goalType = it }
+            command.gender.let { gender = it }
+            command.age.let { age = it }
+            command.weight.let { weight = it }
+            command.height.let { height = it }
+            command.goalType.let { goalType = it }
             command.activityLevel?.let { activityLevel = it }
             command.smi?.let { smi = it }
             command.fatPercentage?.let { fatPercentage = it }

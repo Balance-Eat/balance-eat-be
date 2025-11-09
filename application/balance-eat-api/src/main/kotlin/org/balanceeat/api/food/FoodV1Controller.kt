@@ -19,31 +19,25 @@ class FoodV1Controller(
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@RequestBody @Valid request: FoodV1Request.Create): ApiResponse<FoodV1Response.Details> {
         val result = foodService.create(request, 1L) // TODO: 인증 연동 후 수정
-        return ApiResponse.success(
-            FoodV1Response.Details.from(result)
-        )
+        return ApiResponse.success(result)
     }
 
     @PutMapping("/{id}")
     fun update(@PathVariable id: Long,
                         @RequestBody @Valid request: FoodV1Request.Update): ApiResponse<FoodV1Response.Details> {
         val result = foodService.update(request, id, 1L) // TODO: 인증 연동 후 수정
-        return ApiResponse.success(
-            FoodV1Response.Details.from(result)
-        )
+        return ApiResponse.success(result)
     }
 
     @GetMapping("/{id}")
     fun getDetails(@PathVariable id: Long): ApiResponse<FoodV1Response.Details> {
-        val food = foodService.getDetails(id)
-        return ApiResponse.success(FoodV1Response.Details.from(food))
+        val result = foodService.getDetails(id)
+        return ApiResponse.success(result)
     }
 
     @GetMapping("/recommendations")
     fun getRecommendations(@RequestParam(defaultValue = "10") limit: Int): ApiResponse<List<FoodV1Response.Details>> {
         val result = foodService.getRecommendations(limit)
-            .map { FoodV1Response.Details.from(it) }
-
         return ApiResponse.success(result)
     }
 

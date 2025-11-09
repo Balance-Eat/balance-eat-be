@@ -24,15 +24,16 @@ class FoodService(
     private val curationFoodRepository: CurationFoodRepository
 ) {
     @Transactional(readOnly = true)
-    fun getDetails(id: Long): FoodDto {
+    fun getDetails(id: Long): FoodV1Response.Details {
         return foodRepository.findByIdOrNull(id)
             ?.let { FoodDto.from(it) }
+            ?.let { FoodV1Response.Details.from(it) }
             ?: throw NotFoundException(FOOD_NOT_FOUND)
     }
 
     @Transactional
-    fun create(request: FoodV1Request.Create, creatorId: Long): FoodDto {
-        return foodDomainService.create(
+    fun create(request: FoodV1Request.Create, creatorId: Long): FoodV1Response.Details {
+        val result = foodDomainService.create(
             command = FoodCommand.Create(
                 uuid = request.uuid,
                 userId = creatorId,
@@ -46,10 +47,12 @@ class FoodService(
                 isAdminApproved = false
             )
         )
+
+        return FoodV1Response.Details.from(result)
     }
 
     @Transactional
-    fun update(request: FoodV1Request.Update, id: Long, modifierId: Long): FoodDto {
+    fun update(request: FoodV1Request.Update, id: Long, modifierId: Long): FoodV1Response.Details {
         val food = foodRepository.findByIdOrNull(id)
             ?: throw NotFoundException(FOOD_NOT_FOUND)
 
@@ -57,7 +60,7 @@ class FoodService(
             throw BadRequestException(CANNOT_MODIFY_FOOD)
         }
 
-        return foodDomainService.update(
+        val result = foodDomainService.update(
             command = FoodCommand.Update(
                 id = id,
                 name = request.name,
@@ -70,10 +73,12 @@ class FoodService(
                 isAdminApproved = false
             )
         )
+
+        return FoodV1Response.Details.from(result)
     }
 
     @Transactional(readOnly = true)
-    fun getRecommendations(limit: Int = 10): List<FoodDto> {
+    fun getRecommendations(limit: Int = 10): List<FoodV1Response.Details> {
         val pageable = PageRequest.of(0, limit)
         val curationFoodMap =  curationFoodRepository.findRecommendedFoods(pageable)
             .associateBy { it.foodId }
@@ -81,6 +86,7 @@ class FoodService(
         return foodRepository.findAllById(curationFoodMap.keys)
             .map { FoodDto.from(it) }
             .sortedByDescending { curationFoodMap[it.id]?.weight }
+            .map { FoodV1Response.Details.from(it) }
     }
 
     @Transactional(readOnly = true)

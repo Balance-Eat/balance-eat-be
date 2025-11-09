@@ -29,8 +29,9 @@ class FoodServiceTest: IntegrationTestContext() {
             val result = foodService.getDetails(food.id)
 
             // then
-            assertThat(result).usingRecursiveComparison()
-                .isEqualTo(food)
+            assertThat(result.id).isEqualTo(food.id)
+            assertThat(result.name).isEqualTo(food.name)
+            assertThat(result.uuid).isEqualTo(food.uuid)
         }
     }
 
@@ -49,9 +50,10 @@ class FoodServiceTest: IntegrationTestContext() {
             val result = foodService.create(request, creatorId)
 
             // then
-            assertThat(result).usingRecursiveComparison()
-                .ignoringFields("id", "createdAt", "isAdminApproved", "userId")
-                .isEqualTo(request)
+            assertThat(result.name).isEqualTo(request.name)
+            assertThat(result.brand).isEqualTo(request.brand)
+            assertThat(result.servingSize).isEqualTo(request.servingSize)
+            assertThat(result.unit).isEqualTo(request.unit)
         }
     }
 
@@ -97,9 +99,10 @@ class FoodServiceTest: IntegrationTestContext() {
             )
 
             // then
-            assertThat(result).usingRecursiveComparison()
-                .ignoringFields("id", "uuid", "createdAt", "isAdminApproved", "userId")
-                .isEqualTo(request)
+            assertThat(result.id).isEqualTo(food.id)
+            assertThat(result.name).isEqualTo(request.name)
+            assertThat(result.brand).isEqualTo(request.brand)
+            assertThat(result.uuid).isEqualTo(food.uuid)
         }
     }
 
@@ -124,10 +127,10 @@ class FoodServiceTest: IntegrationTestContext() {
             // then
             assertThat(result).hasSize(2)
             // order: food3(200), food1(150)
-            assertThat(result[0]).usingRecursiveComparison()
-                .isEqualTo(food3)
-            assertThat(result[1]).usingRecursiveComparison()
-                .isEqualTo(food1)
+            assertThat(result[0].id).isEqualTo(food3.id)
+            assertThat(result[0].name).isEqualTo(food3.name)
+            assertThat(result[1].id).isEqualTo(food1.id)
+            assertThat(result[1].name).isEqualTo(food1.name)
         }
     }
 

@@ -8,6 +8,7 @@ import org.balanceeat.domain.user.UserDto
 import org.balanceeat.domain.user.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class AdminUserService(
@@ -15,6 +16,7 @@ class AdminUserService(
     private val userRepository: UserRepository
 ) {
 
+    @Transactional
     fun update(request: AdminUserV1Request.Update, userId: Long): AdminUserV1Response.Details {
         val command = UserCommand.Update(
             id = userId,
@@ -41,6 +43,7 @@ class AdminUserService(
             .let { AdminUserV1Response.Details.from(it) }
     }
 
+    @Transactional(readOnly = true)
     fun getDetails(userId: Long): AdminUserV1Response.Details {
         return  userRepository.findByIdOrNull(userId)
             ?.let { UserDto.from(it) }

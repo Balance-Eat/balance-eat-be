@@ -35,7 +35,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
         @Test
         fun success() {
             val request = mockCreateRequest()
-            every { foodService.create(any(), any()) } returns mockFoodDto()
+            every { foodService.create(any(), any()) } returns mockFoodResponse()
 
             given()
                 .body(request)
@@ -100,7 +100,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
         @Test
         fun success() {
             val request = mockUpdateRequest()
-            every { foodService.update(any(), any(), any()) } returns mockFoodDto()
+            every { foodService.update(any(), any(), any()) } returns mockFoodResponse()
 
             given()
                 .body(request)
@@ -165,7 +165,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
     inner class GetDetailsTest {
         @Test
         fun success() {
-            every { foodService.getDetails(any()) } returns mockFoodDto()
+            every { foodService.getDetails(any()) } returns mockFoodResponse()
 
             given()
                 .get("/v1/foods/{id}", 1)
@@ -206,7 +206,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
     inner class GetRecommendationsTest {
         @Test
         fun success() {
-            every { foodService.getRecommendations(any()) } returns listOf(mockFoodDto())
+            every { foodService.getRecommendations(any()) } returns listOf(mockFoodResponse())
 
             given()
                 .params("limit", 10)
@@ -312,12 +312,11 @@ class FoodV1ControllerTest: ControllerTestContext() {
 
     }
 
-    private fun mockFoodDto(): FoodDto {
-        return FoodDto(
+    private fun mockFoodResponse(): FoodV1Response.Details {
+        return FoodV1Response.Details(
             id = 1L,
             uuid = "test-uuid-123",
             name = "테스트 음식",
-            userId = 1L,
             servingSize = 100.0,
             unit = "g",
             perServingCalories = 150.0,
@@ -325,7 +324,6 @@ class FoodV1ControllerTest: ControllerTestContext() {
             protein = 8.0,
             fat = 3.0,
             brand = "테스트 브랜드",
-            isAdminApproved = false,
             createdAt = LocalDateTime.now()
         )
     }
