@@ -6,7 +6,6 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.balanceeat.api.config.supports.ControllerTestContext
 import org.balanceeat.apibase.response.PageResponse
-import org.balanceeat.domain.food.FoodDto
 import org.balanceeat.domain.food.FoodSearchResult
 import org.balanceeat.domain.food.FoodSearchResultFixture
 import org.junit.jupiter.api.DisplayName

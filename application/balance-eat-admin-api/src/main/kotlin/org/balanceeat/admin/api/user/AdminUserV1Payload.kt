@@ -2,7 +2,7 @@ package org.balanceeat.admin.api.user
 
 import jakarta.validation.constraints.*
 import org.balanceeat.domain.user.User
-import org.balanceeat.domain.user.UserDto
+import org.balanceeat.domain.user.UserResult
 
 class AdminUserV1Request {
     data class Update(
@@ -57,7 +57,7 @@ class AdminUserV1Response {
         val providerType: String?
     ) {
         companion object {
-            fun from(user: UserDto) = Details(
+            fun from(user: UserResult) = Details(
                 id = user.id,
                 uuid = user.uuid,
                 name = user.name,

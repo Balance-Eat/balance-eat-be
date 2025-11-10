@@ -54,10 +54,10 @@ class DietDomainServiceTest : IntegrationTestContext() {
                 ).create()
             )
 
-            val command = DietCommand.Create(
-                userId = 1L,
-                mealType = Diet.MealType.BREAKFAST,
-                consumedAt = LocalDateTime.now(),
+            val command = dietCreateCommandFixture {
+                userId = 1L
+                mealType = Diet.MealType.BREAKFAST
+                consumedAt = LocalDateTime.now()
                 dietFoods = listOf(
                     DietCommand.Create.DietFood(
                         foodId = food1.id,
@@ -68,7 +68,7 @@ class DietDomainServiceTest : IntegrationTestContext() {
                         intake = 1 // 우유 1개
                     )
                 )
-            )
+            }
 
             // when
             val createdDiet = dietDomainService.create(command)
@@ -180,11 +180,11 @@ class DietDomainServiceTest : IntegrationTestContext() {
                 ).create()
             )
 
-            val updateCommand = DietCommandFixture.Update(
-                id = existingDiet2.id,
-                mealType = Diet.MealType.BREAKFAST, // 이미 존재하는 MealType으로 변경
-                consumedAt = existingDiet2.consumedAt,
-            ).create()
+            val updateCommand = dietUpdateCommandFixture {
+                id = existingDiet2.id
+                mealType = Diet.MealType.BREAKFAST // 이미 존재하는 MealType으로 변경
+                consumedAt = existingDiet2.consumedAt
+            }
 
             // when
             val throwable = catchThrowable { dietDomainService.update(updateCommand) }
@@ -236,10 +236,10 @@ class DietDomainServiceTest : IntegrationTestContext() {
             val dietFoodIds = savedDiet.dietFoods.map { it.id }
             val dietFoodIdToDelete = dietFoodIds[1] // 바나나 삭제
 
-            val command = DietCommandFixture.DeleteDietFood(
-                dietId = savedDiet.id,
+            val command = dietDeleteDietFoodCommandFixture {
+                dietId = savedDiet.id
                 dietFoodId = dietFoodIdToDelete
-            ).create()
+            }
 
             // when
             dietDomainService.deleteDietFood(command)
@@ -256,10 +256,10 @@ class DietDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `존재하지 않는 식단으로 삭제 시도하면 실패한다`() {
             // given
-            val command = DietCommandFixture.DeleteDietFood(
-                dietId = 999L,
+            val command = dietDeleteDietFoodCommandFixture {
+                dietId = 999L
                 dietFoodId = 1L
-            ).create()
+            }
 
             // when
             val throwable = catchThrowable { dietDomainService.deleteDietFood(command) }
@@ -280,10 +280,10 @@ class DietDomainServiceTest : IntegrationTestContext() {
                 ).create()
             )
 
-            val command = DietCommandFixture.DeleteDietFood(
-                dietId = diet.id,
+            val command = dietDeleteDietFoodCommandFixture {
+                dietId = diet.id
                 dietFoodId = 999L // 존재하지 않는 dietFoodId
-            ).create()
+            }
 
             // when
             val throwable = catchThrowable { dietDomainService.deleteDietFood(command) }
@@ -310,11 +310,11 @@ class DietDomainServiceTest : IntegrationTestContext() {
             )
 
             val dietFoodId = savedDiet.dietFoods.first().id
-            val command = DietCommandFixture.UpdateDietFood(
-                dietId = savedDiet.id,
-                dietFoodId = dietFoodId,
+            val command = dietUpdateDietFoodCommandFixture {
+                dietId = savedDiet.id
+                dietFoodId = dietFoodId
                 intake = 150
-            ).create()
+            }
 
             // when
             val result = dietDomainService.updateDietFood(command)
@@ -330,11 +330,11 @@ class DietDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `존재하지 않는 식단으로 수정 시도하면 실패한다`() {
             // given
-            val command = DietCommandFixture.UpdateDietFood(
-                dietId = 999L,
-                dietFoodId = 1L,
+            val command = dietUpdateDietFoodCommandFixture {
+                dietId = 999L
+                dietFoodId = 1L
                 intake = 150
-            ).create()
+            }
 
             // when
             val throwable = catchThrowable { dietDomainService.updateDietFood(command) }
@@ -355,11 +355,11 @@ class DietDomainServiceTest : IntegrationTestContext() {
                 ).create()
             )
 
-            val command = DietCommandFixture.UpdateDietFood(
-                dietId = diet.id,
-                dietFoodId = 999L, // 존재하지 않는 dietFoodId
+            val command = dietUpdateDietFoodCommandFixture {
+                dietId = diet.id
+                dietFoodId = 999L // 존재하지 않는 dietFoodId
                 intake = 150
-            ).create()
+            }
 
             // when
             val throwable = catchThrowable { dietDomainService.updateDietFood(command) }

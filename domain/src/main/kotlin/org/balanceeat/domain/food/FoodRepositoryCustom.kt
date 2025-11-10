@@ -4,5 +4,5 @@ import org.springframework.data.domain.Page
 
 
 interface FoodRepositoryCustom {
-    fun search(search: FoodCommand.Search): Page<FoodSearchResult>
+    fun search(query: FoodQuery.Search): Page<FoodSearchResult>
 }

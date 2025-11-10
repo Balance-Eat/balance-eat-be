@@ -6,7 +6,6 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.balanceeat.admin.api.supports.ControllerTestContext
 import org.balanceeat.domain.user.User
-import org.balanceeat.domain.user.UserDto
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

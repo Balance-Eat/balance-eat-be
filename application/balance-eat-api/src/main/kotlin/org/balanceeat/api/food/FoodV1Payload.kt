@@ -1,7 +1,7 @@
 package org.balanceeat.api.food
 
 import jakarta.validation.constraints.NotNull
-import org.balanceeat.domain.food.FoodDto
+import org.balanceeat.domain.food.FoodResult
 import java.time.LocalDateTime
 
 class FoodV1Request {
@@ -81,7 +81,7 @@ class FoodV1Response {
         val createdAt: LocalDateTime
     ) {
         companion object {
-            fun from(food: FoodDto) = Details(
+            fun from(food: FoodResult) = Details(
                 id = food.id,
                 uuid = food.uuid,
                 name = food.name,

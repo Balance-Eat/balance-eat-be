@@ -16,8 +16,9 @@ Balance-Eat 프로젝트의 도메인 레이어 표준 템플릿을 제공합니
 ```
 domain/src/main/kotlin/org/balanceeat/domain/{domain}/
 ├── {Domain}.kt                      # 엔티티
-├── {Domain}Command.kt                # Command 객체
-├── {Domain}Dto.kt                    # DTO 객체
+├── {Domain}Command.kt                # Command 객체 (CUD)
+├── {Domain}Query.kt                  # Query 객체 (조회, 필요시)
+├── {Domain}Result.kt                 # Result 객체 (조회 결과)
 ├── {Domain}DomainService.kt          # 도메인 서비스
 ├── {Domain}Repository.kt             # Repository 인터페이스
 ├── {Domain}RepositoryCustom.kt       # Querydsl 커스텀 인터페이스 (필요시)
@@ -25,7 +26,9 @@ domain/src/main/kotlin/org/balanceeat/domain/{domain}/
 
 domain/src/testFixtures/kotlin/org/balanceeat/domain/{domain}/
 ├── {Domain}Fixture.kt                # 엔티티 픽스처
-└── {Domain}CommandFixture.kt         # Command 픽스처
+├── {Domain}CommandFixture.kt         # Command 픽스처
+├── {Domain}QueryFixture.kt           # Query 픽스처
+└── {Domain}ResultFixture.kt          # Result 픽스처
 
 domain/src/test/kotlin/org/balanceeat/domain/{domain}/
 ├── {Domain}Test.kt                   # 엔티티 테스트 (필요시)
@@ -34,9 +37,10 @@ domain/src/test/kotlin/org/balanceeat/domain/{domain}/
 
 **파일 설명**:
 - **{Domain}.kt**: JPA 엔티티 및 Enum 타입 정의
-- **{Domain}Command.kt**: Create, Update 등 명령 객체
-- **{Domain}Dto.kt**: 조회용 DTO 객체
-- **{Domain}DomainService.kt**: 비즈니스 로직 처리 CUD 담당 (@DomainService) 
+- **{Domain}Command.kt**: Create, Update, Delete 등 명령 객체 (CUD)
+- **{Domain}Query.kt**: 복잡한 조회 조건 객체 (필요시, 예: Search)
+- **{Domain}Result.kt**: 도메인 조회 결과 객체 (Entity → Result 변환)
+- **{Domain}DomainService.kt**: 비즈니스 로직 처리 CUD 담당 (@DomainService)
 - **{Domain}Repository.kt**: 기본 Repository 인터페이스
 - **{Domain}RepositoryCustom.kt**: Querydsl 커스텀 쿼리 인터페이스
 - **{Domain}RepositoryCustomImpl.kt**: Querydsl 구현체
@@ -202,65 +206,157 @@ class ExampleCommand {
 
 ---
 
-## 템플릿 3: DTO ({Domain}Dto.kt)
+## 템플릿 3: Result ({Domain}Result.kt)
+
+도메인 레이어의 조회 결과를 나타내는 객체들입니다. Entity를 직접 반환하지 않고 Result 객체로 변환하여 반환합니다.
 
 ```kotlin
 package org.balanceeat.domain.example
 
+import com.querydsl.core.annotations.QueryProjection
 import java.time.LocalDateTime
 
-class ExampleDto {
-
-    data class Details(
-        val id: Long,
-        val name: String,
-        val status: Example.Status,
-        val userId: Long,
-        val description: String?,
-        val createdAt: LocalDateTime,
-        val updatedAt: LocalDateTime
-    ) {
-        companion object {
-            fun from(example: Example): Details {
-                return Info(
-                    id = example.id,
-                    name = example.name,
-                    status = example.status,
-                    userId = example.userId,
-                    description = example.description,
-                    createdAt = example.createdAt,
-                    updatedAt = example.updatedAt
-                )
-            }
+data class ExampleResult(
+    val id: Long,
+    val name: String,
+    val status: Example.Status,
+    val userId: Long,
+    val description: String?,
+    val createdAt: LocalDateTime
+) {
+    companion object {
+        fun from(example: Example): ExampleResult {
+            return ExampleResult(
+                id = example.id,
+                name = example.name,
+                status = example.status,
+                userId = example.userId,
+                description = example.description,
+                createdAt = example.createdAt
+            )
         }
     }
+}
 
-    data class Summary(
-        val id: Long,
-        val name: String,
-        val status: Example.Status
-    ) {
-        companion object {
-            fun from(example: Example): Summary {
-                return Summary(
-                    id = example.id,
-                    name = example.name,
-                    status = example.status
-                )
-            }
+@QueryProjection
+data class ExampleSearchResult(
+    val id: Long,
+    val name: String,
+    val status: Example.Status,
+    val userId: Long,
+    val description: String?,
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime
+)
+
+data class ExampleDetails(
+    val id: Long,
+    val name: String,
+    val status: Example.Status,
+    val userId: Long,
+    val description: String?,
+    val relatedData: String?,
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime
+) {
+    companion object {
+        fun from(example: Example): ExampleDetails {
+            return ExampleDetails(
+                id = example.id,
+                name = example.name,
+                status = example.status,
+                userId = example.userId,
+                description = example.description,
+                relatedData = example.relatedData,
+                createdAt = example.createdAt,
+                updatedAt = example.updatedAt
+            )
+        }
+    }
+}
+
+data class ExampleSummary(
+    val id: Long,
+    val name: String,
+    val status: Example.Status
+) {
+    companion object {
+        fun from(example: Example): ExampleSummary {
+            return ExampleSummary(
+                id = example.id,
+                name = example.name,
+                status = example.status
+            )
         }
     }
 }
 ```
 
 **핵심 패턴**:
-- Details: 상세 정보용 DTO
-- Summary: 목록 조회용 간략 DTO
-- companion object의 `from()` 팩토리 메서드
+- **{Domain}Result**: 도메인 서비스의 기본 반환 타입 (CUD 작업 결과)
+- **{Domain}SearchResult**: Querydsl 검색 결과용 Projection (`@QueryProjection`)
+- **{Domain}Details**: 상세 정보 조회용 (연관 데이터 포함)
+- **{Domain}Summary**: 목록 조회용 간략 정보
+- companion object의 `from()` 팩토리 메서드로 Entity → Result 변환
+
+**사용 시나리오**:
+- **Result**: Domain Service의 create/update 반환, 단순 조회
+- **SearchResult**: Repository의 Querydsl 검색 결과 (성능 최적화)
+- **Details**: 연관 데이터를 포함한 상세 조회
+- **Summary**: 목록 화면용 간략 정보
+
+**명명 규칙**:
+- 기본: `{Domain}Result`
+- 검색: `{Domain}SearchResult` (with `@QueryProjection`)
+- 상세: `{Domain}Details`
+- 요약: `{Domain}Summary`
+- 통계: `{Domain}StatsResult`, `{Domain}AggregateResult`
 
 ---
 
-## 템플릿 4: Repository ({Domain}Repository.kt)
+## 템플릿 4: Query ({Domain}Query.kt)
+
+복잡한 조회 조건이 필요한 경우에만 작성합니다. 단순 조회는 Repository 메서드로 충분합니다.
+
+```kotlin
+package org.balanceeat.domain.example
+
+import org.springframework.data.domain.Pageable
+
+class ExampleQuery {
+
+    data class Search(
+        val name: String?,
+        val status: Example.Status?,
+        val userId: Long?,
+        val pageable: Pageable
+    )
+
+    data class Filter(
+        val userId: Long,
+        val statuses: List<Example.Status>,
+        val fromDate: LocalDate,
+        val toDate: LocalDate
+    )
+}
+```
+
+**핵심 패턴**:
+- **Command vs Query 분리**: CUD는 Command, 조회는 Query
+- **복잡한 조건만**: 단순 조회는 Repository 메서드 사용
+- **Pageable 포함**: 페이징이 필요한 검색에는 Pageable 포함
+- **Optional 조건**: nullable 필드로 선택적 조건 표현
+
+**작성 시기**:
+- ✅ 여러 조건의 AND/OR 조합이 필요한 경우
+- ✅ 페이징/정렬이 필요한 검색
+- ✅ 날짜 범위, 상태 목록 등 복잡한 필터링
+- ❌ 단일 필드 조회 (Repository 메서드로 충분)
+- ❌ ID로 단건 조회 (Repository의 `findById` 사용)
+
+---
+
+## 템플릿 5: Repository ({Domain}Repository.kt)
 
 ```kotlin
 package org.balanceeat.domain.example
@@ -281,7 +377,7 @@ interface ExampleRepository : JpaRepository<Example, Long>, ExampleRepositoryCus
 - Spring Data JPA 쿼리 메서드 활용
 ---
 
-## 템플릿 5: Repository Custom (Querydsl)
+## 템플릿 6: Repository Custom (Querydsl)
 
 ### {Domain}RepositoryCustom.kt
 
@@ -360,7 +456,7 @@ class ExampleRepositoryCustomImpl(
 
 ---
 
-## 템플릿 6: Domain Service ({Domain}DomainService.kt)
+## 템플릿 7: Domain Service ({Domain}DomainService.kt)
 
 ```kotlin
 package org.balanceeat.domain.example
@@ -372,13 +468,11 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 
 @DomainService
-@Transactional(readOnly = true)
 class ExampleDomainService(
     private val exampleRepository: ExampleRepository
 ) {
-
     @Transactional
-    fun create(command: ExampleCommand.Create): Example {
+    fun create(command: ExampleCommand.Create): ExampleResult {
         validateCreation(command)
 
         val example = Example(
@@ -388,34 +482,32 @@ class ExampleDomainService(
             description = command.description
         )
 
-        return exampleRepository.save(example)
+        val savedExample = exampleRepository.save(example)
+        return ExampleResult.from(savedExample)
     }
 
     @Transactional
-    fun update(command: ExampleCommand.Update): Example {
-        val example = findById(command.id)
+    fun update(command: ExampleCommand.Update): ExampleResult {
+        val example = exampleRepository.findById(command.id)
+            .orElseThrow { EntityNotFoundException(DomainStatus.EXAMPLE_NOT_FOUND) }
 
         example.update(
             name = command.name,
             description = command.description
         )
 
-        return example
+        val savedExample = exampleRepository.save(example)
+        return ExampleResult.from(savedExample)
     }
 
     @Transactional
     fun delete(id: Long) {
-        val example = findById(id)
-        exampleRepository.delete(example)
-    }
-
-    private fun findById(id: Long): Example {
-        return exampleRepository.findByIdOrNull(id)
-            ?: throw DomainException(DomainStatus.EXAMPLE_NOT_FOUND)
+        val example = exampleRepository.findById(id)
+            .ifPresent{ exampleRepository.delete(it) }
     }
 
     private fun validateCreation(command: ExampleCommand.Create) {
-        if (exampleRepository.existsByUserIdAndName(userId, name)) {
+        if (exampleRepository.existsByUserIdAndName(command.userId, command.name)) {
             throw DomainException(DomainStatus.EXAMPLE_ALREADY_EXISTS)
         }
     }
@@ -424,69 +516,87 @@ class ExampleDomainService(
 
 **핵심 패턴**:
 - `@DomainService` 어노테이션
-- `@Transactional(readOnly = true)` 클래스 레벨 적용
-- 쓰기 메서드에만 `@Transactional` 오버라이드
+- `@Transactional(readOnly = true)` 조회 메서드에 적용
+- `@Transactional` 쓰기 메서드에 적용
 - 검증 로직은 private 메서드로 분리
-- `findByIdOrNull()` + Elvis 연산자로 예외 처리
+- `findById().orElseThrow()` 또는 `findByIdOrNull()` + Elvis 연산자로 예외 처리
+- **반환 타입**: CUD 메서드는 Result 객체 반환 (Entity 직접 반환 금지)
+- **Entity → Result 변환**: `Result.from(entity)` 패턴 사용
 
 ---
 
-## 템플릿 7: Test Fixture ({Domain}Fixture.kt)
+## 템플릿 8: Test Fixture (통합 가이드)
+
+도메인 레이어의 모든 픽스쳐는 동일한 핵심 패턴을 따릅니다. 픽스쳐 타입별로 4가지가 있습니다:
+
+1. **Entity Fixture** (`{Domain}Fixture.kt`): 엔티티 테스트 데이터
+2. **Command Fixture** (`{Domain}CommandFixture.kt`): Command 객체 테스트 데이터
+3. **Query Fixture** (`{Domain}QueryFixture.kt`): Query 객체 테스트 데이터 (필요시)
+4. **Result Fixture** (`{Domain}ResultFixture.kt`): Result 객체 테스트 데이터 (필요시)
+
+### 공통 핵심 패턴
+
+모든 픽스쳐는 다음 패턴을 따릅니다:
+
+```kotlin
+// 1. TestFixture<T> 인터페이스 구현 (제네릭 타입 명시)
+class SomeFixture(...) : TestFixture<SomeType> {
+    override fun create(): SomeType { ... }
+}
+
+// 2. 기본값을 가진 생성자 파라미터
+class SomeFixture(
+    var field1: Type1 = defaultValue1,
+    var field2: Type2 = defaultValue2,
+    ...
+)
+
+// 3. create() 메서드로 객체 생성
+override fun create(): SomeType {
+    return SomeType(field1, field2, ...)
+}
+
+// 4. 최상위 함수로 DSL 스타일 제공
+fun someFixture(block: SomeFixture.() -> Unit = {}): SomeType {
+    return SomeFixture().apply(block).create()
+}
+```
+
+### 8-1. Entity Fixture ({Domain}Fixture.kt)
 
 ```kotlin
 package org.balanceeat.domain.example
 
-import org.balanceeat.domain.config.FixtureReflectionUtils
 import org.balanceeat.domain.config.TestFixture
 
-class ExampleFixture : TestFixture {
-
-    override fun clear() {
-        id = 1L
-        name = "테스트 예제"
-        status = Example.Status.ACTIVE
-        userId = 1L
-        description = null
-    }
-
-    var id: Long = 1L
-    var name: String = "테스트 예제"
-    var status: Example.Status = Example.Status.ACTIVE
-    var userId: Long = 1L
+class ExampleFixture(
+    var id: Long = 1L,
+    var name: String = "테스트 예제",
+    var status: Example.Status = Example.Status.ACTIVE,
+    var userId: Long = 1L,
     var description: String? = null
-
-    fun build(): Example {
-        val example = Example(
+) : TestFixture<Example> {
+    override fun create(): Example {
+        return Example(
             id = 0L,
             name = name,
             status = status,
             userId = userId,
             description = description
         )
-        FixtureReflectionUtils.setId(example, id)
-        return example
     }
+}
 
-    companion object {
-        fun create(fixture: ExampleFixture.() -> Unit = {}): Example {
-            val exampleFixture = ExampleFixture()
-            exampleFixture.clear()
-            exampleFixture.fixture()
-            return exampleFixture.build()
-        }
-    }
+fun exampleFixture(block: ExampleFixture.() -> Unit = {}): Example {
+    return ExampleFixture().apply(block).create()
 }
 ```
 
-**핵심 패턴**:
-- `TestFixture` 인터페이스 구현
-- `clear()`: 기본값 초기화
-- `build()`: 엔티티 생성 + ID 설정
-- companion object `create()`: DSL 스타일 픽스처 생성
+**특징**:
+- ID는 생성자 파라미터로 직접 전달하여 설정
+- 함수명 패턴: `{domain}Fixture`
 
----
-
-## 템플릿 8: Command Fixture ({Domain}CommandFixture.kt)
+### 8-2. Command Fixture ({Domain}CommandFixture.kt)
 
 ```kotlin
 package org.balanceeat.domain.example
@@ -537,15 +647,154 @@ fun exampleUpdateCommandFixture(block: ExampleCommandFixture.Update.() -> Unit =
 }
 ```
 
-**핵심 패턴**:
-- Command별 Fixture 클래스 중첩
-- 각 Fixture는 `TestFixture<T>` 구현 (제네릭 타입 명시)
-- 최상위 함수로 DSL 스타일 픽스처 생성 함수 제공
-- 함수명 패턴: `{domain}{Command}CommandFixture`
+**특징**:
+- Command별 Fixture 클래스 중첩 (Create, Update 등)
+- 함수명 패턴: `{domain}{Operation}CommandFixture`
+
+### 8-3. Query Fixture ({Domain}QueryFixture.kt)
+
+복잡한 조회 조건이 있는 경우에만 작성합니다.
+
+```kotlin
+package org.balanceeat.domain.example
+
+import org.balanceeat.domain.config.TestFixture
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import java.time.LocalDate
+
+class ExampleQueryFixture {
+
+    class Search(
+        var name: String? = null,
+        var status: Example.Status? = null,
+        var userId: Long? = null,
+        var pageable: Pageable = PageRequest.of(0, 10)
+    ) : TestFixture<ExampleQuery.Search> {
+        override fun create(): ExampleQuery.Search {
+            return ExampleQuery.Search(
+                name = name,
+                status = status,
+                userId = userId,
+                pageable = pageable
+            )
+        }
+    }
+
+    class Filter(
+        var userId: Long = 1L,
+        var statuses: List<Example.Status> = listOf(Example.Status.ACTIVE),
+        var fromDate: LocalDate = LocalDate.now().minusDays(7),
+        var toDate: LocalDate = LocalDate.now()
+    ) : TestFixture<ExampleQuery.Filter> {
+        override fun create(): ExampleQuery.Filter {
+            return ExampleQuery.Filter(
+                userId = userId,
+                statuses = statuses,
+                fromDate = fromDate,
+                toDate = toDate
+            )
+        }
+    }
+}
+
+fun exampleSearchQueryFixture(block: ExampleQueryFixture.Search.() -> Unit = {}): ExampleQuery.Search {
+    return ExampleQueryFixture.Search().apply(block).create()
+}
+
+fun exampleFilterQueryFixture(block: ExampleQueryFixture.Filter.() -> Unit = {}): ExampleQuery.Filter {
+    return ExampleQueryFixture.Filter().apply(block).create()
+}
+```
+
+**특징**:
+- Query별 Fixture 클래스 중첩 (Search, Filter 등)
+- 함수명 패턴: `{domain}{Operation}QueryFixture`
+
+### 8-4. Result Fixture ({Domain}ResultFixture.kt)
+
+Result 객체가 많거나 복잡한 경우에만 작성합니다.
+
+```kotlin
+package org.balanceeat.domain.example
+
+import org.balanceeat.domain.config.TestFixture
+import java.time.LocalDateTime
+
+class ExampleResultFixture {
+
+    class Basic(
+        var id: Long = 1L,
+        var name: String = "테스트 예제",
+        var status: Example.Status = Example.Status.ACTIVE,
+        var userId: Long = 1L,
+        var description: String? = null,
+        var createdAt: LocalDateTime = LocalDateTime.now()
+    ) : TestFixture<ExampleResult> {
+        override fun create(): ExampleResult {
+            return ExampleResult(
+                id = id,
+                name = name,
+                status = status,
+                userId = userId,
+                description = description,
+                createdAt = createdAt
+            )
+        }
+    }
+
+    class Details(
+        var id: Long = 1L,
+        var name: String = "테스트 예제",
+        var status: Example.Status = Example.Status.ACTIVE,
+        var userId: Long = 1L,
+        var description: String? = null,
+        var relatedData: String? = "관련 데이터",
+        var createdAt: LocalDateTime = LocalDateTime.now(),
+        var updatedAt: LocalDateTime = LocalDateTime.now()
+    ) : TestFixture<ExampleDetails> {
+        override fun create(): ExampleDetails {
+            return ExampleDetails(
+                id = id,
+                name = name,
+                status = status,
+                userId = userId,
+                description = description,
+                relatedData = relatedData,
+                createdAt = createdAt,
+                updatedAt = updatedAt
+            )
+        }
+    }
+}
+
+fun exampleResultFixture(block: ExampleResultFixture.Basic.() -> Unit = {}): ExampleResult {
+    return ExampleResultFixture.Basic().apply(block).create()
+}
+
+fun exampleDetailsFixture(block: ExampleResultFixture.Details.() -> Unit = {}): ExampleDetails {
+    return ExampleResultFixture.Details().apply(block).create()
+}
+```
+
+**특징**:
+- Result 타입별 Fixture 클래스 중첩 (Basic, Details, Summary 등)
+- 함수명 패턴: `{domain}{ResultType}Fixture`
+
+### 픽스쳐 작성 원칙
+
+1. **TestFixture<T> 구현**: 모든 픽스쳐는 `TestFixture<T>` 인터페이스 구현
+2. **기본값 제공**: 생성자 파라미터에 실제적인 기본값 제공
+3. **DSL 함수**: 최상위 함수로 간편한 사용 지원
+4. **한글 데이터**: 테스트 데이터는 한글로 작성하여 가독성 향상
+5. **리플렉션**: Entity Fixture만 `FixtureReflectionUtils.setId()` 사용
+
+### 픽스쳐 작성 시기
+Entity, Command, Query, Result 객체가 생성될거나 변경될때
 
 ---
 
-## 템플릿 9: Entity Test ({Domain}Test.kt)
+## 템플릿 10: Entity Test ({Domain}Test.kt)
 
 엔티티의 비즈니스 로직 메서드를 테스트합니다. 복잡한 로직(if문 분기, 권한 체크, 계산)이 포함된 메서드만 테스트합니다.
 
@@ -682,7 +931,7 @@ class ExampleTest {
 
 ---
 
-## 템플릿 10: Domain Service Test ({Domain}DomainServiceTest.kt)
+## 템플릿 11: Domain Service Test ({Domain}DomainServiceTest.kt)
 
 ```kotlin
 package org.balanceeat.domain.example
@@ -850,11 +1099,16 @@ class ExampleDomainServiceTest : IntegrationTestContext() {
 
 - [ ] **패키지 구조**: `org.balanceeat.domain.{domain}` 생성
 - [ ] **엔티티**: `{Domain}.kt` 작성, `BaseEntity` 상속, `guard()` 구현
-- [ ] **Command**: `{Domain}Command.kt` 작성 (Create, Update)
-- [ ] **DTO**: `{Domain}Dto.kt` 작성 (Info, Summary)
+- [ ] **Command**: `{Domain}Command.kt` 작성 (Create, Update, Delete)
+- [ ] **Query** (필요시): `{Domain}Query.kt` 작성 (Search 등 복잡한 조회 조건)
+- [ ] **Result**: `{Domain}Result.kt` 작성
+  - `{Domain}Result`: 기본 조회 결과
+  - `{Domain}SearchResult`: Querydsl 검색 결과 (with `@QueryProjection`)
+  - `{Domain}Details`: 상세 정보 (필요시)
+  - `{Domain}Summary`: 목록용 간략 정보 (필요시)
 - [ ] **Repository**: `{Domain}Repository.kt` 작성
 - [ ] **Querydsl** (필요시): Custom/Impl 작성
-- [ ] **Domain Service**: `{Domain}DomainService.kt` 작성, `@Service` 적용
+- [ ] **Domain Service**: `{Domain}DomainService.kt` 작성, `@DomainService` 적용
 - [ ] **Fixture**: `{Domain}Fixture.kt` + `{Domain}CommandFixture.kt` 작성
 - [ ] **테스트**: `{Domain}DomainServiceTest.kt` 작성
 - [ ] **예외 처리**: `DomainStatus`에 도메인별 예외 상태 추가
@@ -876,7 +1130,8 @@ class ExampleDomainServiceTest : IntegrationTestContext() {
 |-----|------|-----|
 | Entity | `{Domain}.kt` | `User.kt`, `Diet.kt` |
 | Command | `{Domain}Command.kt` | `UserCommand.kt` |
-| DTO | `{Domain}Dto.kt` | `UserDto.kt` |
+| Query | `{Domain}Query.kt` | `FoodQuery.kt` (필요시) |
+| Result | `{Domain}Result.kt` | `FoodResult.kt` |
 | Repository | `{Domain}Repository.kt` | `UserRepository.kt` |
 | Domain Service | `{Domain}DomainService.kt` | `UserDomainService.kt` |
 | Fixture | `{Domain}Fixture.kt` | `UserFixture.kt` |
@@ -896,13 +1151,40 @@ Balance-Eat 프로젝트는 다음과 같은 차이점이 있습니다:
 3. **Package**: `org.balanceeat.domain.{domain}` 구조
 4. **DomainService**: `@Service` 어노테이션 사용 (별도 `@DomainService` 없음)
 5. **Test**: Kotest assertions + JUnit 5 조합
-6. **Fixture**: `TestFixture` 인터페이스 + `FixtureReflectionUtils` 활용
+6. **Fixture**: `TestFixture` 인터페이스 및 생성 함수 활용
+
+### Command vs Query vs Result 분리
+
+Balance-Eat 프로젝트는 CQRS 패턴을 부분적으로 적용합니다:
+
+**Command (CUD)**:
+- `{Domain}Command.kt`: Create, Update, Delete 명령
+- 상태 변경을 목적으로 함
+- 예: `UserCommand.Create`, `FoodCommand.Update`
+
+**Query (조회 조건)**:
+- `{Domain}Query.kt`: 복잡한 조회 조건 (필요시만 작성)
+- 상태 변경 없이 조회만 수행
+- 예: `FoodQuery.Search` (검색), `DietQuery.Filter` (필터링)
+
+**Result (조회 결과)**:
+- `{Domain}Result.kt`: 조회 결과 객체 모음
+- Entity → Result 변환으로 도메인 계층 결과 전달
+- **Result 타입 구분**:
+  - `{Domain}Result`: Domain Service의 기본 반환 타입 (CUD 작업 결과)
+  - `{Domain}SearchResult`: Querydsl 검색 결과 (`@QueryProjection`)
+  - `{Domain}Details`: 상세 정보 조회 (연관 데이터 포함)
+  - `{Domain}Summary`: 목록 조회용 간략 정보
+- 예: `FoodResult`, `FoodSearchResult`, `FoodDetails`, `FoodSummary`
 
 ### 실제 도메인 예시
 
 프로젝트 내 참고 가능한 도메인:
-- `User`: 사용자 도메인 (복잡한 검증 로직)
-- `Diet`: 식단 도메인 (연관관계, Querydsl)
-- `Food`: 음식 도메인 (단순한 구조)
+- **User**: 사용자 도메인 (복잡한 검증 로직)
+- **Diet**: 식단 도메인 (연관관계, Querydsl)
+- **Food**: 음식 도메인 (Query/Result 분리 예시)
+  - `FoodCommand.kt`: Create, Update
+  - `FoodQuery.kt`: Search
+  - `FoodResult.kt`: FoodResult, FoodSearchResult
 
 이 템플릿을 따라 개발하면 일관성 있고 유지보수가 용이한 도메인 레이어를 구축할 수 있습니다.

@@ -2,7 +2,7 @@ package org.balanceeat.domain.user
 
 import java.time.LocalDateTime
 
-data class UserDto(
+data class UserResult(
     val id: Long,
     val uuid: String,
     val name: String,
@@ -27,8 +27,8 @@ data class UserDto(
     val createdAt: LocalDateTime
 ) {
     companion object {
-        fun from(user: User): UserDto {
-            return UserDto(
+        fun from(user: User): UserResult {
+            return UserResult(
                 id = user.id,
                 uuid = user.uuid,
                 name = user.name,

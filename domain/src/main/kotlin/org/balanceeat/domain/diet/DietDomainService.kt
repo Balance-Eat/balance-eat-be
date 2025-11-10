@@ -17,7 +17,7 @@ class DietDomainService(
     private val eventPublisher: ApplicationEventPublisher
 ) {
     @Transactional
-    fun create(command: DietCommand.Create): DietDto {
+    fun create(command: DietCommand.Create): DietResult {
         checkDuplication(
             userId = command.userId,
             consumedAt = command.consumedAt,
@@ -43,11 +43,11 @@ class DietDomainService(
 
         eventPublisher.publishEvent(DietCreatedEvent(savedDiet.id))
 
-        return DietDto.from(savedDiet, foodMap)
+        return DietResult.from(savedDiet, foodMap)
     }
 
     @Transactional
-    fun update(command: DietCommand.Update): DietDto {
+    fun update(command: DietCommand.Update): DietResult {
         val diet = dietRepository.findByIdOrNull(command.id)
             ?: throw EntityNotFoundException(DomainStatus.DIET_NOT_FOUND)
 
@@ -73,7 +73,7 @@ class DietDomainService(
 
         eventPublisher.publishEvent(DietUpdatedEvent(savedDiet.id))
 
-        return DietDto.from(savedDiet, foodMap)
+        return DietResult.from(savedDiet, foodMap)
     }
 
     @Transactional
@@ -96,7 +96,7 @@ class DietDomainService(
     }
 
     @Transactional
-    fun updateDietFood(command: DietCommand.UpdateDietFood): DietDto {
+    fun updateDietFood(command: DietCommand.UpdateDietFood): DietResult {
         val diet = dietRepository.findByIdOrNull(command.dietId)
             ?: throw EntityNotFoundException(DomainStatus.DIET_NOT_FOUND)
 
@@ -107,7 +107,7 @@ class DietDomainService(
 
         eventPublisher.publishEvent(DietUpdatedEvent(diet.id))
 
-        return DietDto.from(savedDiet, foodMap)
+        return DietResult.from(savedDiet, foodMap)
     }
 
     private fun checkDuplication(

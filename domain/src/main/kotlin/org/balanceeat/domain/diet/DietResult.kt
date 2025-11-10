@@ -3,29 +3,29 @@ package org.balanceeat.domain.diet
 import org.balanceeat.domain.food.Food
 import java.time.LocalDateTime
 
-data class DietDto(
+data class DietResult(
     val id: Long,
     val userId: Long,
     val mealType: Diet.MealType,
     val consumedAt: LocalDateTime,
     val totalNutrition: NutritionInfo,
-    val dietFoods: List<DietFoodDto>
+    val dietFoods: List<DietFoodResult>
 ) {
     companion object {
-        fun from(diet: Diet, foodMap: Map<Long, Food>): DietDto {
+        fun from(diet: Diet, foodMap: Map<Long, Food>): DietResult {
             val dietFoods = diet.dietFoods.map { dietFood ->
                 val food = foodMap[dietFood.foodId]!!
-                DietFoodDto.from(dietFood, food)
+                DietFoodResult.from(dietFood, food)
             }
-            
+
             val totalNutrition = NutritionInfo(
                 calories = dietFoods.sumOf { it.nutrition.calories },
                 carbohydrates = dietFoods.sumOf { it.nutrition.carbohydrates },
                 protein = dietFoods.sumOf { it.nutrition.protein },
                 fat = dietFoods.sumOf { it.nutrition.fat }
             )
-            
-            return DietDto(
+
+            return DietResult(
                 id = diet.id,
                 userId = diet.userId,
                 mealType = diet.mealType,
@@ -37,7 +37,7 @@ data class DietDto(
     }
 }
 
-data class DietFoodDto(
+data class DietFoodResult(
     val dietFoodId: Long,
     val foodId: Long,
     val foodName: String,
@@ -46,9 +46,9 @@ data class DietFoodDto(
     val nutrition: NutritionInfo
 ) {
     companion object {
-        fun from(dietFood: DietFood, food: Food): DietFoodDto {
+        fun from(dietFood: DietFood, food: Food): DietFoodResult {
             val nutrition = food.calculateNutrition(dietFood.intake.toDouble())
-            return DietFoodDto(
+            return DietFoodResult(
                 dietFoodId = dietFood.id,
                 foodId = dietFood.foodId,
                 foodName = food.name,

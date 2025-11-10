@@ -13,9 +13,9 @@ class CurationFoodTest {
         @Test
         fun `가중치를 업데이트할 수 있다`() {
             // given
-            val curationFood = CurationFoodFixture(
+            val curationFood = curationFoodFixture {
                 weight = 50
-            ).create()
+            }
 
             val newWeight = 200
 

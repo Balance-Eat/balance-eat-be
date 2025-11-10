@@ -4,7 +4,7 @@ import org.balanceeat.apibase.ApplicationStatus.FOOD_NOT_FOUND
 import org.balanceeat.apibase.exception.NotFoundException
 import org.balanceeat.domain.food.FoodCommand
 import org.balanceeat.domain.food.FoodDomainService
-import org.balanceeat.domain.food.FoodDto
+import org.balanceeat.domain.food.FoodResult
 import org.balanceeat.domain.food.FoodRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -18,7 +18,7 @@ class AdminFoodService(
     @Transactional(readOnly = true)
     fun getDetails(id: Long): AdminFoodV1Response.Details {
         return foodRepository.findByIdOrNull(id)
-            ?.let { FoodDto.from(it) }
+            ?.let { FoodResult.from(it) }
             ?.let { AdminFoodV1Response.Details.from(it) }
             ?: throw NotFoundException(FOOD_NOT_FOUND)
     }

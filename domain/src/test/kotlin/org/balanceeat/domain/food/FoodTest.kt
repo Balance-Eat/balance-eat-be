@@ -14,13 +14,13 @@ class FoodTest {
         @Test
         fun success() {
             // given
-            val food = FoodFixture(
-                servingSize = 100.0,
-                unit = "g",
-                carbohydrates = 20.0,
-                protein = 5.0,
+            val food = foodFixture {
+                servingSize = 100.0
+                unit = "g"
+                carbohydrates = 20.0
+                protein = 5.0
                 fat = 2.0
-            ).create()
+            }
 
             // when
             val nutrition = food.calculateNutrition(200.0) // 2배 섭취
@@ -40,16 +40,16 @@ class FoodTest {
         fun `작성자는 음식을 업데이트할 수 있다`() {
             // given
             val originalUserId = 1L
-            val food = FoodFixture(
-                name = "수정 전 음식",
-                userId = originalUserId,
-                servingSize = 100.0,
-                unit = "g",
-                carbohydrates = 20.0,
-                protein = 5.0,
-                fat = 2.0,
+            val food = foodFixture {
+                name = "수정 전 음식"
+                userId = originalUserId
+                servingSize = 100.0
+                unit = "g"
+                carbohydrates = 20.0
+                protein = 5.0
+                fat = 2.0
                 isAdminApproved = false
-            ).create()
+            }
 
             // when
             food.update(
@@ -77,10 +77,10 @@ class FoodTest {
         @Test
         fun `엔티티 업데이트는 비즈니스 규칙을 검증한다`() {
             // given
-            val food = FoodFixture(
-                name = "기존 음식",
+            val food = foodFixture {
+                name = "기존 음식"
                 servingSize = 100.0
-            ).create()
+            }
 
             // when & then - 잘못된 값으로 업데이트 시도
             val ex = assertThrows(IllegalArgumentException::class.java) {

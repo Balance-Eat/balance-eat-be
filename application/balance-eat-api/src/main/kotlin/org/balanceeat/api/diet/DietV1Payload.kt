@@ -7,9 +7,9 @@ import org.balanceeat.domain.common.DomainStatus
 import org.balanceeat.domain.common.exception.DomainException
 import org.balanceeat.domain.diet.Diet
 import org.balanceeat.domain.diet.Diet.MealType
-import org.balanceeat.domain.diet.DietDto
+import org.balanceeat.domain.diet.DietResult
 import org.balanceeat.domain.diet.DietFood
-import org.balanceeat.domain.diet.DietFoodDto
+import org.balanceeat.domain.diet.DietFoodResult
 import org.balanceeat.domain.diet.NutritionInfo
 import org.balanceeat.domain.food.Food
 import java.time.LocalDate
@@ -129,15 +129,15 @@ class DietV1Response {
         val dietFoods: List<DietFood>
     ) {
         companion object {
-            fun from(dietDto: DietDto): Details {
+            fun from(dietResult: DietResult): Details {
                 return Details(
-                    dietId = dietDto.id,
-                    userId = dietDto.userId,
-                    mealType = dietDto.mealType,
-                    consumeDate = dietDto.consumedAt.toLocalDate(),
-                    consumedAt = dietDto.consumedAt,
-                    totalNutrition = dietDto.totalNutrition,
-                    dietFoods = dietDto.dietFoods.map { DietFood.from(it) }
+                    dietId = dietResult.id,
+                    userId = dietResult.userId,
+                    mealType = dietResult.mealType,
+                    consumeDate = dietResult.consumedAt.toLocalDate(),
+                    consumedAt = dietResult.consumedAt,
+                    totalNutrition = dietResult.totalNutrition,
+                    dietFoods = dietResult.dietFoods.map { DietFood.from(it) }
                 )
             }
         }
@@ -151,7 +151,7 @@ class DietV1Response {
             val nutrition: NutritionInfo
         ) {
             companion object {
-                fun from(dietFood: DietFoodDto): DietFood {
+                fun from(dietFood: DietFoodResult): DietFood {
                     return DietFood(
                         id = dietFood.dietFoodId,
                         foodId = dietFood.foodId,

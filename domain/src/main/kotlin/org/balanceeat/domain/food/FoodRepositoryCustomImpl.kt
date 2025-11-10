@@ -10,11 +10,11 @@ import org.springframework.data.domain.Page
 class FoodRepositoryCustomImpl(
     queryFactory: JPAQueryFactory
 ): BaseQueryRepository(queryFactory), FoodRepositoryCustom {
-    override fun search(search: FoodCommand.Search): Page<FoodSearchResult> {
+    override fun search(query: FoodQuery.Search): Page<FoodSearchResult> {
         val where = mutableListOf<BooleanExpression>()
 
-        search.foodName?.let { where.add(food.name.containsIgnoreCase(it)) }
-        search.userId?.let { where.add(food.userId.eq(it)) }
+        query.foodName?.let { where.add(food.name.containsIgnoreCase(it)) }
+        query.userId?.let { where.add(food.userId.eq(it)) }
 
         val baseQuery = queryFactory
             .from(food)
@@ -48,6 +48,6 @@ class FoodRepositoryCustomImpl(
                 )
             )
             .orderBy(food.createdAt.desc())
-            .toPage(search.pageable, totalCount)
+            .toPage(query.pageable, totalCount)
     }
 }

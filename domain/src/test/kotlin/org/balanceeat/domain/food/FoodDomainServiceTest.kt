@@ -39,25 +39,6 @@ class FoodDomainServiceTest : IntegrationTestContext() {
     }
 
     @Nested
-    @DisplayName("조회 테스트")
-    inner class GetFoodTest {
-        
-        @Test
-        fun `음식 정보를 조회할 수 있다`() {
-            // given
-            val food = foodRepository.save(FoodFixture().create())
-
-            // when
-            val foundFood = foodDomainService.getFood(food.id)
-
-            // then
-            assertThat(foundFood)
-                .usingRecursiveComparison()
-                .isEqualTo(food)
-        }
-    }
-
-    @Nested
     @DisplayName("수정 테스트")
     inner class UpdateTest {
 

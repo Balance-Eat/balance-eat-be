@@ -7,7 +7,6 @@ import org.balanceeat.apibase.ApplicationStatus
 import org.balanceeat.apibase.exception.BadRequestException
 import org.balanceeat.domain.curation.CurationFoodFixture
 import org.balanceeat.domain.food.FoodFixture
-import org.balanceeat.domain.food.FoodSearchResultFixture
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

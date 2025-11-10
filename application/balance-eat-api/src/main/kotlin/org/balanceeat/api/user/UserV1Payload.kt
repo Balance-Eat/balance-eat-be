@@ -2,7 +2,7 @@ package org.balanceeat.api.user
 
 import jakarta.validation.constraints.NotNull
 import org.balanceeat.domain.user.User
-import org.balanceeat.domain.user.UserDto
+import org.balanceeat.domain.user.UserResult
 
 class UserV1Request {
     data class Create(
@@ -87,7 +87,7 @@ class UserV1Response {
         val providerType: String?
     ) {
         companion object {
-            fun from(user: UserDto) = Details(
+            fun from(user: UserResult) = Details(
                 id = user.id,
                 uuid = user.uuid,
                 name = user.name,

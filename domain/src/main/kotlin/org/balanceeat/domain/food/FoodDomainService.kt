@@ -10,15 +10,8 @@ import org.springframework.transaction.annotation.Transactional
 class FoodDomainService(
     private val foodRepository: FoodRepository
 ) {
-    @Transactional(readOnly = true)
-    fun getFood(foodId: Long): FoodDto {
-        val food = foodRepository.findById(foodId)
-            .orElseThrow { EntityNotFoundException(DomainStatus.FOOD_NOT_FOUND) }
-        return FoodDto.from(food)
-    }
-    
     @Transactional
-    fun create(command: FoodCommand.Create): FoodDto {
+    fun create(command: FoodCommand.Create): FoodResult {
         val food = Food(
             name = command.name,
             uuid = command.uuid,
@@ -38,11 +31,11 @@ class FoodDomainService(
         )
         
         val savedFood = foodRepository.save(food)
-        return FoodDto.from(savedFood)
+        return FoodResult.from(savedFood)
     }
     
     @Transactional
-    fun update(command: FoodCommand.Update): FoodDto {
+    fun update(command: FoodCommand.Update): FoodResult {
         val food = foodRepository.findById(command.id)
             .orElseThrow { EntityNotFoundException(DomainStatus.FOOD_NOT_FOUND) }
 
@@ -57,6 +50,6 @@ class FoodDomainService(
         )
 
         val savedFood = foodRepository.save(food)
-        return FoodDto.from(savedFood)
+        return FoodResult.from(savedFood)
     }
 }

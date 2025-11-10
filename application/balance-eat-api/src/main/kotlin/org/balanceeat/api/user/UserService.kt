@@ -4,7 +4,7 @@ import org.balanceeat.apibase.ApplicationStatus
 import org.balanceeat.apibase.exception.NotFoundException
 import org.balanceeat.domain.user.UserCommand
 import org.balanceeat.domain.user.UserDomainService
-import org.balanceeat.domain.user.UserDto
+import org.balanceeat.domain.user.UserResult
 import org.balanceeat.domain.user.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -72,7 +72,7 @@ class UserService(
     @Transactional(readOnly = true)
     fun findByUuid(uuid: String): UserV1Response.Details {
         val user = userRepository.findByUuid(uuid)
-            ?.let { UserDto.from(it) }
+            ?.let { UserResult.from(it) }
             ?: throw NotFoundException(ApplicationStatus.USER_NOT_FOUND)
 
         return UserV1Response.Details.from(user)

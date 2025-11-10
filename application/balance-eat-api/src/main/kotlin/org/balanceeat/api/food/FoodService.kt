@@ -8,7 +8,8 @@ import org.balanceeat.apibase.response.PageResponse
 import org.balanceeat.domain.curation.CurationFoodRepository
 import org.balanceeat.domain.food.FoodCommand
 import org.balanceeat.domain.food.FoodDomainService
-import org.balanceeat.domain.food.FoodDto
+import org.balanceeat.domain.food.FoodQuery
+import org.balanceeat.domain.food.FoodResult
 import org.balanceeat.domain.food.FoodRepository
 import org.balanceeat.domain.food.FoodSearchResult
 import org.springframework.data.domain.PageRequest
@@ -26,7 +27,7 @@ class FoodService(
     @Transactional(readOnly = true)
     fun getDetails(id: Long): FoodV1Response.Details {
         return foodRepository.findByIdOrNull(id)
-            ?.let { FoodDto.from(it) }
+            ?.let { FoodResult.from(it) }
             ?.let { FoodV1Response.Details.from(it) }
             ?: throw NotFoundException(FOOD_NOT_FOUND)
     }
@@ -84,7 +85,7 @@ class FoodService(
             .associateBy { it.foodId }
 
         return foodRepository.findAllById(curationFoodMap.keys)
-            .map { FoodDto.from(it) }
+            .map { FoodResult.from(it) }
             .sortedByDescending { curationFoodMap[it.id]?.weight }
             .map { FoodV1Response.Details.from(it) }
     }
@@ -92,7 +93,7 @@ class FoodService(
     @Transactional(readOnly = true)
     fun search(request: FoodV1Request.Search, pageable: Pageable): PageResponse<FoodSearchResult>{
         val result =  foodRepository.search(
-            FoodCommand.Search(
+            FoodQuery.Search(
                 foodName = request.foodName,
                 userId = request.userId,
                 pageable = pageable

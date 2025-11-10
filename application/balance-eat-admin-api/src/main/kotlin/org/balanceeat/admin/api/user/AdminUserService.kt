@@ -4,7 +4,7 @@ import org.balanceeat.apibase.ApplicationStatus
 import org.balanceeat.apibase.exception.BadRequestException
 import org.balanceeat.domain.user.UserCommand
 import org.balanceeat.domain.user.UserDomainService
-import org.balanceeat.domain.user.UserDto
+import org.balanceeat.domain.user.UserResult
 import org.balanceeat.domain.user.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -46,7 +46,7 @@ class AdminUserService(
     @Transactional(readOnly = true)
     fun getDetails(userId: Long): AdminUserV1Response.Details {
         return  userRepository.findByIdOrNull(userId)
-            ?.let { UserDto.from(it) }
+            ?.let { UserResult.from(it) }
             ?.let { AdminUserV1Response.Details.from(it) }
             ?: throw BadRequestException(ApplicationStatus.USER_NOT_FOUND)
     }

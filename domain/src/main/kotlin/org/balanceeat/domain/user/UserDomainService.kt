@@ -19,7 +19,7 @@ class UserDomainService(
     }
 
     @Transactional
-    fun create(command: UserCommand.Create): UserDto {
+    fun create(command: UserCommand.Create): UserResult {
         if (userRepository.existsByUuid(command.uuid)) {
             throw BadCommandException(USER_ALREADY_EXISTS)
         }
@@ -47,7 +47,7 @@ class UserDomainService(
             providerType = command.providerType
         )
         return userRepository.save(user)
-            .let { UserDto.from(it) }
+            .let { UserResult.from(it) }
     }
 
 
@@ -63,7 +63,7 @@ class UserDomainService(
     }
 
     @Transactional
-    fun update(command: UserCommand.Update): UserDto {
+    fun update(command: UserCommand.Update): UserResult {
         val user = findById(command.id)
         user.apply {
             command.name.let { name = it }
@@ -85,6 +85,6 @@ class UserDomainService(
             command.targetFat?.let { targetFat = it }
         }
         return userRepository.save(user)
-            .let { UserDto.from(it) }
+            .let { UserResult.from(it) }
     }
 }

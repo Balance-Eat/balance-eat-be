@@ -303,11 +303,11 @@ class UserFixture(
 
 자세한 픽스처 가이드라인은 [claude/fixture-guidelines.md](fixture-guidelines.md)를 참고하세요.
 
-## DTO 패턴
+## Result 패턴
 
-### 1. DTO의 역할과 목적
+### 1. Result의 역할과 목적
 
-Balance-Eat 프로젝트에서는 **도메인 엔티티의 불변성 유지**와 **계층 간 분리**를 위해 DTO(Data Transfer Object) 패턴을 사용합니다.
+Balance-Eat 프로젝트에서는 **도메인 엔티티의 불변성 유지**와 **계층 간 분리**를 위해 Result 객체 패턴을 사용합니다.
 
 #### 핵심 목적
 - **도메인 엔티티 보호**: 도메인 엔티티가 다른 계층에서 직접 노출되지 않음
@@ -315,26 +315,26 @@ Balance-Eat 프로젝트에서는 **도메인 엔티티의 불변성 유지**와
 - **불변성 유지**: 엔티티 상태 변경을 도메인 계층에서만 허용
 - **데이터 변환**: 계층 간 데이터 전송 시 적절한 형태로 변환
 
-### 2. DTO 네이밍 규칙
+### 2. Result 네이밍 규칙
 
 ```
-{Entity}Dto.kt
+{Entity}Result.kt
 ```
 
-예: `UserDto.kt`, `FoodDto.kt`
+예: `UserResult.kt`, `FoodResult.kt`
 
-### 3. DTO 클래스 구조
+### 3. Result 클래스 구조
 
 ```kotlin
-data class EntityDto(
+data class EntityResult(
     val id: Long,
     val uuid: String,
     // ... 엔티티의 모든 필드
     val createdAt: LocalDateTime
 ) {
     companion object {
-        fun from(entity: Entity): EntityDto {
-            return EntityDto(
+        fun from(entity: Entity): EntityResult {
+            return EntityResult(
                 id = entity.id,
                 uuid = entity.uuid,
                 // ... 모든 필드 매핑
@@ -345,31 +345,31 @@ data class EntityDto(
 }
 ```
 
-### 4. DTO 사용 패턴
+### 4. Result 사용 패턴
 
-#### 도메인 서비스에서 DTO 반환
+#### 도메인 서비스에서 Result 반환
 ```kotlin
 @DomainService
 class EntityDomainService(
     private val entityRepository: EntityRepository
 ) {
     @Transactional(readOnly = true)
-    fun getEntity(id: Long): EntityDto {
+    fun getEntity(id: Long): EntityResult {
         val entity = entityRepository.findById(id)
             .orElseThrow { NotFoundException(ENTITY_NOT_FOUND) }
-        return EntityDto.from(entity)
+        return EntityResult.from(entity)
     }
-    
+
     @Transactional
-    fun create(command: EntityCommand.Create): EntityDto {
+    fun create(command: EntityCommand.Create): EntityResult {
         val entity = Entity(/* 생성 로직 */)
         val savedEntity = entityRepository.save(entity)
-        return EntityDto.from(savedEntity)
+        return EntityResult.from(savedEntity)
     }
 }
 ```
 
-#### API 계층에서 DTO 사용
+#### API 계층에서 Result 사용
 ```kotlin
 @RestController
 class EntityV1Controller(
@@ -380,7 +380,7 @@ class EntityV1Controller(
         val result = entityDomainService.create(command)
         return ApiResponse.success(EntityV1Response.Info.from(result))
     }
-    
+
     @GetMapping("/{id}")
     fun get(@PathVariable id: Long): ApiResponse<EntityV1Response.Info> {
         val entity = entityDomainService.get(id)
@@ -389,7 +389,7 @@ class EntityV1Controller(
 }
 ```
 
-#### API 응답 클래스에서 DTO 변환
+#### API 응답 클래스에서 Result 변환
 ```kotlin
 data class Info(
     val id: Long,
@@ -397,34 +397,34 @@ data class Info(
     // ... API 응답 필드
 ) {
     companion object {
-        fun from(dto: EntityDto) = Info(
-            id = dto.id,
-            uuid = dto.uuid,
+        fun from(result: EntityResult) = Info(
+            id = result.id,
+            uuid = result.uuid,
             // ... 필드 매핑
         )
     }
 }
 ```
 
-### 5. DTO 구현 가이드라인
+### 5. Result 구현 가이드라인
 
 #### ✅ 해야 할 것들
-- **모든 필드 포함**: 엔티티의 모든 필드를 DTO에 포함
-- **비즈니스 메소드 복사**: 다른 계층에서 필요한 엔티티의 비즈니스 메소드를 DTO에 복사
-- **companion object 활용**: `from()` 메소드로 엔티티→DTO 변환 제공
+- **모든 필드 포함**: 엔티티의 모든 필드를 Result에 포함
+- **비즈니스 메소드 복사**: 다른 계층에서 필요한 엔티티의 비즈니스 메소드를 Result에 복사
+- **companion object 활용**: `from()` 메소드로 엔티티→Result 변환 제공
 - **불변성 보장**: `data class`와 `val` 필드로 불변성 보장
 
 #### ❌ 피해야 할 것들
 - **엔티티 직접 노출**: 도메인 서비스에서 엔티티를 직접 반환
-- **부분 필드만 포함**: DTO에서 일부 필드만 선택적으로 포함
+- **부분 필드만 포함**: Result에서 일부 필드만 선택적으로 포함
 - **가변 필드 사용**: `var` 필드 사용으로 불변성 훼손
 - **변환 로직 누락**: `from()` 메소드 없이 수동 변환
 
 ### 6. 실제 구현 예시
 
-#### FoodDto 예시
+#### FoodResult 예시
 ```kotlin
-data class FoodDto(
+data class FoodResult(
     val id: Long,
     val uuid: String,
     val name: String,
@@ -444,21 +444,21 @@ data class FoodDto(
             fat = fat * ratio
         )
     }
-    
+
     private fun calculateCalories(ratio: Double): Double {
         return (carbohydrates * 4 + protein * 4 + fat * 9) * ratio
     }
-    
+
     data class NutritionInfo(
         val calories: Double,
         val carbohydrates: Double,
         val protein: Double,
         val fat: Double
     )
-    
+
     companion object {
-        fun from(food: Food): FoodDto {
-            return FoodDto(
+        fun from(food: Food): FoodResult {
+            return FoodResult(
                 id = food.id,
                 uuid = food.uuid,
                 name = food.name,
@@ -474,18 +474,18 @@ data class FoodDto(
 }
 ```
 
-### 7. DTO 체크리스트
+### 7. Result 체크리스트
 
-#### ✅ 새 DTO 생성 시 확인사항
-- [ ] `{Entity}Dto.kt` 네이밍 규칙 준수
+#### ✅ 새 Result 생성 시 확인사항
+- [ ] `{Entity}Result.kt` 네이밍 규칙 준수
 - [ ] 엔티티의 모든 필드 포함
 - [ ] `data class`로 선언하여 불변성 보장
 - [ ] `companion object`에 `from()` 메소드 구현
-- [ ] 도메인 서비스에서 DTO 반환하도록 수정자 그럼 이제 
-- [ ] API 응답 클래스에서 DTO 사용하도록 수정
+- [ ] 도메인 서비스에서 Result 반환하도록 수정
+- [ ] API 응답 클래스에서 Result 사용하도록 수정
 
-#### ✅ 기존 엔티티 수정 시 DTO 업데이트
-- [ ] 엔티티 필드 변경사항을 DTO에 동기화
-- [ ] 새로운 비즈니스 메소드가 추가된 경우 DTO에 복사
+#### ✅ 기존 엔티티 수정 시 Result 업데이트
+- [ ] 엔티티 필드 변경사항을 Result에 동기화
+- [ ] 새로운 비즈니스 메소드가 추가된 경우 Result에 복사
 - [ ] `from()` 메소드에 새 필드 매핑 추가
 - [ ] 관련 테스트 케이스 업데이트

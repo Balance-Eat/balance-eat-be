@@ -3,7 +3,7 @@ package org.balanceeat.domain.stats
 import com.querydsl.core.annotations.QueryProjection
 import java.time.LocalDate
 
-data class DietStatsDto(
+data class DietStatsResult(
     val id: Long,
     val userId: Long,
     val statsDate: String,
@@ -13,8 +13,8 @@ data class DietStatsDto(
     val totalFat: Double
 ) {
     companion object {
-        fun from(dietStats: DietStats): DietStatsDto {
-            return DietStatsDto(
+        fun from(dietStats: DietStats): DietStatsResult {
+            return DietStatsResult(
                 id = dietStats.id,
                 userId = dietStats.userId,
                 statsDate = dietStats.statsDate.toString(),
