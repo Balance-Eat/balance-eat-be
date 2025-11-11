@@ -1,7 +1,7 @@
 package org.balanceeat.domain.diet
 
+import org.balanceeat.common.TestFixture
 import org.balanceeat.domain.config.NEW_ID
-import org.balanceeat.domain.config.TestFixture
 import java.time.LocalDate
 import java.time.LocalDateTime
 

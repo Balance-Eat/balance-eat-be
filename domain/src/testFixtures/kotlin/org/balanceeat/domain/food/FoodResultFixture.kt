@@ -1,6 +1,6 @@
 package org.balanceeat.domain.food
 
-import org.balanceeat.domain.config.TestFixture
+import org.balanceeat.common.TestFixture
 import org.balanceeat.domain.config.UuidGenerator
 import java.time.LocalDateTime
 

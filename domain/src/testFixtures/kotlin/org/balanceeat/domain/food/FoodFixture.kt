@@ -1,7 +1,7 @@
 package org.balanceeat.domain.food
 
+import org.balanceeat.common.TestFixture
 import org.balanceeat.domain.common.utils.CalorieCalculator
-import org.balanceeat.domain.config.TestFixture
 import org.balanceeat.domain.config.NEW_ID
 import org.balanceeat.domain.config.UuidGenerator
 

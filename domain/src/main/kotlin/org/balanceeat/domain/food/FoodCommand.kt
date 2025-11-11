@@ -3,7 +3,7 @@ package org.balanceeat.domain.food
 import org.springframework.data.domain.Pageable
 
 
-sealed class FoodCommand {
+class FoodCommand {
     data class Create(
         val uuid: String,
         val name: String,
@@ -27,11 +27,5 @@ sealed class FoodCommand {
         val fat: Double,
         val brand: String,
         val isAdminApproved: Boolean
-    )
-
-    data class Search(
-        val foodName: String?,
-        val userId: Long?,
-        val pageable: Pageable
     )
 }

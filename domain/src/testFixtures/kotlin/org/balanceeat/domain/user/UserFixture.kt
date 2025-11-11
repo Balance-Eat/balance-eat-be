@@ -1,6 +1,6 @@
 package org.balanceeat.domain.user
 
-import org.balanceeat.domain.config.TestFixture
+import org.balanceeat.common.TestFixture
 import org.balanceeat.domain.config.NEW_ID
 import java.util.UUID
 

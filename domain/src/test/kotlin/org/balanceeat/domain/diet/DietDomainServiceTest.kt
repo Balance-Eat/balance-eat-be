@@ -312,7 +312,7 @@ class DietDomainServiceTest : IntegrationTestContext() {
             val dietFoodId = savedDiet.dietFoods.first().id
             val command = dietUpdateDietFoodCommandFixture {
                 dietId = savedDiet.id
-                dietFoodId = dietFoodId
+                this.dietFoodId = dietFoodId
                 intake = 150
             }
 

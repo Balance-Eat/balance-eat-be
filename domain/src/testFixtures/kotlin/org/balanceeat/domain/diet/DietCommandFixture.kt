@@ -47,18 +47,6 @@ class DietCommandFixture {
         }
     }
 
-    class FindDailyDiets(
-        var userId: Long = 1L,
-        var date: LocalDate = LocalDate.now()
-    ) : TestFixture<DietCommand.FindDailyDiets> {
-        override fun create(): DietCommand.FindDailyDiets {
-            return DietCommand.FindDailyDiets(
-                userId = userId,
-                date = date
-            )
-        }
-    }
-
     class DeleteDietFood(
         var dietId: Long = 1L,
         var dietFoodId: Long = 1L
@@ -92,10 +80,6 @@ fun dietCreateCommandFixture(block: DietCommandFixture.Create.() -> Unit = {}): 
 
 fun dietUpdateCommandFixture(block: DietCommandFixture.Update.() -> Unit = {}): DietCommand.Update {
     return DietCommandFixture.Update().apply(block).create()
-}
-
-fun dietFindDailyDietsCommandFixture(block: DietCommandFixture.FindDailyDiets.() -> Unit = {}): DietCommand.FindDailyDiets {
-    return DietCommandFixture.FindDailyDiets().apply(block).create()
 }
 
 fun dietDeleteDietFoodCommandFixture(block: DietCommandFixture.DeleteDietFood.() -> Unit = {}): DietCommand.DeleteDietFood {

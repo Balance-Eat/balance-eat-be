@@ -1,6 +1,6 @@
 package org.balanceeat.domain.curation
 
-import org.balanceeat.domain.config.TestFixture
+import org.balanceeat.common.TestFixture
 import org.balanceeat.domain.config.NEW_ID
 
 class CurationFoodFixture(

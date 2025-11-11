@@ -1,6 +1,6 @@
 package org.balanceeat.domain.stats
 
-import org.balanceeat.domain.config.TestFixture
+import org.balanceeat.common.TestFixture
 import java.time.LocalDate
 
 class DietStatsFixture(

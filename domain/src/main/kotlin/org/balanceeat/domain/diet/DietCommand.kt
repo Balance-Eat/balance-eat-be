@@ -3,7 +3,7 @@ package org.balanceeat.domain.diet
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-sealed class DietCommand {
+class DietCommand {
     data class Create(
         val userId: Long,
         val mealType: Diet.MealType,
@@ -27,11 +27,6 @@ sealed class DietCommand {
             val intake: Int
         )
     }
-
-    data class FindDailyDiets(
-        val userId: Long,
-        val date: LocalDate
-    )
 
     data class DeleteDietFood(
         val dietId: Long,
