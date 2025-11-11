@@ -45,15 +45,7 @@ class FoodDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `수정 성공`() {
             // given
-            val food = foodRepository.save(FoodFixture(
-                name = "수정 전 음식",
-                servingSize = 100.0,
-                unit = "g",
-                carbohydrates = 20.0,
-                protein = 5.0,
-                fat = 2.0,
-                isAdminApproved = false
-            ).create())
+            val food = foodRepository.save(foodFixture())
 
             val updateCommand = foodUpdateCommandFixture {
                 foodId = food.id
@@ -78,7 +70,7 @@ class FoodDomainServiceTest : IntegrationTestContext() {
         fun `일부 필드만 수정할 수 있다`() {
             // given
             val userId = 1L
-            val food = foodRepository.save(FoodFixture().create())
+            val food = foodRepository.save(foodFixture())
 
             val updateCommand = foodUpdateCommandFixture {
                 foodId = food.id

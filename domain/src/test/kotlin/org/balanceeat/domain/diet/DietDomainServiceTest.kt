@@ -7,7 +7,7 @@ import org.balanceeat.domain.common.DomainStatus
 import org.balanceeat.domain.common.DomainStatus.DIET_MEAL_TYPE_ALREADY_EXISTS
 import org.balanceeat.domain.common.exception.DomainException
 import org.balanceeat.domain.config.supports.IntegrationTestContext
-import org.balanceeat.domain.food.FoodFixture
+import org.balanceeat.domain.food.foodFixture
 import org.balanceeat.domain.food.FoodRepository
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -33,25 +33,25 @@ class DietDomainServiceTest : IntegrationTestContext() {
         fun `식단 생성 성공`() {
             // given
             val food1 = foodRepository.save(
-                FoodFixture(
-                    name = "바나나",
-                    servingSize = 100.0,
-                    unit = "g",
-                    carbohydrates = 27.0,
-                    protein = 1.3,
+                foodFixture {
+                    name = "바나나"
+                    servingSize = 100.0
+                    unit = "g"
+                    carbohydrates = 27.0
+                    protein = 1.3
                     fat = 0.2
-                ).create()
+                }
             )
 
             val food2 = foodRepository.save(
-                FoodFixture(
-                    name = "우유",
-                    servingSize = 200.0,
-                    unit = "ml",
-                    carbohydrates = 9.1,
-                    protein = 6.6,
+                foodFixture {
+                    name = "우유"
+                    servingSize = 200.0
+                    unit = "ml"
+                    carbohydrates = 9.1
+                    protein = 6.6
                     fat = 3.2
-                ).create()
+                }
             )
 
             val command = dietCreateCommandFixture {
@@ -96,7 +96,7 @@ class DietDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `같은 날짜, 같은 사용자, 같은 MealType으로 식단을 생성하면 실패한다`() {
             // given
-            val alreadySavedDiet = dietRepository.save(DietFixture().create())
+            val alreadySavedDiet = dietRepository.save(dietFixture())
             val command = dietCreateCommandFixture {
                 userId = alreadySavedDiet.userId
                 mealType = alreadySavedDiet.mealType
@@ -119,19 +119,28 @@ class DietDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `식단 수정 성공`() {
             // given
-            val food1 = foodRepository.save(FoodFixture(name = "사과").create())
-            val food2 = foodRepository.save(FoodFixture(name = "바나나").create())
-            val food3 = foodRepository.save(FoodFixture(name = "당근").create())
-            val food4 = foodRepository.save(FoodFixture(name = "토마토").create())
+            val food1 = foodRepository.save(foodFixture { name = "사과" })
+            val food2 = foodRepository.save(foodFixture { name = "바나나" })
+            val food3 = foodRepository.save(foodFixture { name = "당근" })
+            val food4 = foodRepository.save(foodFixture { name = "토마토" })
 
             val existingDiet = dietRepository.save(
-                DietFixture(
+                dietFixture {
                     dietFoods = mutableListOf(
-                        DietFoodFixture(foodId = food1.id, intake = 1).create(),
-                        DietFoodFixture(foodId = food2.id, intake = 1).create(),
-                        DietFoodFixture(foodId = food4.id, intake = 1).create(),
+                        dietFoodFixture {
+                            foodId = food1.id
+                            intake = 1
+                        },
+                        dietFoodFixture {
+                            foodId = food2.id
+                            intake = 1
+                        },
+                        dietFoodFixture {
+                            foodId = food4.id
+                            intake = 1
+                        }
                     )
-                ).create()
+                }
             )
 
             val command = dietUpdateCommandFixture {
@@ -167,17 +176,17 @@ class DietDomainServiceTest : IntegrationTestContext() {
         fun `수정 시 같은 날짜, 같은 MealType의 다른 식단이 있으면 실패한다`() {
             // given
             val existingDiet1 = dietRepository.save(
-                DietFixture(
-                    mealType = Diet.MealType.BREAKFAST,
+                dietFixture {
+                    mealType = Diet.MealType.BREAKFAST
                     consumedAt = LocalDateTime.now()
-                ).create()
+                }
             )
 
             val existingDiet2 = dietRepository.save(
-                DietFixture(
-                    mealType = Diet.MealType.LUNCH,
+                dietFixture {
+                    mealType = Diet.MealType.LUNCH
                     consumedAt = LocalDateTime.now()
-                ).create()
+                }
             )
 
             val updateCommand = dietUpdateCommandFixture {
@@ -202,7 +211,7 @@ class DietDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `성공`() {
             // given
-            val diet = dietRepository.save(DietFixture().create())
+            val diet = dietRepository.save(dietFixture())
 
             // when
             dietDomainService.delete(diet.id)
@@ -218,18 +227,27 @@ class DietDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `식단 음식 삭제 성공`() {
             // given
-            val food1 = foodRepository.save(FoodFixture(name = "사과").create())
-            val food2 = foodRepository.save(FoodFixture(name = "바나나").create())
-            val food3 = foodRepository.save(FoodFixture(name = "포도").create())
+            val food1 = foodRepository.save(foodFixture { name = "사과" })
+            val food2 = foodRepository.save(foodFixture { name = "바나나" })
+            val food3 = foodRepository.save(foodFixture { name = "포도" })
 
             val savedDiet = dietRepository.save(
-                DietFixture(
+                dietFixture {
                     dietFoods = mutableListOf(
-                        DietFoodFixture(foodId = food1.id, intake = 2).create(),
-                        DietFoodFixture(foodId = food2.id, intake = 3).create(),
-                        DietFoodFixture(foodId = food3.id, intake = 1).create()
+                        dietFoodFixture {
+                            foodId = food1.id
+                            intake = 2
+                        },
+                        dietFoodFixture {
+                            foodId = food2.id
+                            intake = 3
+                        },
+                        dietFoodFixture {
+                            foodId = food3.id
+                            intake = 1
+                        }
                     )
-                ).create()
+                }
             )
 
             // dietFoods를 미리 로드하여 ID 저장
@@ -271,13 +289,16 @@ class DietDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `존재하지 않는 식단 음식 ID로 삭제 시도하면 실패한다`() {
             // given
-            val food = foodRepository.save(FoodFixture(name = "사과").create())
+            val food = foodRepository.save(foodFixture { name = "사과" })
             val diet = dietRepository.save(
-                DietFixture(
+                dietFixture {
                     dietFoods = mutableListOf(
-                        DietFoodFixture(foodId = food.id, intake = 2).create()
+                        dietFoodFixture {
+                            foodId = food.id
+                            intake = 2
+                        }
                     )
-                ).create()
+                }
             )
 
             val command = dietDeleteDietFoodCommandFixture {
@@ -300,13 +321,16 @@ class DietDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `식단 음식 섭취량 수정 성공`() {
             // given
-            val food = foodRepository.save(FoodFixture(name = "사과").create())
+            val food = foodRepository.save(foodFixture { name = "사과" })
             val savedDiet = dietRepository.save(
-                DietFixture(
+                dietFixture {
                     dietFoods = mutableListOf(
-                        DietFoodFixture(foodId = food.id, intake = 100).create()
+                        dietFoodFixture {
+                            foodId = food.id
+                            intake = 100
+                        }
                     )
-                ).create()
+                }
             )
 
             val dietFoodId = savedDiet.dietFoods.first().id
@@ -346,13 +370,16 @@ class DietDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `존재하지 않는 식단 음식 ID로 수정 시도하면 실패한다`() {
             // given
-            val food = foodRepository.save(FoodFixture(name = "사과").create())
+            val food = foodRepository.save(foodFixture { name = "사과" })
             val diet = dietRepository.save(
-                DietFixture(
+                dietFixture {
                     dietFoods = mutableListOf(
-                        DietFoodFixture(foodId = food.id, intake = 100).create()
+                        dietFoodFixture {
+                            foodId = food.id
+                            intake = 100
+                        }
                     )
-                ).create()
+                }
             )
 
             val command = dietUpdateDietFoodCommandFixture {

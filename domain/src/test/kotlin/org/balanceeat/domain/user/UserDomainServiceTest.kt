@@ -47,7 +47,7 @@ class UserDomainServiceTest : IntegrationTestContext() {
         fun `중복된 UUID로 사용자 생성시 예외가 발생한다`() {
             // given
             val testUuid = UUID.randomUUID().toString()
-            val alreadySavedUser = userRepository.save(UserFixture(uuid=testUuid).create())
+            val alreadySavedUser = userRepository.save(userFixture { uuid = testUuid })
 
             val duplicateCommand = userCreateCommandFixture {
                 uuid = testUuid
@@ -68,7 +68,7 @@ class UserDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `존재하는 사용자 ID로 검증시 예외가 발생하지 않는다`() {
             // given
-            val user = userRepository.save(UserFixture().create())
+            val user = userRepository.save(userFixture())
 
             // when & then
             userDomainService.validateExistsUser(user.id)
@@ -93,7 +93,7 @@ class UserDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `사용자 정보를 수정할 수 있다`() {
             // given
-            val user = userRepository.save(UserFixture().create())
+            val user = userRepository.save(userFixture())
             val command = userUpdateCommandFixture {
                 id = user.id
             }

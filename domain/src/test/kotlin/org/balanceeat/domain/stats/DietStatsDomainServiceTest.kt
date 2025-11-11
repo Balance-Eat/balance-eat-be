@@ -3,12 +3,12 @@ package org.balanceeat.domain.stats
 import org.assertj.core.api.Assertions.assertThat
 import org.balanceeat.domain.config.supports.IntegrationTestContext
 import org.balanceeat.domain.diet.Diet
-import org.balanceeat.domain.diet.DietFixture
-import org.balanceeat.domain.diet.DietFoodFixture
+import org.balanceeat.domain.diet.dietFixture
+import org.balanceeat.domain.diet.dietFoodFixture
 import org.balanceeat.domain.diet.DietRepository
-import org.balanceeat.domain.food.FoodFixture
+import org.balanceeat.domain.food.foodFixture
 import org.balanceeat.domain.food.FoodRepository
-import org.balanceeat.domain.user.UserFixture
+import org.balanceeat.domain.user.userFixture
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -33,32 +33,32 @@ class DietStatsDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `새로운 통계 생성 성공`() {
             // given
-            val user = createEntity(UserFixture().create())
-            val food = createEntity(FoodFixture().create())
+            val user = createEntity(userFixture())
+            val food = createEntity(foodFixture())
             val breakfast = dietRepository.save(
-                DietFixture(
-                    userId = user.id,
-                    mealType = Diet.MealType.BREAKFAST,
+                dietFixture {
+                    userId = user.id
+                    mealType = Diet.MealType.BREAKFAST
                     dietFoods = mutableListOf(
-                        DietFoodFixture(
-                            foodId = food.id,
+                        dietFoodFixture {
+                            foodId = food.id
                             intake = food.servingSize.toInt()
-                        ).create()
+                        }
                     )
-                ).create()
+                }
             )
             val lunch = dietRepository.save(
-                DietFixture(
-                    userId = user.id,
-                    mealType = Diet.MealType.LUNCH,
-                    consumedAt = breakfast.consumedAt.plusHours(4),
+                dietFixture {
+                    userId = user.id
+                    mealType = Diet.MealType.LUNCH
+                    consumedAt = breakfast.consumedAt.plusHours(4)
                     dietFoods = mutableListOf(
-                        DietFoodFixture(
-                            foodId = food.id,
+                        dietFoodFixture {
+                            foodId = food.id
                             intake = food.servingSize.toInt() * 2
-                        ).create()
+                        }
                     )
-                ).create()
+                }
             )
 
             val statsDate = lunch.consumedAt.toLocalDate()
@@ -79,18 +79,18 @@ class DietStatsDomainServiceTest : IntegrationTestContext() {
         @Test
         fun `기존 통계를 업데이트 성공`() {
             // given
-            val user = createEntity(UserFixture().create())
-            val food = createEntity(FoodFixture().create())
+            val user = createEntity(userFixture())
+            val food = createEntity(foodFixture())
             val diet = dietRepository.save(
-                DietFixture(
-                    userId = user.id,
+                dietFixture {
+                    userId = user.id
                     dietFoods = mutableListOf(
-                        DietFoodFixture(
-                            foodId = food.id,
+                        dietFoodFixture {
+                            foodId = food.id
                             intake = food.servingSize.toInt()
-                        ).create()
+                        }
                     )
-                ).create()
+                }
             )
 
             val statsDate = diet.consumedAt.toLocalDate()

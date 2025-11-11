@@ -11,7 +11,7 @@ class DietFixture(
     var mealType: Diet.MealType = Diet.MealType.BREAKFAST,
     var consumedAt: LocalDateTime = LocalDate.now().atStartOfDay(),
     var dietFoods: MutableList<DietFood> = mutableListOf(
-        DietFoodFixture().create()
+        dietFoodFixture()
     )
 ) : TestFixture<Diet> {
     override fun create(): Diet {

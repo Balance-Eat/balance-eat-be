@@ -1,8 +1,6 @@
 # Balance-Eat Domain Layer 표준 템플릿
 
 ## 필수 규칙
-
-- **주석 금지**: 코드 내 주석은 작성하지 않습니다
 - **검증 로직**: 모든 엔티티는 `guard()` 메서드에서 비즈니스 규칙 검증을 수행합니다
 
 ## 목적
@@ -14,6 +12,7 @@ Balance-Eat 프로젝트의 도메인 레이어 표준 템플릿을 제공합니
 ## 표준 패키지 구조
 
 ```
+
 domain/src/main/kotlin/org/balanceeat/domain/{domain}/
 ├── {Domain}.kt                      # 엔티티
 ├── {Domain}Command.kt                # Command 객체 (CUD)
