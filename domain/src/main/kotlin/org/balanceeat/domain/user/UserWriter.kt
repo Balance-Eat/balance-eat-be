@@ -1,14 +1,14 @@
 package org.balanceeat.domain.user
 
-import org.balanceeat.domain.common.DomainService
 import org.balanceeat.domain.common.DomainStatus
 import org.balanceeat.domain.common.DomainStatus.USER_ALREADY_EXISTS
 import org.balanceeat.domain.common.exception.BadCommandException
 import org.balanceeat.domain.common.exception.EntityNotFoundException
+import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
-@DomainService
-class UserDomainService(
+@Component
+class UserWriter(
     private val userRepository: UserRepository
 ) {
     @Transactional(readOnly = true)

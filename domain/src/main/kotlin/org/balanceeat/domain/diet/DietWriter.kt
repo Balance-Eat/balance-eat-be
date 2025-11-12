@@ -1,17 +1,17 @@
 package org.balanceeat.domain.diet
 
-import org.balanceeat.domain.common.DomainService
 import org.balanceeat.domain.common.DomainStatus
 import org.balanceeat.domain.common.exception.DomainException
 import org.balanceeat.domain.common.exception.EntityNotFoundException
 import org.balanceeat.domain.food.FoodRepository
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
-@DomainService
-class DietDomainService(
+@Component
+class DietWriter(
     private val dietRepository: DietRepository,
     private val foodRepository: FoodRepository,
     private val eventPublisher: ApplicationEventPublisher
@@ -38,7 +38,7 @@ class DietDomainService(
                 ?: throw EntityNotFoundException(DomainStatus.FOOD_NOT_FOUND)
             diet.addFood(food, foodInfo.intake)
         }
-        
+
         val savedDiet = dietRepository.save(diet)
 
         eventPublisher.publishEvent(DietCreatedEvent(savedDiet.id))

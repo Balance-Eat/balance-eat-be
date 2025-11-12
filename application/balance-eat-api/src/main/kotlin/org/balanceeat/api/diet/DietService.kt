@@ -7,11 +7,11 @@ import org.balanceeat.domain.common.DomainStatus
 import org.balanceeat.domain.common.exception.DomainException
 import org.balanceeat.domain.diet.Diet
 import org.balanceeat.domain.diet.DietCommand
-import org.balanceeat.domain.diet.DietDomainService
+import org.balanceeat.domain.diet.DietWriter
 import org.balanceeat.domain.diet.DietRepository
 import org.balanceeat.domain.food.Food
 import org.balanceeat.domain.food.FoodRepository
-import org.balanceeat.domain.user.UserDomainService
+import org.balanceeat.domain.user.UserWriter
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -20,14 +20,14 @@ import java.time.YearMonth
 
 @Service
 class DietService(
-    private val dietDomainService: DietDomainService,
-    private val userDomainService: UserDomainService,
+    private val dietWriter: DietWriter,
+    private val userWriter: UserWriter,
     private val dietRepository: DietRepository,
     private val foodRepository: FoodRepository
 ) {
     @Transactional
     fun create(request: DietV1Request.Create, userId: Long): DietV1Response.Details {
-        userDomainService.validateExistsUser(userId)
+        userWriter.validateExistsUser(userId)
 
         val command = DietCommand.Create(
             userId = userId,
@@ -42,13 +42,13 @@ class DietService(
         )
         
         return DietV1Response.Details.from(
-            dietDomainService.create(command)
+            dietWriter.create(command)
         )
     }
 
     @Transactional
     fun update(request: DietV1Request.Update, dietId: Long, userId: Long): DietV1Response.Details {
-        userDomainService.validateExistsUser(userId)
+        userWriter.validateExistsUser(userId)
 
         val diet = dietRepository.findByIdOrNull(dietId)
             ?: throw NotFoundException(ApplicationStatus.DIET_NOT_FOUND)
@@ -70,13 +70,13 @@ class DietService(
         )
 
         return DietV1Response.Details.from(
-            dietDomainService.update(command)
+            dietWriter.update(command)
         )
     }
 
     @Transactional
     fun delete(id: Long, userId: Long) {
-        userDomainService.validateExistsUser(userId)
+        userWriter.validateExistsUser(userId)
 
         val diet = dietRepository.findByIdOrNull(id)
 
@@ -86,12 +86,12 @@ class DietService(
             throw BadRequestException(ApplicationStatus.CANNOT_MODIFY_DIET)
         }
 
-        dietDomainService.delete(id)
+        dietWriter.delete(id)
     }
 
     @Transactional
     fun deleteDietFood(dietId: Long, dietFoodId: Long, userId: Long) {
-        userDomainService.validateExistsUser(userId)
+        userWriter.validateExistsUser(userId)
 
         val diet = dietRepository.findByIdOrNull(dietId)
             ?: throw NotFoundException(ApplicationStatus.DIET_NOT_FOUND)
@@ -105,7 +105,7 @@ class DietService(
             dietFoodId = dietFoodId
         )
 
-        dietDomainService.deleteDietFood(command)
+        dietWriter.deleteDietFood(command)
     }
 
     @Transactional
@@ -115,7 +115,7 @@ class DietService(
         request: DietV1Request.UpdateDietFood,
         userId: Long
     ): DietV1Response.Details {
-        userDomainService.validateExistsUser(userId)
+        userWriter.validateExistsUser(userId)
 
         val diet = dietRepository.findByIdOrNull(dietId)
             ?: throw NotFoundException(ApplicationStatus.DIET_NOT_FOUND)
@@ -130,7 +130,7 @@ class DietService(
             intake = request.intake
         )
 
-        val result = dietDomainService.updateDietFood(command)
+        val result = dietWriter.updateDietFood(command)
         return DietV1Response.Details.from(result)
     }
 

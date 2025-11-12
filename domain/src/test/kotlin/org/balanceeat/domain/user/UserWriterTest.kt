@@ -13,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import java.util.*
 
-class UserDomainServiceTest : IntegrationTestContext() {
+class UserWriterTest : IntegrationTestContext() {
 
     @Autowired
-    private lateinit var userDomainService: UserDomainService
+    private lateinit var userWriter: UserWriter
 
     @Autowired
     private lateinit var userRepository: UserRepository
@@ -24,7 +24,7 @@ class UserDomainServiceTest : IntegrationTestContext() {
     @Nested
     @DisplayName("생성 테스트")
     inner class CreateTest {
-        
+
         @Test
         fun `사용자를 생성할 수 있다`() {
             // given
@@ -32,7 +32,7 @@ class UserDomainServiceTest : IntegrationTestContext() {
             val createCommand = userCreateCommandFixture { uuid = testUuid }
 
             // when
-            val result = userDomainService.create(createCommand)
+            val result = userWriter.create(createCommand)
 
             // then
             val savedUser = userRepository.findByUuid(testUuid)
@@ -56,7 +56,7 @@ class UserDomainServiceTest : IntegrationTestContext() {
             }
 
             // when & then
-            assertThatThrownBy { userDomainService.create(duplicateCommand) }
+            assertThatThrownBy { userWriter.create(duplicateCommand) }
                 .isInstanceOf(BadCommandException::class.java)
                 .hasFieldOrPropertyWithValue("status", DomainStatus.USER_ALREADY_EXISTS)
         }
@@ -71,16 +71,16 @@ class UserDomainServiceTest : IntegrationTestContext() {
             val user = userRepository.save(userFixture())
 
             // when & then
-            userDomainService.validateExistsUser(user.id)
+            userWriter.validateExistsUser(user.id)
         }
-        
+
         @Test
         fun `존재하지 않는 사용자 ID로 검증시 예외가 발생한다`() {
             // given
             val nonExistentUserId = 999L
 
             // when & then
-            assertThatThrownBy { userDomainService.validateExistsUser(nonExistentUserId) }
+            assertThatThrownBy { userWriter.validateExistsUser(nonExistentUserId) }
                 .isInstanceOf(EntityNotFoundException::class.java)
                 .hasFieldOrPropertyWithValue("status", DomainStatus.USER_NOT_FOUND)
         }
@@ -89,7 +89,7 @@ class UserDomainServiceTest : IntegrationTestContext() {
     @Nested
     @DisplayName("수정 테스트")
     inner class UpdateTest {
-        
+
         @Test
         fun `사용자 정보를 수정할 수 있다`() {
             // given
@@ -99,7 +99,7 @@ class UserDomainServiceTest : IntegrationTestContext() {
             }
 
             // when
-            val result = userDomainService.update(command)
+            val result = userWriter.update(command)
 
             // then
             val savedUser = userRepository.findByIdOrNull(user.id)

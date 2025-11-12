@@ -14,9 +14,9 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
-class DietStatsDomainServiceTest : IntegrationTestContext() {
+class DietStatsWriterTest : IntegrationTestContext() {
     @Autowired
-    private lateinit var dietStatsDomainService: DietStatsDomainService
+    private lateinit var dietStatsWriter: DietStatsWriter
 
     @Autowired
     private lateinit var dietRepository: DietRepository
@@ -64,7 +64,7 @@ class DietStatsDomainServiceTest : IntegrationTestContext() {
             val statsDate = lunch.consumedAt.toLocalDate()
 
             // when
-            dietStatsDomainService.upsert(lunch.id)
+            dietStatsWriter.upsert(lunch.id)
 
             // then
             val savedStats = dietStatsRepository.findByUserIdAndStatsDate(lunch.userId, statsDate)!!
@@ -110,7 +110,7 @@ class DietStatsDomainServiceTest : IntegrationTestContext() {
             assertThat(beforeUpdate!!.totalCalories).isEqualTo(100.0)
 
             // when
-            dietStatsDomainService.upsert(diet.id)
+            dietStatsWriter.upsert(diet.id)
 
             // then
             val updatedStats = dietStatsRepository.findByUserIdAndStatsDate(diet.userId, statsDate)!!

@@ -9,18 +9,18 @@ import org.springframework.transaction.event.TransactionalEventListener
 
 @Component
 class DietStatsEventListener(
-    private val dietStatsDomainService: DietStatsDomainService
+    private val dietStatsWriter: DietStatsWriter
 ) {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun handleDietChangedEvent(event: DietChangedEvent) {
-        dietStatsDomainService.upsert(event.dietId)
+        dietStatsWriter.upsert(event.dietId)
     }
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     fun handleDietDeletedEvent(event: DietDeletedEvent) {
         val (diet) = event
-        dietStatsDomainService.upsert(diet.userId, diet.consumedAt.toLocalDate())
+        dietStatsWriter.upsert(diet.userId, diet.consumedAt.toLocalDate())
     }
 }

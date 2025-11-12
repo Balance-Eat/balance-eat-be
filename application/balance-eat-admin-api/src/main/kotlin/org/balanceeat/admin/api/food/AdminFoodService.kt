@@ -3,7 +3,7 @@ package org.balanceeat.admin.api.food
 import org.balanceeat.apibase.ApplicationStatus.FOOD_NOT_FOUND
 import org.balanceeat.apibase.exception.NotFoundException
 import org.balanceeat.domain.food.FoodCommand
-import org.balanceeat.domain.food.FoodDomainService
+import org.balanceeat.domain.food.FoodWriter
 import org.balanceeat.domain.food.FoodResult
 import org.balanceeat.domain.food.FoodRepository
 import org.springframework.data.repository.findByIdOrNull
@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class AdminFoodService(
-    private val foodDomainService: FoodDomainService,
+    private val foodWriter: FoodWriter,
     private val foodRepository: FoodRepository
 ) {
     @Transactional(readOnly = true)
@@ -25,7 +25,7 @@ class AdminFoodService(
 
     @Transactional
     fun update(request: AdminFoodV1Request.Update, id: Long, adminId: Long): AdminFoodV1Response.Details {
-        val result =  foodDomainService.update(
+        val result =  foodWriter.update(
             command = FoodCommand.Update(
                 id = id,
                 name = request.name,

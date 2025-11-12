@@ -1,13 +1,13 @@
 package org.balanceeat.domain.food
 
-import org.balanceeat.domain.common.DomainService
 import org.balanceeat.domain.common.DomainStatus
 import org.balanceeat.domain.common.exception.EntityNotFoundException
 import org.balanceeat.domain.common.utils.CalorieCalculator
+import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
-@DomainService
-class FoodDomainService(
+@Component
+class FoodWriter(
     private val foodRepository: FoodRepository
 ) {
     @Transactional
@@ -29,11 +29,11 @@ class FoodDomainService(
             brand = command.brand,
             isAdminApproved = command.isAdminApproved
         )
-        
+
         val savedFood = foodRepository.save(food)
         return FoodResult.from(savedFood)
     }
-    
+
     @Transactional
     fun update(command: FoodCommand.Update): FoodResult {
         val food = foodRepository.findById(command.id)

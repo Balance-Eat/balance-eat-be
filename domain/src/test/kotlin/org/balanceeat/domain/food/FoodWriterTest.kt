@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
-class FoodDomainServiceTest : IntegrationTestContext() {
+class FoodWriterTest : IntegrationTestContext() {
 
     @Autowired
-    private lateinit var foodDomainService: FoodDomainService
+    private lateinit var foodWriter: FoodWriter
 
     @Autowired
     private lateinit var foodRepository: FoodRepository
@@ -19,14 +19,14 @@ class FoodDomainServiceTest : IntegrationTestContext() {
     @Nested
     @DisplayName("생성 테스트")
     inner class CreateTest {
-        
+
         @Test
         fun `음식을 생성할 수 있다`() {
             // given
             val command = foodCreateCommandFixture()
 
             // when
-            val result = foodDomainService.create(command)
+            val result = foodWriter.create(command)
 
             // then
             assertThat(command)
@@ -58,7 +58,7 @@ class FoodDomainServiceTest : IntegrationTestContext() {
             }
 
             // when
-            val result = foodDomainService.update(updateCommand)
+            val result = foodWriter.update(updateCommand)
 
             // then
             assertThat(updateCommand)
@@ -83,7 +83,7 @@ class FoodDomainServiceTest : IntegrationTestContext() {
             }
 
             // when
-            val result = foodDomainService.update(updateCommand)
+            val result = foodWriter.update(updateCommand)
 
             // then
             assertThat(updateCommand)

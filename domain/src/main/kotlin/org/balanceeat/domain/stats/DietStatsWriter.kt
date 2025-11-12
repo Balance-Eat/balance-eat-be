@@ -1,15 +1,15 @@
 package org.balanceeat.domain.stats
 
-import org.balanceeat.domain.common.DomainService
 import org.balanceeat.domain.common.DomainStatus.DIET_NOT_FOUND
 import org.balanceeat.domain.common.exception.EntityNotFoundException
 import org.balanceeat.domain.diet.DietRepository
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 
-@DomainService
-class DietStatsDomainService(
+@Component
+class DietStatsWriter(
     private val dietRepository: DietRepository,
     private val dietStatsRepository: DietStatsRepository
 ){

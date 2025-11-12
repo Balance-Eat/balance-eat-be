@@ -3,7 +3,7 @@ package org.balanceeat.api.user
 import org.balanceeat.apibase.ApplicationStatus
 import org.balanceeat.apibase.exception.NotFoundException
 import org.balanceeat.domain.user.UserCommand
-import org.balanceeat.domain.user.UserDomainService
+import org.balanceeat.domain.user.UserWriter
 import org.balanceeat.domain.user.UserResult
 import org.balanceeat.domain.user.UserRepository
 import org.springframework.stereotype.Service
@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserService(
-    private val userDomainService: UserDomainService,
+    private val userWriter: UserWriter,
     private val userRepository: UserRepository
 ) {
     @Transactional
@@ -38,7 +38,7 @@ class UserService(
             providerId = request.providerId,
             providerType = request.providerType,
         )
-        return userDomainService.create(command)
+        return userWriter.create(command)
             .let { UserV1Response.Details.from(it) }
     }
 
@@ -65,7 +65,7 @@ class UserService(
             targetFat = request.targetFat
         )
 
-        return userDomainService.update(command)
+        return userWriter.update(command)
             .let { UserV1Response.Details.from(it) }
     }
 

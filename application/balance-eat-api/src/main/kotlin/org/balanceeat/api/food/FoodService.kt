@@ -7,7 +7,7 @@ import org.balanceeat.apibase.exception.NotFoundException
 import org.balanceeat.apibase.response.PageResponse
 import org.balanceeat.domain.curation.CurationFoodRepository
 import org.balanceeat.domain.food.FoodCommand
-import org.balanceeat.domain.food.FoodDomainService
+import org.balanceeat.domain.food.FoodWriter
 import org.balanceeat.domain.food.FoodQuery
 import org.balanceeat.domain.food.FoodResult
 import org.balanceeat.domain.food.FoodRepository
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class FoodService(
-    private val foodDomainService: FoodDomainService,
+    private val foodWriter: FoodWriter,
     private val foodRepository: FoodRepository,
     private val curationFoodRepository: CurationFoodRepository
 ) {
@@ -34,7 +34,7 @@ class FoodService(
 
     @Transactional
     fun create(request: FoodV1Request.Create, creatorId: Long): FoodV1Response.Details {
-        val result = foodDomainService.create(
+        val result = foodWriter.create(
             command = FoodCommand.Create(
                 uuid = request.uuid,
                 userId = creatorId,
@@ -61,7 +61,7 @@ class FoodService(
             throw BadRequestException(CANNOT_MODIFY_FOOD)
         }
 
-        val result = foodDomainService.update(
+        val result = foodWriter.update(
             command = FoodCommand.Update(
                 id = id,
                 name = request.name,

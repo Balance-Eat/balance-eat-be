@@ -16,9 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalDateTime
 
 @Transactional
-class DietDomainServiceTest : IntegrationTestContext() {
+class DietWriterTest : IntegrationTestContext() {
     @Autowired
-    private lateinit var dietDomainService: DietDomainService
+    private lateinit var dietWriter: DietWriter
 
     @Autowired
     private lateinit var dietRepository: DietRepository
@@ -71,7 +71,7 @@ class DietDomainServiceTest : IntegrationTestContext() {
             }
 
             // when
-            val createdDiet = dietDomainService.create(command)
+            val createdDiet = dietWriter.create(command)
 
             // then
             assertThat(command)
@@ -104,7 +104,7 @@ class DietDomainServiceTest : IntegrationTestContext() {
             }
 
             // when
-            val throwable = catchThrowable { dietDomainService.create(command) }
+            val throwable = catchThrowable { dietWriter.create(command) }
 
             // then
             assertThat(throwable).isInstanceOf(DomainException::class.java)
@@ -164,7 +164,7 @@ class DietDomainServiceTest : IntegrationTestContext() {
             }
 
             // when
-            val result = dietDomainService.update(command)
+            val result = dietWriter.update(command)
 
             // then
             assertThat(command)
@@ -196,7 +196,7 @@ class DietDomainServiceTest : IntegrationTestContext() {
             }
 
             // when
-            val throwable = catchThrowable { dietDomainService.update(updateCommand) }
+            val throwable = catchThrowable { dietWriter.update(updateCommand) }
 
             // then
             assertThat(throwable).isInstanceOf(DomainException::class.java)
@@ -214,7 +214,7 @@ class DietDomainServiceTest : IntegrationTestContext() {
             val diet = dietRepository.save(dietFixture())
 
             // when
-            dietDomainService.delete(diet.id)
+            dietWriter.delete(diet.id)
 
             // then
             assertThat(dietRepository.existsById(diet.id)).isFalse()
@@ -260,7 +260,7 @@ class DietDomainServiceTest : IntegrationTestContext() {
             }
 
             // when
-            dietDomainService.deleteDietFood(command)
+            dietWriter.deleteDietFood(command)
 
             // then
             val updatedDiet = dietRepository.findById(savedDiet.id).get()
@@ -280,7 +280,7 @@ class DietDomainServiceTest : IntegrationTestContext() {
             }
 
             // when
-            val throwable = catchThrowable { dietDomainService.deleteDietFood(command) }
+            val throwable = catchThrowable { dietWriter.deleteDietFood(command) }
 
             // then
             assertThat(throwable).isInstanceOf(org.balanceeat.domain.common.exception.EntityNotFoundException::class.java)
@@ -307,7 +307,7 @@ class DietDomainServiceTest : IntegrationTestContext() {
             }
 
             // when
-            val throwable = catchThrowable { dietDomainService.deleteDietFood(command) }
+            val throwable = catchThrowable { dietWriter.deleteDietFood(command) }
 
             // then
             assertThat(throwable).isInstanceOf(DomainException::class.java)
@@ -341,7 +341,7 @@ class DietDomainServiceTest : IntegrationTestContext() {
             }
 
             // when
-            val result = dietDomainService.updateDietFood(command)
+            val result = dietWriter.updateDietFood(command)
 
             // then
             assertThat(result.id).isEqualTo(savedDiet.id)
@@ -361,7 +361,7 @@ class DietDomainServiceTest : IntegrationTestContext() {
             }
 
             // when
-            val throwable = catchThrowable { dietDomainService.updateDietFood(command) }
+            val throwable = catchThrowable { dietWriter.updateDietFood(command) }
 
             // then
             assertThat(throwable).isInstanceOf(org.balanceeat.domain.common.exception.EntityNotFoundException::class.java)
@@ -389,7 +389,7 @@ class DietDomainServiceTest : IntegrationTestContext() {
             }
 
             // when
-            val throwable = catchThrowable { dietDomainService.updateDietFood(command) }
+            val throwable = catchThrowable { dietWriter.updateDietFood(command) }
 
             // then
             assertThat(throwable).isInstanceOf(DomainException::class.java)

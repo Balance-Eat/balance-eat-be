@@ -3,7 +3,7 @@ package org.balanceeat.admin.api.user
 import org.balanceeat.apibase.ApplicationStatus
 import org.balanceeat.apibase.exception.BadRequestException
 import org.balanceeat.domain.user.UserCommand
-import org.balanceeat.domain.user.UserDomainService
+import org.balanceeat.domain.user.UserWriter
 import org.balanceeat.domain.user.UserResult
 import org.balanceeat.domain.user.UserRepository
 import org.springframework.data.repository.findByIdOrNull
@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class AdminUserService(
-    private val userDomainService: UserDomainService,
+    private val userWriter: UserWriter,
     private val userRepository: UserRepository
 ) {
 
@@ -39,7 +39,7 @@ class AdminUserService(
             targetFat = request.targetFat
         )
 
-        return userDomainService.update(command)
+        return userWriter.update(command)
             .let { AdminUserV1Response.Details.from(it) }
     }
 

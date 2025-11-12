@@ -2,8 +2,6 @@ package org.balanceeat.api.user
 
 import jakarta.validation.Valid
 import org.balanceeat.apibase.response.ApiResponse
-import org.balanceeat.domain.user.UserCommand
-import org.balanceeat.domain.user.UserDomainService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
