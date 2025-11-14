@@ -7,6 +7,8 @@
 
 Balance-Eat 프로젝트의 도메인 레이어 표준 템플릿을 제공합니다. 각 도메인은 독립적인 패키지 구조를 가지며, Kotlin + Spring Data JPA + Querydsl을 기반으로 합니다.
 
+**현재 아키텍처**: Writer/Reader 패턴을 표준으로 사용하며, Application Service는 Writer와 Reader 와 같은 컴포넌트들만 의존 도메인에 직접 접근 불가
+
 ---
 
 ## 표준 패키지 구조
@@ -32,7 +34,8 @@ domain/src/testFixtures/kotlin/org/balanceeat/domain/{domain}/
 
 domain/src/test/kotlin/org/balanceeat/domain/{domain}/
 ├── {Domain}Test.kt                   # 엔티티 테스트 (필요시)
-└── {Domain}DomainServiceTest.kt      # 도메인 서비스 테스트
+├── {Domain}WriterTest.kt             # Writer 테스트
+└── {Domain}ReaderTest.kt             # Reader 테스트
 ```
 
 **파일 설명**:
@@ -93,6 +96,63 @@ const val NEW_ID = 0L
 **검증 시점**:
 - `@PrePersist`: 엔티티 저장 전
 - `@PreUpdate`: 엔티티 수정 전
+
+---
+
+## BaseReader와 EntityMapper
+
+### BaseReader 추상 클래스
+
+프로젝트는 `BaseReader` 추상 클래스를 사용하여 공통 조회 메서드를 제공합니다.
+
+**BaseReader 구조**:
+```kotlin
+abstract class BaseReader<E: BaseEntity, R>(
+    protected val repository: JpaRepository<E, Long>,
+    protected val mapper: EntityMapper<E, R>
+) {
+    fun existsById(id: Long): Boolean
+    fun findById(id: Long): R?
+    abstract fun findByIdOrThrow(id: Long): R
+    protected fun findByIdOrThrow(id: Long, status: DomainStatus): R
+    fun findAllByIds(ids: Collection<Long>): List<R>
+    fun count(): Long
+}
+```
+
+**제공 기능**:
+- **existsById**: ID 존재 여부 확인
+- **findById**: ID로 조회 (nullable, Entity → Result 자동 변환)
+- **findByIdOrThrow**: ID로 조회 (예외 발생, 도메인별 오버라이드 필요)
+- **findAllByIds**: 여러 ID로 일괄 조회 (Entity → Result 자동 변환)
+- **count**: 전체 개수 조회
+
+**사용 이점**:
+- Entity → Result 변환 로직 자동화
+- 공통 조회 메서드 중복 제거
+- 일관된 예외 처리 패턴
+- 타입 안전성 보장
+
+### EntityMapper 인터페이스
+
+`EntityMapper`는 Entity → Result 변환을 정의하는 인터페이스입니다.
+
+**EntityMapper 구조**:
+```kotlin
+interface EntityMapper<E: BaseEntity, D> {
+    fun from(entity: E): D
+}
+```
+
+**구현 방법**:
+- Result의 companion object가 EntityMapper 구현
+- `from()` 메서드를 override하여 변환 로직 정의
+- BaseReader에서 자동으로 변환 로직 활용
+
+**통합 패턴**:
+1. Result의 companion object가 EntityMapper 구현
+2. BaseReader 생성 시 mapper로 Result의 companion object 전달
+3. BaseReader의 조회 메서드가 자동으로 mapper.from() 호출
 
 ---
 
@@ -215,6 +275,7 @@ class ExampleCommand {
 package org.balanceeat.domain.example
 
 import com.querydsl.core.annotations.QueryProjection
+import org.balanceeat.domain.common.EntityMapper
 import java.time.LocalDateTime
 
 data class ExampleResult(
@@ -225,8 +286,8 @@ data class ExampleResult(
     val description: String?,
     val createdAt: LocalDateTime
 ) {
-    companion object {
-        fun from(example: Example): ExampleResult {
+    companion object : EntityMapper<Example, ExampleResult> {
+        override fun from(example: Example): ExampleResult {
             return ExampleResult(
                 id = example.id,
                 name = example.name,
@@ -294,14 +355,15 @@ data class ExampleSummary(
 ```
 
 **핵심 패턴**:
-- **{Domain}Result**: 도메인 서비스의 기본 반환 타입 (CUD 작업 결과)
+- **{Domain}Result**: Writer/Reader의 기본 반환 타입 (CUD 작업 결과 및 조회 결과)
 - **{Domain}SearchResult**: Querydsl 검색 결과용 Projection (`@QueryProjection`)
 - **{Domain}Details**: 상세 정보 조회용 (연관 데이터 포함)
 - **{Domain}Summary**: 목록 조회용 간략 정보
-- companion object의 `from()` 팩토리 메서드로 Entity → Result 변환
+- **EntityMapper 구현**: companion object가 `EntityMapper<Entity, Result>` 인터페이스를 구현하여 `from()` 메서드 제공
+- `from()` 팩토리 메서드로 Entity → Result 변환 (BaseReader와의 통합을 위해 EntityMapper 구현 필요)
 
 **사용 시나리오**:
-- **Result**: Domain Service의 create/update 반환, 단순 조회
+- **Result**: Writer의 create/update 반환, Reader의 단순 조회
 - **SearchResult**: Repository의 Querydsl 검색 결과 (성능 최적화)
 - **Details**: 연관 데이터를 포함한 상세 조회
 - **Summary**: 목록 화면용 간략 정보
@@ -457,90 +519,12 @@ class ExampleRepositoryCustomImpl(
 
 ---
 
-## 템플릿 7: Domain Service ({Domain}DomainService.kt)
 
-```kotlin
-package org.balanceeat.domain.example
-
-import org.balanceeat.domain.common.DomainStatus
-import org.balanceeat.domain.common.DomainService
-import org.balanceeat.domain.common.exception.DomainException
-import org.springframework.data.repository.findByIdOrNull
-import org.springframework.transaction.annotation.Transactional
-
-@DomainService
-class ExampleDomainService(
-    private val exampleRepository: ExampleRepository
-) {
-    @Transactional
-    fun create(command: ExampleCommand.Create): ExampleResult {
-        validateCreation(command)
-
-        val example = Example(
-            name = command.name,
-            userId = command.userId,
-            status = command.status,
-            description = command.description
-        )
-
-        val savedExample = exampleRepository.save(example)
-        return ExampleResult.from(savedExample)
-    }
-
-    @Transactional
-    fun update(command: ExampleCommand.Update): ExampleResult {
-        val example = exampleRepository.findById(command.id)
-            .orElseThrow { EntityNotFoundException(DomainStatus.EXAMPLE_NOT_FOUND) }
-
-        example.update(
-            name = command.name,
-            description = command.description
-        )
-
-        val savedExample = exampleRepository.save(example)
-        return ExampleResult.from(savedExample)
-    }
-
-    @Transactional
-    fun delete(id: Long) {
-        val example = exampleRepository.findById(id)
-            .ifPresent{ exampleRepository.delete(it) }
-    }
-
-    private fun validateCreation(command: ExampleCommand.Create) {
-        if (exampleRepository.existsByUserIdAndName(command.userId, command.name)) {
-            throw DomainException(DomainStatus.EXAMPLE_ALREADY_EXISTS)
-        }
-    }
-}
-```
-
-**핵심 패턴**:
-- `@DomainService` 어노테이션
-- `@Transactional(readOnly = true)` 조회 메서드에 적용
-- `@Transactional` 쓰기 메서드에 적용
-- 검증 로직은 private 메서드로 분리
-- `findById().orElseThrow()` 또는 `findByIdOrNull()` + Elvis 연산자로 예외 처리
-- **반환 타입**: CUD 메서드는 Result 객체 반환 (Entity 직접 반환 금지)
-- **Entity → Result 변환**: `Result.from(entity)` 패턴 사용
-
----
-
-## Writer/Reader 패턴 개요
+## Writer/Reader 패턴
 
 ### 패턴 목적
 
-기존 DomainService 패턴을 **CUD(Writer)**와 **Read(Reader)**로 명확히 분리하여 책임을 구분합니다.
-
-### 핵심 차이점
-
-| 항목 | 기존 (DomainService) | 신규 (Writer/Reader) |
-|------|---------------------|---------------------|
-| **파일 구조** | `{Domain}DomainService.kt` | `{Domain}Writer.kt` + `{Domain}Reader.kt` |
-| **책임 범위** | CUD + Read 혼재 | CUD와 Read 명확히 분리 |
-| **트랜잭션** | 메서드별 `@Transactional` | Writer: `@Transactional`, Reader: `@Transactional(readOnly = true)` |
-| **의존성** | Repository 의존 | Repository 의존 (동일) |
-| **반환 타입** | Result 객체 | Result 객체 (동일) |
+**CUD(Writer)**와 **Read(Reader)**로 책임을 명확히 분리하여 단일 책임 원칙을 준수합니다.
 
 ### Writer와 Reader의 역할
 
@@ -556,51 +540,42 @@ class ExampleDomainService(
 - **의존성**: Repository (조회 메서드 사용)
 - **반환**: Result 객체 또는 Result 리스트
 
-### 마이그레이션 고려사항
+### Application Service 패턴
 
-#### Reader 마이그레이션 이슈
+**Application Service는 Writer와 Reader만을 의존**합니다. Repository를 직접 의존하지 않습니다.
 
-**문제점**: 기존 코드에서 Repository의 `findById()`, `findByXxx()` 등을 직접 사용하는 경우가 많음
+```kotlin
+@Service
+class FoodService(
+    private val foodWriter: FoodWriter,
+    private val foodReader: FoodReader
+) {
+    @Transactional
+    fun create(request: FoodV1Request.Create, creatorId: Long): FoodV1Response.Details {
+        val result = foodWriter.create(
+            command = FoodCommand.Create(...)
+        )
+        return FoodV1Response.Details.from(result)
+    }
 
-**해결 방안** (추후 결정 필요):
+    @Transactional(readOnly = true)
+    fun getDetails(id: Long): FoodV1Response.Details {
+        return foodReader.findById(id)
+            ?.let { FoodV1Response.Details.from(it) }
+            ?: throw NotFoundException(FOOD_NOT_FOUND)
+    }
+}
+```
 
-1. **Option A - 점진적 마이그레이션**
-   - 기존 Repository 직접 사용 유지
-   - 신규 도메인부터 Reader 패턴 적용
-   - 장점: 점진적 전환 가능, 기존 코드 변경 최소화
-   - 단점: 일관성 부족, 두 가지 패턴 공존
-
-2. **Option B - Reader 래퍼 메서드 제공**
-   ```kotlin
-   @Component
-   class ExampleReader(
-       private val exampleRepository: ExampleRepository
-   ) {
-       @Transactional(readOnly = true)
-       fun findById(id: Long): ExampleResult? {
-           return exampleRepository.findByIdOrNull(id)?.let { ExampleResult.from(it) }
-       }
-
-       @Transactional(readOnly = true)
-       fun findByUserId(userId: Long): List<ExampleResult> {
-           return exampleRepository.findByUserId(userId).map { ExampleResult.from(it) }
-       }
-   }
-   ```
-   - 장점: Repository 메서드를 Reader로 래핑, 명확한 책임 분리
-   - 단점: 보일러플레이트 코드 증가
-
-3. **Option C - Repository 직접 사용 허용**
-   - Reader는 복잡한 비즈니스 로직이 포함된 조회만 담당
-   - 단순 `findById()` 등은 Repository 직접 사용 허용
-   - 장점: 실용적, 불필요한 래핑 방지
-   - 단점: 책임 경계가 모호해질 수 있음
-
-**권장 방향**: Option C (실용적 접근) + 신규 도메인은 Option B 적용
+**핵심 원칙**:
+- Application Service는 Writer/Reader만 의존
+- Repository 직접 참조 금지
+- 도메인 로직은 Writer/Reader에 위임
+- Application Service는 조율(orchestration) 역할만 수행
 
 ---
 
-## 템플릿 7A: Writer ({Domain}Writer.kt)
+## 템플릿 7: Writer ({Domain}Writer.kt)
 
 ```kotlin
 package org.balanceeat.domain.example
@@ -669,43 +644,36 @@ class ExampleWriter(
 
 ---
 
-## 템플릿 7B: Reader ({Domain}Reader.kt)
+## 템플릿 8: Reader ({Domain}Reader.kt)
 
 ```kotlin
 package org.balanceeat.domain.example
 
+import org.balanceeat.domain.common.BaseReader
 import org.balanceeat.domain.common.DomainStatus
-import org.balanceeat.domain.common.exception.EntityNotFoundException
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
 @Component
+@Transactional(readOnly = true)
 class ExampleReader(
     private val exampleRepository: ExampleRepository
-) {
-    @Transactional(readOnly = true)
-    fun findById(id: Long): ExampleResult {
-        val example = exampleRepository.findByIdOrNull(id)
-            ?: throw EntityNotFoundException(DomainStatus.EXAMPLE_NOT_FOUND)
+): BaseReader<Example, ExampleResult>(exampleRepository, ExampleResult) {
 
-        return ExampleResult.from(example)
+    override fun findByIdOrThrow(id: Long): ExampleResult {
+        return findByIdOrThrow(id, DomainStatus.EXAMPLE_NOT_FOUND)
     }
 
-    @Transactional(readOnly = true)
     fun findByUserId(userId: Long): List<ExampleResult> {
         return exampleRepository.findByUserId(userId)
             .map { ExampleResult.from(it) }
     }
 
-    @Transactional(readOnly = true)
     fun search(query: ExampleQuery.Search): Page<ExampleSearchResult> {
         return exampleRepository.search(query)
     }
 
-    @Transactional(readOnly = true)
     fun existsByUserIdAndName(userId: Long, name: String): Boolean {
         return exampleRepository.existsByUserIdAndName(userId, name)
     }
@@ -714,20 +682,31 @@ class ExampleReader(
 
 **핵심 패턴**:
 - `@Component` 어노테이션 (Spring 빈 등록)
-- `@Transactional(readOnly = true)` 모든 메서드에 적용 (읽기 전용)
+- `@Transactional(readOnly = true)` 클래스 레벨 적용 (읽기 전용)
+- **BaseReader 상속**: `BaseReader<Entity, Result>` 상속으로 공통 조회 메서드 제공
+- **필수 오버라이드**: `findByIdOrThrow(id: Long)` 메서드는 도메인별 예외 처리를 위해 오버라이드 필요
 - **반환 타입**: Result 객체 또는 Result 리스트 (Entity 직접 반환 금지)
 - **Entity → Result 변환**: `Result.from(entity)` 패턴 사용
 - 복잡한 검색은 Query 객체 활용
 
+**BaseReader 제공 메서드**:
+- `existsById(id: Long): Boolean` - ID 존재 여부 확인
+- `findById(id: Long): R?` - ID로 조회 (nullable)
+- `findByIdOrThrow(id: Long): R` - ID로 조회 (예외 발생, 오버라이드 필요)
+- `findAllByIds(ids: Collection<Long>): List<R>` - 여러 ID로 일괄 조회
+- `count(): Long` - 전체 개수 조회
+
 **Reader 작성 가이드**:
-1. **단순 조회**: `findById()`, `findByXxx()` → Repository 직접 호출 후 Result 변환
-2. **복잡한 검색**: Query 객체를 받아 Repository의 커스텀 메서드 호출
-3. **존재 여부 확인**: `existsByXxx()` → Repository 메서드 직접 호출
-4. **비즈니스 로직 포함 조회**: Repository 조회 + 추가 로직 후 Result 반환
+1. **BaseReader 상속**: Entity와 Result 타입을 제네릭으로 지정
+2. **필수 오버라이드**: `findByIdOrThrow(id: Long)` 메서드에서 도메인별 예외 상태 지정
+3. **단순 조회**: BaseReader 제공 메서드 활용 또는 Repository 직접 호출 후 Result 변환
+4. **복잡한 검색**: Query 객체를 받아 Repository의 커스텀 메서드 호출
+5. **존재 여부 확인**: BaseReader의 `existsById()` 활용 또는 Repository 메서드 직접 호출
+6. **비즈니스 로직 포함 조회**: Repository 조회 + 추가 로직 후 Result 반환
 
 ---
 
-## 템플릿 8: Test Fixture (통합 가이드)
+## 템플릿 9: Test Fixture (통합 가이드)
 
 도메인 레이어의 모든 픽스쳐는 동일한 핵심 패턴을 따릅니다. 픽스쳐 타입별로 4가지가 있습니다:
 
@@ -764,7 +743,7 @@ fun someFixture(block: SomeFixture.() -> Unit = {}): SomeType {
 }
 ```
 
-### 8-1. Entity Fixture ({Domain}Fixture.kt)
+### 9-1. Entity Fixture ({Domain}Fixture.kt)
 
 ```kotlin
 package org.balanceeat.domain.example
@@ -798,7 +777,7 @@ fun exampleFixture(block: ExampleFixture.() -> Unit = {}): Example {
 - ID는 생성자 파라미터로 직접 전달하여 설정
 - 함수명 패턴: `{domain}Fixture`
 
-### 8-2. Command Fixture ({Domain}CommandFixture.kt)
+### 9-2. Command Fixture ({Domain}CommandFixture.kt)
 
 ```kotlin
 package org.balanceeat.domain.example
@@ -853,7 +832,7 @@ fun exampleUpdateCommandFixture(block: ExampleCommandFixture.Update.() -> Unit =
 - Command별 Fixture 클래스 중첩 (Create, Update 등)
 - 함수명 패턴: `{domain}{Operation}CommandFixture`
 
-### 8-3. Query Fixture ({Domain}QueryFixture.kt)
+### 9-3. Query Fixture ({Domain}QueryFixture.kt)
 
 복잡한 조회 조건이 있는 경우에만 작성합니다.
 
@@ -913,7 +892,7 @@ fun exampleFilterQueryFixture(block: ExampleQueryFixture.Filter.() -> Unit = {})
 - Query별 Fixture 클래스 중첩 (Search, Filter 등)
 - 함수명 패턴: `{domain}{Operation}QueryFixture`
 
-### 8-4. Result Fixture ({Domain}ResultFixture.kt)
+### 9-4. Result Fixture ({Domain}ResultFixture.kt)
 
 Result 객체가 많거나 복잡한 경우에만 작성합니다.
 
@@ -1133,7 +1112,7 @@ class ExampleTest {
 
 ---
 
-## 템플릿 11A: Writer Test ({Domain}WriterTest.kt)
+## 템플릿 11: Writer Test ({Domain}WriterTest.kt)
 
 ```kotlin
 package org.balanceeat.domain.example
@@ -1255,7 +1234,7 @@ class ExampleWriterTest : IntegrationTestContext() {
 
 ---
 
-## 템플릿 11B: Reader Test ({Domain}ReaderTest.kt)
+## 템플릿 12: Reader Test ({Domain}ReaderTest.kt)
 
 ```kotlin
 package org.balanceeat.domain.example
@@ -1282,12 +1261,38 @@ class ExampleReaderTest : IntegrationTestContext() {
     inner class FindByIdTest {
 
         @Test
-        fun `ID로 예제를 조회할 수 있다`() {
+        fun `ID로 예제를 조회할 수 있다 (nullable)`() {
             // given
             val example = exampleRepository.save(exampleFixture())
 
             // when
             val result = exampleReader.findById(example.id)
+
+            // then
+            assertThat(result).isNotNull
+            assertThat(result?.id).isEqualTo(example.id)
+            assertThat(result?.name).isEqualTo(example.name)
+        }
+
+        @Test
+        fun `존재하지 않는 ID로 조회시 null을 반환한다`() {
+            // given
+            val nonExistentId = 999L
+
+            // when
+            val result = exampleReader.findById(nonExistentId)
+
+            // then
+            assertThat(result).isNull()
+        }
+
+        @Test
+        fun `ID로 예제를 조회할 수 있다 (예외 발생)`() {
+            // given
+            val example = exampleRepository.save(exampleFixture())
+
+            // when
+            val result = exampleReader.findByIdOrThrow(example.id)
 
             // then
             assertThat(result.id).isEqualTo(example.id)
@@ -1300,8 +1305,28 @@ class ExampleReaderTest : IntegrationTestContext() {
             val nonExistentId = 999L
 
             // when & then
-            assertThatThrownBy { exampleReader.findById(nonExistentId) }
+            assertThatThrownBy { exampleReader.findByIdOrThrow(nonExistentId) }
                 .isInstanceOf(EntityNotFoundException::class.java)
+        }
+    }
+
+    @Nested
+    @DisplayName("여러 ID 조회 테스트")
+    inner class FindAllByIdsTest {
+
+        @Test
+        fun `여러 ID로 예제 목록을 조회할 수 있다`() {
+            // given
+            val example1 = exampleRepository.save(exampleFixture())
+            val example2 = exampleRepository.save(exampleFixture())
+            val example3 = exampleRepository.save(exampleFixture())
+
+            // when
+            val results = exampleReader.findAllByIds(listOf(example1.id, example2.id, example3.id))
+
+            // then
+            assertThat(results).hasSize(3)
+            assertThat(results.map { it.id }).containsExactlyInAnyOrder(example1.id, example2.id, example3.id)
         }
     }
 
@@ -1365,207 +1390,27 @@ class ExampleReaderTest : IntegrationTestContext() {
 - **Fixture 활용**: DSL 스타일 픽스처 함수 사용
 - **IntegrationTestContext**: 통합 테스트 환경
 
----
-
-## 템플릿 11: Domain Service Test ({Domain}DomainServiceTest.kt) [레거시]
-
-> ⚠️ **참고**: 이 템플릿은 기존 DomainService 패턴을 위한 것입니다. 신규 개발 시에는 Writer/Reader 테스트 템플릿을 사용하세요.
-
-```kotlin
-package org.balanceeat.domain.example
-
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.balanceeat.domain.common.exception.DomainException
-import org.balanceeat.domain.config.supports.IntegrationTestContext
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
-import org.springframework.beans.factory.annotation.Autowired
-
-class ExampleDomainServiceTest : IntegrationTestContext() {
-
-    @Autowired
-    private lateinit var exampleDomainService: ExampleDomainService
-
-    @Autowired
-    private lateinit var exampleRepository: ExampleRepository
-
-    @Nested
-    @DisplayName("생성 테스트")
-    inner class CreateTest {
-
-        @Test
-        fun `예제를 생성할 수 있다`() {
-            // given
-            val command = exampleCreateCommandFixture()
-
-            // when
-            val result = exampleDomainService.create(command)
-
-            // then
-            assertThat(command)
-                .usingRecursiveComparison()
-                .isEqualTo(result)
-        }
-
-        @Test
-        fun `중복된 이름으로 예제를 생성하면 예외가 발생한다`() {
-            // given
-            val existingExample = exampleRepository.save(
-                ExampleFixture(
-                    name = "중복 이름",
-                    userId = 1L
-                ).create()
-            )
-
-            val command = exampleCreateCommandFixture {
-                name = "중복 이름"
-                userId = 1L
-            }
-
-            // when & then
-            assertThatThrownBy { exampleDomainService.create(command) }
-                .isInstanceOf(DomainException::class.java)
-                .hasMessage("이미 존재하는 이름입니다")
-        }
-    }
-
-    @Nested
-    @DisplayName("수정 테스트")
-    inner class UpdateTest {
-
-        @Test
-        fun `예제를 수정할 수 있다`() {
-            // given
-            val example = exampleRepository.save(
-                ExampleFixture(
-                    name = "수정 전 이름",
-                    status = Example.Status.ACTIVE,
-                    description = "수정 전 설명"
-                ).create()
-            )
-
-            val command = exampleUpdateCommandFixture {
-                id = example.id
-                name = "수정 후 이름"
-                status = Example.Status.INACTIVE
-                description = "수정 후 설명"
-            }
-
-            // when
-            val result = exampleDomainService.update(command)
-
-            // then
-            assertThat(result.name).isEqualTo("수정 후 이름")
-            assertThat(result.status).isEqualTo(Example.Status.INACTIVE)
-            assertThat(result.description).isEqualTo("수정 후 설명")
-        }
-
-        @Test
-        fun `일부 필드만 수정할 수 있다`() {
-            // given
-            val example = exampleRepository.save(ExampleFixture().create())
-
-            val command = exampleUpdateCommandFixture {
-                id = example.id
-                name = "새로운 이름만 변경"
-                status = example.status
-                description = example.description
-            }
-
-            // when
-            val result = exampleDomainService.update(command)
-
-            // then
-            assertThat(result.name).isEqualTo("새로운 이름만 변경")
-            assertThat(result.status).isEqualTo(example.status)
-            assertThat(result.description).isEqualTo(example.description)
-        }
-    }
-
-    @Nested
-    @DisplayName("삭제 테스트")
-    inner class DeleteTest {
-
-        @Test
-        fun `예제를 삭제할 수 있다`() {
-            // given
-            val example = exampleRepository.save(ExampleFixture().create())
-
-            // when
-            exampleDomainService.delete(example.id)
-
-            // then
-            assertThat(exampleRepository.findById(example.id)).isEmpty
-        }
-    }
-}
-```
-
-**핵심 패턴**:
-- **@Nested + inner class**: 기능별로 테스트 그룹화
-- **Given-When-Then**: 명확한 테스트 구조
-- **AssertJ assertions**: `assertThat()`, `usingRecursiveComparison()`, `assertThatThrownBy()`
-- **@ParameterizedTest + @CsvSource**: 반복적인 상태 변경 테스트를 파라미터화
-- **비즈니스 로직 중심**: 성공 케이스와 비즈니스 요구사항 검증
-- **한글 테스트명**: 백틱(`)을 사용한 자연어 설명
-- **Fixture 활용**:
-  - Entity Fixture: `ExampleFixture().create()`
-  - Command Fixture: `exampleCreateCommandFixture { }`, `exampleUpdateCommandFixture { }`
-  - 람다 블록 내에서 `this` 키워드 사용 금지 (변수 섀도잉 방지)
-
-**작성 가이드**:
-1. **성공 케이스 우선**: 각 기능의 정상 동작을 먼저 테스트
-2. **비즈니스 요구사항**: if문 분기, 계산 로직, 상태 전이 등 도메인 규칙 검증
-3. **일부 필드 수정**: 선택적 필드 업데이트 케이스 포함
-4. **ParameterizedTest**: 반복적인 패턴(상태 변경 등)은 파라미터화
-5. **예외 케이스**: 비즈니스 규칙 위반 시나리오만 포함 (중복 생성 등)
-6. **엔티티 없음 테스트 지양**: 단순 Not Found 예외는 비즈니스 가치 없음
-7. **Fixture 사용시 주의사항**:
-   - Command Fixture는 DSL 스타일 함수 사용 (`exampleCreateCommandFixture { }`)
-   - 람다 블록 내에서 `this` 키워드 사용 금지 (변수 섀도잉 방지)
-   - 외부 변수와 동일한 이름의 속성 설정 시 변수명 변경 필요
-
----
 
 ## 개발 체크리스트
 
-### 새로운 도메인 추가시 (Writer/Reader 패턴)
+### 새로운 도메인 추가시
 
 - [ ] **패키지 구조**: `org.balanceeat.domain.{domain}` 생성
 - [ ] **엔티티**: `{Domain}.kt` 작성, `BaseEntity` 상속, `guard()` 구현
 - [ ] **Command**: `{Domain}Command.kt` 작성 (Create, Update, Delete)
 - [ ] **Query** (필요시): `{Domain}Query.kt` 작성 (Search 등 복잡한 조회 조건)
 - [ ] **Result**: `{Domain}Result.kt` 작성
-  - `{Domain}Result`: 기본 조회 결과
+  - `{Domain}Result`: 기본 조회 결과 (companion object가 EntityMapper 구현)
   - `{Domain}SearchResult`: Querydsl 검색 결과 (with `@QueryProjection`)
   - `{Domain}Details`: 상세 정보 (필요시)
   - `{Domain}Summary`: 목록용 간략 정보 (필요시)
 - [ ] **Repository**: `{Domain}Repository.kt` 작성
 - [ ] **Querydsl** (필요시): Custom/Impl 작성
 - [ ] **Writer**: `{Domain}Writer.kt` 작성, `@Component` 적용 (CUD 담당)
-- [ ] **Reader**: `{Domain}Reader.kt` 작성, `@Component` 적용 (조회 담당)
+- [ ] **Reader**: `{Domain}Reader.kt` 작성, `BaseReader<Entity, Result>` 상속, `@Component` 적용 (조회 담당)
+  - `findByIdOrThrow(id: Long)` 메서드 오버라이드하여 도메인별 예외 상태 지정
 - [ ] **Fixture**: `{Domain}Fixture.kt` + `{Domain}CommandFixture.kt` 작성
 - [ ] **테스트**: `{Domain}WriterTest.kt` + `{Domain}ReaderTest.kt` 작성
-- [ ] **예외 처리**: `DomainStatus`에 도메인별 예외 상태 추가
-
-### 새로운 도메인 추가시 (레거시 DomainService 패턴)
-
-> ⚠️ **참고**: 기존 코드와의 일관성을 위해 DomainService 패턴을 사용하는 경우
-
-- [ ] **패키지 구조**: `org.balanceeat.domain.{domain}` 생성
-- [ ] **엔티티**: `{Domain}.kt` 작성, `BaseEntity` 상속, `guard()` 구현
-- [ ] **Command**: `{Domain}Command.kt` 작성 (Create, Update, Delete)
-- [ ] **Query** (필요시): `{Domain}Query.kt` 작성 (Search 등 복잡한 조회 조건)
-- [ ] **Result**: `{Domain}Result.kt` 작성
-- [ ] **Repository**: `{Domain}Repository.kt` 작성
-- [ ] **Querydsl** (필요시): Custom/Impl 작성
-- [ ] **Domain Service**: `{Domain}DomainService.kt` 작성, `@DomainService` 적용
-- [ ] **Fixture**: `{Domain}Fixture.kt` + `{Domain}CommandFixture.kt` 작성
-- [ ] **테스트**: `{Domain}DomainServiceTest.kt` 작성
 - [ ] **예외 처리**: `DomainStatus`에 도메인별 예외 상태 추가
 
 ### 코드 품질 체크
@@ -1581,8 +1426,6 @@ class ExampleDomainServiceTest : IntegrationTestContext() {
 
 ## 명명 규칙 요약
 
-### Writer/Reader 패턴 (신규)
-
 | 항목 | 규칙 | 예시 |
 |-----|------|-----|
 | Entity | `{Domain}.kt` | `User.kt`, `Diet.kt` |
@@ -1597,32 +1440,18 @@ class ExampleDomainServiceTest : IntegrationTestContext() {
 | Writer Test | `{Domain}WriterTest.kt` | `UserWriterTest.kt` |
 | Reader Test | `{Domain}ReaderTest.kt` | `UserReaderTest.kt` |
 
-### DomainService 패턴 (레거시)
-
-| 항목 | 규칙 | 예시 |
-|-----|------|-----|
-| Entity | `{Domain}.kt` | `User.kt`, `Diet.kt` |
-| Command | `{Domain}Command.kt` | `UserCommand.kt` |
-| Query | `{Domain}Query.kt` | `FoodQuery.kt` (필요시) |
-| Result | `{Domain}Result.kt` | `FoodResult.kt` |
-| Repository | `{Domain}Repository.kt` | `UserRepository.kt` |
-| Domain Service | `{Domain}DomainService.kt` | `UserDomainService.kt` |
-| Fixture | `{Domain}Fixture.kt` | `UserFixture.kt` |
-| Command Fixture | `{Domain}CommandFixture.kt` | `UserCommandFixture.kt` |
-| Test | `{Domain}DomainServiceTest.kt` | `UserDomainServiceTest.kt` |
-
 ---
 
 ## 참고 사항
 
 ### 기존 프로젝트와의 차이점
 
-Balance-Eat 프로젝트는 다음과 같은 차이점이 있습니다:
+Balance-Eat 프로젝트는 다음과 같은 특징이 있습니다:
 
 1. **BaseEntity**: `LocalDateTime` 사용 (ZonedDateTime 대신)
 2. **NEW_ID**: `0L` 상수로 신규 엔티티 표시
 3. **Package**: `org.balanceeat.domain.{domain}` 구조
-4. **DomainService**: `@Service` 어노테이션 사용 (별도 `@DomainService` 없음)
+4. **Writer/Reader**: `@Component` 어노테이션 사용
 5. **Test**: Kotest assertions + JUnit 5 조합
 6. **Fixture**: `TestFixture` 인터페이스 및 생성 함수 활용
 
@@ -1644,163 +1473,23 @@ Balance-Eat 프로젝트는 CQRS 패턴을 부분적으로 적용합니다:
 - `{Domain}Result.kt`: 조회 결과 객체 모음
 - Entity → Result 변환으로 도메인 계층 결과 전달
 - **Result 타입 구분**:
-  - `{Domain}Result`: Domain Service의 기본 반환 타입 (CUD 작업 결과)
+  - `{Domain}Result`: Writer의 기본 반환 타입 (CUD 작업 결과), Reader의 조회 결과
   - `{Domain}SearchResult`: Querydsl 검색 결과 (`@QueryProjection`)
   - `{Domain}Details`: 상세 정보 조회 (연관 데이터 포함)
   - `{Domain}Summary`: 목록 조회용 간략 정보
 - 예: `FoodResult`, `FoodSearchResult`, `FoodDetails`, `FoodSummary`
 
-### Writer/Reader 패턴 전환 가이드
-
-#### 전환 시점 결정
-
-**권장 전환 시점**:
-1. **신규 도메인**: 처음부터 Writer/Reader 패턴 적용
-2. **대규모 리팩토링 시**: 도메인 전체를 재작성하는 경우
-3. **명확한 책임 분리 필요 시**: CUD와 Read 로직이 복잡하게 얽힌 경우
-
-**전환 보류 권장**:
-1. **안정된 도메인**: 잘 동작하는 기존 DomainService
-2. **단순 CRUD**: 복잡도가 낮은 도메인
-3. **리소스 부족**: 전환 작업 인력/시간이 부족한 경우
-
-#### 단계별 전환 프로세스
-
-**1단계: Writer 분리**
-```kotlin
-// Before: DomainService
-@DomainService
-class UserDomainService(
-    private val userRepository: UserRepository
-) {
-    @Transactional
-    fun create(command: UserCommand.Create): UserResult { ... }
-
-    @Transactional
-    fun update(command: UserCommand.Update): UserResult { ... }
-
-    @Transactional
-    fun delete(id: Long) { ... }
-
-    @Transactional(readOnly = true)
-    fun findById(id: Long): UserResult { ... }
-}
-
-// After: Writer
-@Component
-class UserWriter(
-    private val userRepository: UserRepository
-) {
-    @Transactional
-    fun create(command: UserCommand.Create): UserResult { ... }
-
-    @Transactional
-    fun update(command: UserCommand.Update): UserResult { ... }
-
-    @Transactional
-    fun delete(id: Long) { ... }
-}
-```
-
-**2단계: Reader 분리 (선택적)**
-```kotlin
-// Option B: Reader 래퍼 메서드 제공
-@Component
-class UserReader(
-    private val userRepository: UserRepository
-) {
-    @Transactional(readOnly = true)
-    fun findById(id: Long): UserResult {
-        return userRepository.findByIdOrNull(id)
-            ?.let { UserResult.from(it) }
-            ?: throw EntityNotFoundException(DomainStatus.USER_NOT_FOUND)
-    }
-
-    @Transactional(readOnly = true)
-    fun findByEmail(email: String): UserResult? {
-        return userRepository.findByEmail(email)
-            ?.let { UserResult.from(it) }
-    }
-}
-
-// Option C: Repository 직접 사용 허용 (단순 조회)
-// Reader는 복잡한 비즈니스 로직이 포함된 조회만 담당
-```
-
-**3단계: 상위 계층 (Application Service) 수정**
-```kotlin
-// Before
-@Service
-class UserApplicationService(
-    private val userDomainService: UserDomainService
-) {
-    fun register(request: RegisterRequest): UserResponse {
-        val command = request.toCommand()
-        val result = userDomainService.create(command)
-        return UserResponse.from(result)
-    }
-}
-
-// After
-@Service
-class UserApplicationService(
-    private val userWriter: UserWriter,
-    private val userReader: UserReader // 또는 userRepository 직접 사용
-) {
-    fun register(request: RegisterRequest): UserResponse {
-        val command = request.toCommand()
-        val result = userWriter.create(command)
-        return UserResponse.from(result)
-    }
-}
-```
-
-**4단계: 테스트 수정**
-```kotlin
-// Before
-class UserDomainServiceTest : IntegrationTestContext() {
-    @Autowired
-    private lateinit var userDomainService: UserDomainService
-    // ...
-}
-
-// After
-class UserWriterTest : IntegrationTestContext() {
-    @Autowired
-    private lateinit var userWriter: UserWriter
-    // ...
-}
-
-class UserReaderTest : IntegrationTestContext() {
-    @Autowired
-    private lateinit var userReader: UserReader
-    // ...
-}
-```
-
-#### 전환 체크리스트
-
-- [ ] Writer 클래스 생성 및 CUD 메서드 이동
-- [ ] Reader 클래스 생성 (Option B 선택 시)
-- [ ] 기존 DomainService 제거 또는 Deprecated 표시
-- [ ] Application Service 의존성 변경
-- [ ] Controller 영향도 확인 및 수정
-- [ ] Writer/Reader 테스트 작성
-- [ ] 기존 DomainService 테스트 제거
-- [ ] 통합 테스트 실행 및 검증
-- [ ] 문서 업데이트
-
 ### 실제 도메인 예시
 
-**현재 프로젝트 구조** (DomainService 패턴):
+**현재 프로젝트 구조**:
 - **User**: 사용자 도메인 (복잡한 검증 로직)
 - **Diet**: 식단 도메인 (연관관계, Querydsl)
-- **Food**: 음식 도메인 (Query/Result 분리 예시)
+- **Food**: 음식 도메인 (Writer/Reader 패턴 적용)
   - `FoodCommand.kt`: Create, Update
   - `FoodQuery.kt`: Search
   - `FoodResult.kt`: FoodResult, FoodSearchResult
-
-**신규 도메인 개발 시**: Writer/Reader 패턴을 적용하여 명확한 책임 분리를 구현하세요.
+  - `FoodWriter.kt`: CUD 로직
+  - `FoodReader.kt`: 조회 로직
 
 ---
 

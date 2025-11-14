@@ -1,18 +1,15 @@
 package org.balanceeat.api.user
 
-import org.balanceeat.apibase.ApplicationStatus
-import org.balanceeat.apibase.exception.NotFoundException
 import org.balanceeat.domain.user.UserCommand
+import org.balanceeat.domain.user.UserReader
 import org.balanceeat.domain.user.UserWriter
-import org.balanceeat.domain.user.UserResult
-import org.balanceeat.domain.user.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserService(
     private val userWriter: UserWriter,
-    private val userRepository: UserRepository
+    private val userReader: UserReader
 ) {
     @Transactional
     fun create(request: UserV1Request.Create): UserV1Response.Details {
@@ -71,10 +68,7 @@ class UserService(
 
     @Transactional(readOnly = true)
     fun findByUuid(uuid: String): UserV1Response.Details {
-        val user = userRepository.findByUuid(uuid)
-            ?.let { UserResult.from(it) }
-            ?: throw NotFoundException(ApplicationStatus.USER_NOT_FOUND)
-
+        val user = userReader.findByUuidOrThrow(uuid)
         return UserV1Response.Details.from(user)
     }
 }

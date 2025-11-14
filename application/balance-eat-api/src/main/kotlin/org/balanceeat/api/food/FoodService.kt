@@ -5,29 +5,22 @@ import org.balanceeat.apibase.ApplicationStatus.FOOD_NOT_FOUND
 import org.balanceeat.apibase.exception.BadRequestException
 import org.balanceeat.apibase.exception.NotFoundException
 import org.balanceeat.apibase.response.PageResponse
-import org.balanceeat.domain.curation.CurationFoodRepository
-import org.balanceeat.domain.food.FoodCommand
-import org.balanceeat.domain.food.FoodWriter
-import org.balanceeat.domain.food.FoodQuery
-import org.balanceeat.domain.food.FoodResult
-import org.balanceeat.domain.food.FoodRepository
-import org.balanceeat.domain.food.FoodSearchResult
+import org.balanceeat.domain.curation.CurationFoodReader
+import org.balanceeat.domain.food.*
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class FoodService(
     private val foodWriter: FoodWriter,
-    private val foodRepository: FoodRepository,
-    private val curationFoodRepository: CurationFoodRepository
+    private val foodReader: FoodReader,
+    private val curationFoodReader: CurationFoodReader
 ) {
     @Transactional(readOnly = true)
     fun getDetails(id: Long): FoodV1Response.Details {
-        return foodRepository.findByIdOrNull(id)
-            ?.let { FoodResult.from(it) }
+        return foodReader.findById(id)
             ?.let { FoodV1Response.Details.from(it) }
             ?: throw NotFoundException(FOOD_NOT_FOUND)
     }
@@ -54,7 +47,7 @@ class FoodService(
 
     @Transactional
     fun update(request: FoodV1Request.Update, id: Long, modifierId: Long): FoodV1Response.Details {
-        val food = foodRepository.findByIdOrNull(id)
+        val food = foodReader.findById(id)
             ?: throw NotFoundException(FOOD_NOT_FOUND)
 
         if (food.userId != modifierId) {
@@ -81,18 +74,17 @@ class FoodService(
     @Transactional(readOnly = true)
     fun getRecommendations(limit: Int = 10): List<FoodV1Response.Details> {
         val pageable = PageRequest.of(0, limit)
-        val curationFoodMap =  curationFoodRepository.findRecommendedFoods(pageable)
+        val curationFoodMap =  curationFoodReader.findRecommendedFoods(pageable)
             .associateBy { it.foodId }
 
-        return foodRepository.findAllById(curationFoodMap.keys)
-            .map { FoodResult.from(it) }
+        return foodReader.findAllByIds(curationFoodMap.keys)
             .sortedByDescending { curationFoodMap[it.id]?.weight }
             .map { FoodV1Response.Details.from(it) }
     }
 
     @Transactional(readOnly = true)
     fun search(request: FoodV1Request.Search, pageable: Pageable): PageResponse<FoodSearchResult>{
-        val result =  foodRepository.search(
+        val result =  foodReader.search(
             FoodQuery.Search(
                 foodName = request.foodName,
                 userId = request.userId,

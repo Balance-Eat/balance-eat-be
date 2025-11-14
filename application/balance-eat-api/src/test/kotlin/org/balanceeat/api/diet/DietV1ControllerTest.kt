@@ -5,7 +5,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.balanceeat.api.config.supports.ControllerTestContext
 import org.balanceeat.domain.diet.Diet
-import org.balanceeat.domain.diet.NutritionInfo
+import org.balanceeat.domain.food.NutritionInfo
 import org.balanceeat.jackson.JsonUtils
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested

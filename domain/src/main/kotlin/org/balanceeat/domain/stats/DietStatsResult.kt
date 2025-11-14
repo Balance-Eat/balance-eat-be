@@ -1,27 +1,28 @@
 package org.balanceeat.domain.stats
 
 import com.querydsl.core.annotations.QueryProjection
+import org.balanceeat.domain.common.EntityMapper
 import java.time.LocalDate
 
 data class DietStatsResult(
     val id: Long,
     val userId: Long,
-    val statsDate: String,
+    val statsDate: LocalDate,
     val totalCalories: Double,
     val totalCarbohydrates: Double,
     val totalProtein: Double,
     val totalFat: Double
 ) {
-    companion object {
-        fun from(dietStats: DietStats): DietStatsResult {
+    companion object: EntityMapper<DietStats, DietStatsResult> {
+        override fun from(entity: DietStats): DietStatsResult {
             return DietStatsResult(
-                id = dietStats.id,
-                userId = dietStats.userId,
-                statsDate = dietStats.statsDate.toString(),
-                totalCalories = dietStats.totalCalories,
-                totalCarbohydrates = dietStats.totalCarbohydrates,
-                totalProtein = dietStats.totalProtein,
-                totalFat = dietStats.totalFat
+                id = entity.id,
+                userId = entity.userId,
+                statsDate = entity.statsDate,
+                totalCalories = entity.totalCalories,
+                totalCarbohydrates = entity.totalCarbohydrates,
+                totalProtein = entity.totalProtein,
+                totalFat = entity.totalFat
             )
         }
     }

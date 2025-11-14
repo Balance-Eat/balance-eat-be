@@ -1,6 +1,7 @@
 package org.balanceeat.domain.food
 
 import com.querydsl.core.annotations.QueryProjection
+import org.balanceeat.domain.common.EntityMapper
 import java.time.LocalDateTime
 
 data class FoodResult(
@@ -18,22 +19,22 @@ data class FoodResult(
     val isAdminApproved: Boolean,
     val createdAt: LocalDateTime
 ) {
-    companion object {
-        fun from(food: Food): FoodResult {
+    companion object: EntityMapper<Food, FoodResult> {
+        override fun from(entity: Food): FoodResult {
             return FoodResult(
-                id = food.id,
-                uuid = food.uuid,
-                name = food.name,
-                userId = food.userId,
-                servingSize = food.servingSize,
-                unit = food.unit,
-                perServingCalories = food.perServingCalories,
-                carbohydrates = food.carbohydrates,
-                protein = food.protein,
-                fat = food.fat,
-                brand = food.brand,
-                isAdminApproved = food.isAdminApproved,
-                createdAt = food.createdAt
+                id = entity.id,
+                uuid = entity.uuid,
+                name = entity.name,
+                userId = entity.userId,
+                servingSize = entity.servingSize,
+                unit = entity.unit,
+                perServingCalories = entity.perServingCalories,
+                carbohydrates = entity.carbohydrates,
+                protein = entity.protein,
+                fat = entity.fat,
+                brand = entity.brand,
+                isAdminApproved = entity.isAdminApproved,
+                createdAt = entity.createdAt
             )
         }
     }

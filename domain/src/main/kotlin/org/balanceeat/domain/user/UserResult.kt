@@ -1,5 +1,6 @@
 package org.balanceeat.domain.user
 
+import org.balanceeat.domain.common.EntityMapper
 import java.time.LocalDateTime
 
 data class UserResult(
@@ -26,31 +27,31 @@ data class UserResult(
     val providerType: String?,
     val createdAt: LocalDateTime
 ) {
-    companion object {
-        fun from(user: User): UserResult {
+    companion object: EntityMapper<User, UserResult> {
+        override fun from(entity: User): UserResult {
             return UserResult(
-                id = user.id,
-                uuid = user.uuid,
-                name = user.name,
-                email = user.email,
-                gender = user.gender,
-                age = user.age,
-                weight = user.weight,
-                height = user.height,
-                goalType = user.goalType,
-                activityLevel = user.activityLevel,
-                smi = user.smi,
-                fatPercentage = user.fatPercentage,
-                targetWeight = user.targetWeight,
-                targetCalorie = user.targetCalorie,
-                targetSmi = user.targetSmi,
-                targetFatPercentage = user.targetFatPercentage,
-                targetCarbohydrates = user.targetCarbohydrates,
-                targetProtein = user.targetProtein,
-                targetFat = user.targetFat,
-                providerId = user.providerId,
-                providerType = user.providerType,
-                createdAt = user.createdAt
+                id = entity.id,
+                uuid = entity.uuid,
+                name = entity.name,
+                email = entity.email,
+                gender = entity.gender,
+                age = entity.age,
+                weight = entity.weight,
+                height = entity.height,
+                goalType = entity.goalType,
+                activityLevel = entity.activityLevel,
+                smi = entity.smi,
+                fatPercentage = entity.fatPercentage,
+                targetWeight = entity.targetWeight,
+                targetCalorie = entity.targetCalorie,
+                targetSmi = entity.targetSmi,
+                targetFatPercentage = entity.targetFatPercentage,
+                targetCarbohydrates = entity.targetCarbohydrates,
+                targetProtein = entity.targetProtein,
+                targetFat = entity.targetFat,
+                providerId = entity.providerId,
+                providerType = entity.providerType,
+                createdAt = entity.createdAt
             )
         }
     }

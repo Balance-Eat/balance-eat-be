@@ -1,17 +1,14 @@
 package org.balanceeat.api.diet
 
 import jakarta.validation.Valid
-import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.NotEmpty
+import jakarta.validation.constraints.NotNull
 import org.balanceeat.domain.common.DomainStatus
 import org.balanceeat.domain.common.exception.DomainException
-import org.balanceeat.domain.diet.Diet
+import org.balanceeat.domain.diet.*
 import org.balanceeat.domain.diet.Diet.MealType
-import org.balanceeat.domain.diet.DietResult
-import org.balanceeat.domain.diet.DietFood
-import org.balanceeat.domain.diet.DietFoodResult
-import org.balanceeat.domain.diet.NutritionInfo
-import org.balanceeat.domain.food.Food
+import org.balanceeat.domain.food.FoodResult
+import org.balanceeat.domain.food.NutritionInfo
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -71,17 +68,13 @@ class DietV1Response {
         val items: List<DietFoodResponse>
     ) {
         companion object {
-            fun of(diet: Diet, foodMap: Map<Long, Food>): Summary {
+            fun from(summary: DietSummary): Summary {
                 return Summary(
-                    dietId = diet.id,
-                    consumeDate = diet.consumedAt.toLocalDate(),
-                    consumedAt = diet.consumedAt,
-                    mealType = diet.mealType,
-                    items = diet.dietFoods.map { dietFood ->
-                        val food = foodMap[dietFood.foodId]
-                            ?: throw DomainException(DomainStatus.FOOD_NOT_FOUND)
-                        DietFoodResponse.of(dietFood, food)
-                    }
+                    dietId = summary.id,
+                    consumeDate = summary.consumedAt.toLocalDate(),
+                    consumedAt = summary.consumedAt,
+                    mealType = summary.mealType,
+                    items = summary.dietFoods.map { dietFood -> DietFoodResponse.from(dietFood) }
                 )
             }
         }
@@ -99,21 +92,17 @@ class DietV1Response {
         val fat: Double
     ) {
         companion object {
-            fun of(dietFood: DietFood, food: Food): DietFoodResponse {
-                val info = food.calculateNutrition(
-                    dietFood.intake.toDouble()
-                )
-
+            fun from(summary: DietFoodSummary): DietFoodResponse {
                 return DietFoodResponse(
-                    foodId = dietFood.foodId,
-                    foodName = food.name,
-                    intake = dietFood.intake,
-                    servingSize = food.servingSize,
-                    unit = food.unit,
-                    calories = info.calories,
-                    carbohydrates = info.carbohydrates,
-                    protein = info.protein,
-                    fat = info.fat
+                    foodId = summary.foodId,
+                    foodName = summary.foodName,
+                    intake = summary.intake,
+                    servingSize = summary.servingSize,
+                    unit = summary.unit,
+                    calories = summary.nutrition.calories,
+                    carbohydrates = summary.nutrition.carbohydrates,
+                    protein = summary.nutrition.protein,
+                    fat = summary.nutrition.fat
                 )
             }
         }
@@ -129,15 +118,15 @@ class DietV1Response {
         val dietFoods: List<DietFood>
     ) {
         companion object {
-            fun from(dietResult: DietResult): Details {
+            fun from(dietDetails: DietDetails): Details {
                 return Details(
-                    dietId = dietResult.id,
-                    userId = dietResult.userId,
-                    mealType = dietResult.mealType,
-                    consumeDate = dietResult.consumedAt.toLocalDate(),
-                    consumedAt = dietResult.consumedAt,
-                    totalNutrition = dietResult.totalNutrition,
-                    dietFoods = dietResult.dietFoods.map { DietFood.from(it) }
+                    dietId = dietDetails.id,
+                    userId = dietDetails.userId,
+                    mealType = dietDetails.mealType,
+                    consumeDate = dietDetails.consumedAt.toLocalDate(),
+                    consumedAt = dietDetails.consumedAt,
+                    totalNutrition = dietDetails.totalNutrition,
+                    dietFoods = dietDetails.dietFoods.map { DietFood.from(it) }
                 )
             }
         }
@@ -151,7 +140,7 @@ class DietV1Response {
             val nutrition: NutritionInfo
         ) {
             companion object {
-                fun from(dietFood: DietFoodResult): DietFood {
+                fun from(dietFood: DietFoodDetails): DietFood {
                     return DietFood(
                         id = dietFood.dietFoodId,
                         foodId = dietFood.foodId,

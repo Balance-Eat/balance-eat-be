@@ -109,11 +109,4 @@ class Food(
             fat = fat * ratio
         )
     }
-    
-    data class NutritionInfo(
-        val calories: Double,
-        val carbohydrates: Double,
-        val protein: Double,
-        val fat: Double
-    )
 }

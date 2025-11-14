@@ -1,5 +1,6 @@
 package org.balanceeat.domain.curation
 
+import org.balanceeat.domain.common.EntityMapper
 import java.time.LocalDateTime
 
 data class CurationFoodResult(
@@ -8,13 +9,13 @@ data class CurationFoodResult(
     val weight: Int,
     val createdAt: LocalDateTime
 ) {
-    companion object {
-        fun from(curationFood: CurationFood): CurationFoodResult {
+    companion object: EntityMapper<CurationFood, CurationFoodResult> {
+        override fun from(entity: CurationFood): CurationFoodResult {
             return CurationFoodResult(
-                id = curationFood.id,
-                foodId = curationFood.foodId,
-                weight = curationFood.weight,
-                createdAt = curationFood.createdAt
+                id = entity.id,
+                foodId = entity.foodId,
+                weight = entity.weight,
+                createdAt = entity.createdAt
             )
         }
     }

@@ -51,20 +51,14 @@ class UserWriter(
     }
 
 
-    private fun findById(id: Long): User {
+    private fun findByIdOrThrow(id: Long): User {
         return userRepository.findById(id)
             .orElseThrow { EntityNotFoundException(DomainStatus.USER_NOT_FOUND) }
     }
 
-    @Transactional(readOnly = true)
-    fun findByUuid(uuid: String): User {
-        return userRepository.findByUuid(uuid)
-            ?: throw EntityNotFoundException(DomainStatus.USER_NOT_FOUND)
-    }
-
     @Transactional
     fun update(command: UserCommand.Update): UserResult {
-        val user = findById(command.id)
+        val user = findByIdOrThrow(command.id)
         user.apply {
             command.name.let { name = it }
             command.email?.let { email = it }

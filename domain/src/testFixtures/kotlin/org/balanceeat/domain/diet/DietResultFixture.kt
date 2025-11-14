@@ -1,6 +1,7 @@
 package org.balanceeat.domain.diet
 
 import org.balanceeat.common.TestFixture
+import org.balanceeat.domain.food.NutritionInfo
 import java.time.LocalDateTime
 
 class NutritionInfoFixture(
@@ -54,9 +55,9 @@ class DietResultFixture(
     var consumedAt: LocalDateTime = LocalDateTime.now(),
     var totalNutrition: NutritionInfo = nutritionInfoFixture(),
     var dietFoods: List<DietFoodResult> = listOf(dietFoodResultFixture())
-) : TestFixture<DietResult> {
-    override fun create(): DietResult {
-        return DietResult(
+) : TestFixture<DietDetails> {
+    override fun create(): DietDetails {
+        return DietDetails(
             id = id,
             userId = userId,
             mealType = mealType,
@@ -67,6 +68,6 @@ class DietResultFixture(
     }
 }
 
-fun dietResultFixture(block: DietResultFixture.() -> Unit = {}): DietResult {
+fun dietResultFixture(block: DietResultFixture.() -> Unit = {}): DietDetails {
     return DietResultFixture().apply(block).create()
 }

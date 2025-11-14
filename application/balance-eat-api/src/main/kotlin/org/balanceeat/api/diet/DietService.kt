@@ -3,16 +3,13 @@ package org.balanceeat.api.diet
 import org.balanceeat.apibase.ApplicationStatus
 import org.balanceeat.apibase.exception.BadRequestException
 import org.balanceeat.apibase.exception.NotFoundException
-import org.balanceeat.domain.common.DomainStatus
-import org.balanceeat.domain.common.exception.DomainException
-import org.balanceeat.domain.diet.Diet
 import org.balanceeat.domain.diet.DietCommand
+import org.balanceeat.domain.diet.DietReader
+import org.balanceeat.domain.diet.DietResult
 import org.balanceeat.domain.diet.DietWriter
-import org.balanceeat.domain.diet.DietRepository
-import org.balanceeat.domain.food.Food
-import org.balanceeat.domain.food.FoodRepository
-import org.balanceeat.domain.user.UserWriter
-import org.springframework.data.repository.findByIdOrNull
+import org.balanceeat.domain.food.FoodReader
+import org.balanceeat.domain.food.FoodResult
+import org.balanceeat.domain.user.UserReader
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -21,13 +18,12 @@ import java.time.YearMonth
 @Service
 class DietService(
     private val dietWriter: DietWriter,
-    private val userWriter: UserWriter,
-    private val dietRepository: DietRepository,
-    private val foodRepository: FoodRepository
+    private val dietReader: DietReader,
+    private val userReader: UserReader
 ) {
     @Transactional
     fun create(request: DietV1Request.Create, userId: Long): DietV1Response.Details {
-        userWriter.validateExistsUser(userId)
+        userReader.validateExistsUser(userId)
 
         val command = DietCommand.Create(
             userId = userId,
@@ -48,9 +44,9 @@ class DietService(
 
     @Transactional
     fun update(request: DietV1Request.Update, dietId: Long, userId: Long): DietV1Response.Details {
-        userWriter.validateExistsUser(userId)
+        userReader.validateExistsUser(userId)
 
-        val diet = dietRepository.findByIdOrNull(dietId)
+        val diet = dietReader.findById(dietId)
             ?: throw NotFoundException(ApplicationStatus.DIET_NOT_FOUND)
 
         if (diet.userId != userId) {
@@ -76,9 +72,9 @@ class DietService(
 
     @Transactional
     fun delete(id: Long, userId: Long) {
-        userWriter.validateExistsUser(userId)
+        userReader.validateExistsUser(userId)
 
-        val diet = dietRepository.findByIdOrNull(id)
+        val diet = dietReader.findById(id)
 
         if (diet == null) return
 
@@ -91,9 +87,9 @@ class DietService(
 
     @Transactional
     fun deleteDietFood(dietId: Long, dietFoodId: Long, userId: Long) {
-        userWriter.validateExistsUser(userId)
+        userReader.validateExistsUser(userId)
 
-        val diet = dietRepository.findByIdOrNull(dietId)
+        val diet = dietReader.findById(dietId)
             ?: throw NotFoundException(ApplicationStatus.DIET_NOT_FOUND)
 
         if (diet.userId != userId) {
@@ -115,9 +111,9 @@ class DietService(
         request: DietV1Request.UpdateDietFood,
         userId: Long
     ): DietV1Response.Details {
-        userWriter.validateExistsUser(userId)
+        userReader.validateExistsUser(userId)
 
-        val diet = dietRepository.findByIdOrNull(dietId)
+        val diet = dietReader.findById(dietId)
             ?: throw NotFoundException(ApplicationStatus.DIET_NOT_FOUND)
 
         if (diet.userId != userId) {
@@ -136,29 +132,13 @@ class DietService(
 
     @Transactional(readOnly = true)
     fun getDailyDiets(userId: Long, date: LocalDate): List<DietV1Response.Summary> {
-        val diets = dietRepository.findDailyDiets(userId, date)
-        val foodMap = getFoodMap(diets)
-
-        return diets.map {
-            DietV1Response.Summary.of(it, foodMap)
-        }
+        return dietReader.findDailyDietSummaries(userId, date)
+            .map { DietV1Response.Summary.from(it) }
     }
 
     @Transactional(readOnly = true)
     fun getMonthlyDiets(userId: Long, yearMonth: YearMonth): List<DietV1Response.Summary> {
-        val diets = dietRepository.findMonthlyDiets(userId, yearMonth)
-        val foodMap = getFoodMap(diets)
-
-        return diets.map {
-            DietV1Response.Summary.of(it, foodMap)
-        }
-    }
-
-    private fun getFoodMap(diets: List<Diet>): Map<Long, Food> {
-        return diets.flatMap { it.dietFoods }
-            .map { it.foodId }
-            .distinct()
-            .let { foodRepository.findAllById(it) }
-            .associateBy { it.id }
+        return dietReader.findMonthlyDietSummaries(userId, yearMonth)
+            .map { DietV1Response.Summary.from(it) }
     }
 }

@@ -21,5 +21,11 @@ enum class DomainStatus(
     // food
     FOOD_NOT_FOUND("음식을 찾을 수 없습니다"),
     CANNOT_MODIFY_FOOD("음식을 수정할 권한이 없습니다"),
+
+    // curation_food
+    CURATION_FOOD_NOT_FOUND("큐레이션 음식을 찾을 수 없습니다"),
+
+    // diet_stats
+    DIET_STATS_NOT_FOUND("식단 통계를 찾을 수 없습니다")
     ;
 }
