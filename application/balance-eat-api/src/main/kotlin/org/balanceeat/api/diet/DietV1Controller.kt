@@ -1,6 +1,7 @@
 package org.balanceeat.api.diet
 
 import jakarta.validation.Valid
+import org.balanceeat.api.common.USER_ID_HEADER
 import org.balanceeat.apibase.response.ApiResponse
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.web.bind.annotation.*
@@ -15,7 +16,7 @@ class DietV1Controller(
 
     @GetMapping("/daily")
     fun getDailyDiets(
-        @RequestHeader("X-USER-ID") userId: Long,
+        @RequestHeader(USER_ID_HEADER) userId: Long,
         @RequestParam date: LocalDate,
     ): ApiResponse<List<DietV1Response.Summary>> {
         return ApiResponse.success(
@@ -25,7 +26,7 @@ class DietV1Controller(
 
     @GetMapping("/monthly")
     fun getMonthlyDiets(
-        @RequestHeader("X-USER-ID") userId: Long,
+        @RequestHeader(USER_ID_HEADER) userId: Long,
         @RequestParam yearMonth: YearMonth,
     ): ApiResponse<List<DietV1Response.Summary>> {
         return ApiResponse.success(
@@ -36,7 +37,7 @@ class DietV1Controller(
     @PostMapping
     @ResponseStatus(CREATED)
     fun create(
-        @RequestHeader("X-USER-ID") userId: Long,
+        @RequestHeader(USER_ID_HEADER) userId: Long,
         @RequestBody @Valid request: DietV1Request.Create
     ): ApiResponse<DietV1Response.Details> {
         return ApiResponse.success(dietService.create(request, userId))
@@ -44,7 +45,7 @@ class DietV1Controller(
 
     @PutMapping("/{dietId}")
     fun update(
-        @RequestHeader("X-USER-ID") userId: Long,
+        @RequestHeader(USER_ID_HEADER) userId: Long,
         @PathVariable dietId: Long,
         @RequestBody @Valid request: DietV1Request.Update
     ): ApiResponse<DietV1Response.Details> {
@@ -53,7 +54,7 @@ class DietV1Controller(
 
     @DeleteMapping("/{dietId}")
     fun delete(
-        @RequestHeader("X-USER-ID") userId: Long,
+        @RequestHeader(USER_ID_HEADER) userId: Long,
         @PathVariable dietId: Long
     ): ApiResponse<Void> {
         dietService.delete(dietId, userId)
@@ -62,7 +63,7 @@ class DietV1Controller(
 
     @DeleteMapping("/{dietId}/diet-foods/{dietFoodId}")
     fun deleteDietFood(
-        @RequestHeader("X-USER-ID") userId: Long,
+        @RequestHeader(USER_ID_HEADER) userId: Long,
         @PathVariable dietId: Long,
         @PathVariable dietFoodId: Long
     ): ApiResponse<Void> {
@@ -72,7 +73,7 @@ class DietV1Controller(
 
     @PutMapping("/{dietId}/diet-foods/{dietFoodId}")
     fun updateDietFood(
-        @RequestHeader("X-USER-ID") userId: Long,
+        @RequestHeader(USER_ID_HEADER) userId: Long,
         @PathVariable dietId: Long,
         @PathVariable dietFoodId: Long,
         @RequestBody @Valid request: DietV1Request.UpdateDietFood

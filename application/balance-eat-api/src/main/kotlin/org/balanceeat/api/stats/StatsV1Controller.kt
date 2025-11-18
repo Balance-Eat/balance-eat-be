@@ -1,5 +1,6 @@
 package org.balanceeat.api.stats
 
+import org.balanceeat.api.common.USER_ID_HEADER
 import org.balanceeat.apibase.response.ApiResponse
 import org.balanceeat.domain.diet.StatsType
 import org.springframework.web.bind.annotation.*
@@ -14,7 +15,7 @@ class StatsV1Controller(
 
     @GetMapping
     fun getStats(
-        @RequestHeader("X-USER-ID") userId: Long,
+        @RequestHeader(USER_ID_HEADER) userId: Long,
         @RequestParam type: StatsType,
         @RequestParam from: LocalDate?,
         @RequestParam to: LocalDate?,
