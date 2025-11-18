@@ -1093,7 +1093,7 @@ class ExampleTest {
 **핵심 패턴**:
 - **@Nested + inner class**: 기능별 테스트 그룹화
 - **비즈니스 로직 메서드**: 복잡한 로직이 포함된 메서드만 테스트
-- **Given-When-Then**: 명확한 테스트 구조
+- **Given-When-Then 주석 필수**: 모든 테스트 메서드는 `// given`, `// when`, `// then` 주석으로 구조를 명확히 표시
 - **AssertJ assertions**: `assertThat()`, `assertThatThrownBy()`
 - **Fixture 활용**: `ExampleFixture.create { ... }`, `UserFixture.create { ... }` DSL 패턴 사용
 - **IntegrationTestContext 없음**: 엔티티 단독 테스트 (DB 불필요)
@@ -1227,7 +1227,7 @@ class ExampleWriterTest : IntegrationTestContext() {
 
 **핵심 패턴**:
 - **@Nested + inner class**: 기능별로 테스트 그룹화 (Create, Update, Delete)
-- **Given-When-Then**: 명확한 테스트 구조
+- **Given-When-Then 주석 필수**: 모든 테스트 메서드는 `// given`, `// when`, `// then` 주석으로 구조를 명확히 표시
 - **AssertJ assertions**: `assertThat()`, `assertThatThrownBy()`
 - **Fixture 활용**: DSL 스타일 픽스처 함수 사용
 - **IntegrationTestContext**: 통합 테스트 환경
@@ -1385,11 +1385,57 @@ class ExampleReaderTest : IntegrationTestContext() {
 
 **핵심 패턴**:
 - **@Nested + inner class**: 기능별로 테스트 그룹화 (FindById, FindByUserId, ExistsBy)
-- **Given-When-Then**: 명확한 테스트 구조
+- **Given-When-Then 주석 필수**: 모든 테스트 메서드는 `// given`, `// when`, `// then` 주석으로 구조를 명확히 표시
 - **AssertJ assertions**: `assertThat()`, `assertThatThrownBy()`
 - **Fixture 활용**: DSL 스타일 픽스처 함수 사용
 - **IntegrationTestContext**: 통합 테스트 환경
 
+**테스트 작성 가이드**:
+
+**BaseReader 기본 메서드는 테스트 작성 불필요**:
+- `findById(id: Long): R?` - BaseReader에 이미 구현된 공통 메서드
+- `findByIdOrThrow(id: Long): R` - BaseReader에 이미 구현된 공통 메서드
+- `findAllByIds(ids: Collection<Long>): List<R>` - BaseReader에 이미 구현된 공통 메서드
+- `existsById(id: Long): Boolean` - BaseReader에 이미 구현된 공통 메서드
+- `count(): Long` - BaseReader에 이미 구현된 공통 메서드
+
+위의 예시 코드에서 "단건 조회 테스트"와 "여러 ID 조회 테스트"는 참고용이며, **실제로는 작성하지 않아도 됩니다**.
+
+**테스트 작성 대상**:
+- ✅ Reader에서 **새로 추가한 도메인별 조회 메서드** (예: `findByUserId`, `search`, `existsByUserIdAndName`)
+- ❌ BaseReader에서 상속받은 기본 메서드 (`findById`, `findByIdOrThrow`, `findAllByIds`, `existsById`, `count`)
+
+**실제 작성 예시**:
+```kotlin
+class ExampleReaderTest : IntegrationTestContext() {
+
+    @Autowired
+    private lateinit var exampleReader: ExampleReader
+
+    @Autowired
+    private lateinit var exampleRepository: ExampleRepository
+
+    // BaseReader 메서드는 테스트 불필요 (findById, findByIdOrThrow, findAllByIds 등)
+
+    @Nested
+    @DisplayName("목록 조회 테스트")
+    inner class FindByUserIdTest {
+        @Test
+        fun `사용자 ID로 예제 목록을 조회할 수 있다`() {
+            // 도메인별 커스텀 조회 메서드만 테스트
+        }
+    }
+
+    @Nested
+    @DisplayName("존재 여부 확인 테스트")
+    inner class ExistsByTest {
+        @Test
+        fun `사용자 ID와 이름으로 존재 여부를 확인할 수 있다`() {
+            // 도메인별 커스텀 조회 메서드만 테스트
+        }
+    }
+}
+```
 
 ## 개발 체크리스트
 
@@ -1420,6 +1466,7 @@ class ExampleReaderTest : IntegrationTestContext() {
 - [ ] Enum은 `EnumType.STRING` 매핑
 - [ ] 상수는 companion object에 정의
 - [ ] 한글 에러 메시지 작성
+- [ ] **테스트 메서드에 Given-When-Then 주석 필수 작성**
 - [ ] 테스트 커버리지 확인
 
 ---

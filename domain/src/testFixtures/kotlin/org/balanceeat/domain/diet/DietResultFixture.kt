@@ -25,21 +25,17 @@ fun nutritionInfoFixture(block: NutritionInfoFixture.() -> Unit = {}): Nutrition
 }
 
 class DietFoodResultFixture(
+    val id: Long = 1L,
     var dietFoodId: Long = 1L,
     var foodId: Long = 1L,
-    var foodName: String = "테스트 음식",
     var intake: Int = 100,
-    var servingSize: Double = 100.0,
-    var nutrition: NutritionInfo = nutritionInfoFixture()
 ) : TestFixture<DietFoodResult> {
     override fun create(): DietFoodResult {
         return DietFoodResult(
+            id = id,
             dietFoodId = dietFoodId,
             foodId = foodId,
-            foodName = foodName,
             intake = intake,
-            servingSize = servingSize,
-            nutrition = nutrition
         )
     }
 }
@@ -53,21 +49,19 @@ class DietResultFixture(
     var userId: Long = 1L,
     var mealType: Diet.MealType = Diet.MealType.BREAKFAST,
     var consumedAt: LocalDateTime = LocalDateTime.now(),
-    var totalNutrition: NutritionInfo = nutritionInfoFixture(),
     var dietFoods: List<DietFoodResult> = listOf(dietFoodResultFixture())
-) : TestFixture<DietDetails> {
-    override fun create(): DietDetails {
-        return DietDetails(
+) : TestFixture<DietResult> {
+    override fun create(): DietResult {
+        return DietResult(
             id = id,
             userId = userId,
             mealType = mealType,
             consumedAt = consumedAt,
-            totalNutrition = totalNutrition,
             dietFoods = dietFoods
         )
     }
 }
 
-fun dietResultFixture(block: DietResultFixture.() -> Unit = {}): DietDetails {
+fun dietResultFixture(block: DietResultFixture.() -> Unit = {}): DietResult {
     return DietResultFixture().apply(block).create()
 }

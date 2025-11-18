@@ -1,0 +1,11 @@
+### 알림 디바이스 등록
+POST {{host}}/v1/notification-devices
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "agentId": "test-agent-id-456",
+  "osType": "IOS",
+  "deviceName": "iPhone 15 Pro",
+  "allowsNotification": true
+}

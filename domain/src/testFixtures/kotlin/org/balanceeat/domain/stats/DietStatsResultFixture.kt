@@ -6,7 +6,7 @@ import java.time.LocalDate
 class DietStatsResultFixture(
     var id: Long = 1L,
     var userId: Long = 1L,
-    var statsDate: String = LocalDate.now().toString(),
+    var statsDate: LocalDate = LocalDate.now(),
     var totalCalories: Double = 2000.0,
     var totalCarbohydrates: Double = 250.0,
     var totalProtein: Double = 100.0,

@@ -357,15 +357,15 @@ import java.util.UUID
 
 class FoodV1RequestFixture {
     data class Create(
-        val uuid: String = UUID.randomUUID().toString(),
-        val name: String = "테스트 음식",
-        val servingSize: Double = 100.0,
-        val unit: String = "g",
-        val carbohydrates: Double = 25.0,
-        val protein: Double = 8.0,
-        val fat: Double = 3.0,
-        val perServingCalories: Double = CalorieCalculator.calculate(carbohydrates, protein, fat),
-        val brand: String = "테스트 브랜드"
+        var uuid: String = UUID.randomUUID().toString(),
+        var name: String = "테스트 음식",
+        var servingSize: Double = 100.0,
+        var unit: String = "g",
+        var carbohydrates: Double = 25.0,
+        var protein: Double = 8.0,
+        var fat: Double = 3.0,
+        var perServingCalories: Double = CalorieCalculator.calculate(carbohydrates, protein, fat),
+        var brand: String = "테스트 브랜드"
     ): TestFixture<FoodV1Request.Create> {
         override fun create(): FoodV1Request.Create {
             return FoodV1Request.Create(
@@ -383,14 +383,14 @@ class FoodV1RequestFixture {
     }
 
     data class Update(
-        val name: String = "테스트 음식",
-        val servingSize: Double = 100.0,
-        val unit: String = "g",
-        val carbohydrates: Double = 25.0,
-        val protein: Double = 8.0,
-        val fat: Double = 3.0,
-        val perServingCalories: Double = 159.0,
-        val brand: String = "테스트 브랜드"
+        var name: String = "테스트 음식",
+        var servingSize: Double = 100.0,
+        var unit: String = "g",
+        var carbohydrates: Double = 25.0,
+        var protein: Double = 8.0,
+        var fat: Double = 3.0,
+        var perServingCalories: Double = 159.0,
+        var brand: String = "테스트 브랜드"
     ): TestFixture<FoodV1Request.Update> {
         override fun create(): FoodV1Request.Update {
             return FoodV1Request.Update(
@@ -407,8 +407,8 @@ class FoodV1RequestFixture {
     }
 
     data class Search(
-        val foodName: String? = null,
-        val userId: Long? = null
+        var foodName: String? = null,
+        var userId: Long? = null
     ): TestFixture<FoodV1Request.Search> {
         override fun create(): FoodV1Request.Search {
             return FoodV1Request.Search(

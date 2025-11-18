@@ -26,6 +26,10 @@ enum class DomainStatus(
     CURATION_FOOD_NOT_FOUND("큐레이션 음식을 찾을 수 없습니다"),
 
     // diet_stats
-    DIET_STATS_NOT_FOUND("식단 통계를 찾을 수 없습니다")
+    DIET_STATS_NOT_FOUND("식단 통계를 찾을 수 없습니다"),
+
+    // notification_device
+    NOTIFICATION_DEVICE_NOT_FOUND("알림 디바이스를 찾을 수 없습니다"),
+    NOTIFICATION_DEVICE_ALREADY_EXISTS("이미 존재하는 디바이스입니다")
     ;
 }

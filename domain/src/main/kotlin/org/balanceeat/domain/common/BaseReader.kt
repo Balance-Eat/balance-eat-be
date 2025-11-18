@@ -9,27 +9,27 @@ abstract class BaseReader<E: BaseEntity, R>(
     protected val repository: JpaRepository<E, Long>,
     protected val mapper: EntityMapper<E, R>
 ) {
-    fun existsById(id: Long): Boolean {
+    open fun existsById(id: Long): Boolean {
         return repository.existsById(id)
     }
 
-    fun findById(id: Long): R? {
+    open fun findById(id: Long): R? {
         return  repository.findByIdOrNull(id)
             ?.let { mapper.from(it) }
     }
 
     abstract fun findByIdOrThrow(id: Long): R
 
-    protected fun findByIdOrThrow(id: Long, status: DomainStatus): R {
+    protected open fun findByIdOrThrow(id: Long, status: DomainStatus): R {
         return findById(id) ?: throw EntityNotFoundException(status)
     }
 
-    fun findAllByIds(ids: Collection<Long>): List<R> {
+    open fun findAllByIds(ids: Collection<Long>): List<R> {
         return repository.findAllById(ids)
             .map { mapper.from(it) }
     }
 
-    fun count(): Long {
+    open fun count(): Long {
         return repository.count()
     }
 }

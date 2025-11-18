@@ -17,6 +17,7 @@ data class DietResult(
         override fun from(entity: Diet): DietResult {
             val dietFoods = entity.dietFoods.map { dietFood ->
                 DietFoodResult(
+                    id = dietFood.id,
                     dietFoodId = dietFood.id,
                     foodId = dietFood.foodId,
                     intake = dietFood.intake
@@ -35,6 +36,7 @@ data class DietResult(
 }
 
 data class DietFoodResult(
+    val id: Long,
     val dietFoodId: Long,
     val foodId: Long,
     val intake: Int,
