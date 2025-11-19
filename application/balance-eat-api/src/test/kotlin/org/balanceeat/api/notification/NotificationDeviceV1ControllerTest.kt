@@ -78,6 +78,47 @@ class NotificationDeviceV1ControllerTest : ControllerTestContext() {
     }
 
     @Nested
+    @DisplayName("GET /v1/notification-devices/current - 현재 디바이스 조회")
+    inner class GetCurrentTest {
+        @Test
+        fun success() {
+            // given
+            every { notificationDeviceService.getCurrent(any(), any()) } returns mockNotificationDeviceResponse()
+
+            // when & then
+            given()
+                .header("X-USER-ID", "1")
+                .header("X-Device-Agent-Id", "test-agent-id-123")
+                .get("/v1/notification-devices/current")
+                .then()
+                .log().all()
+                .apply(
+                    document(
+                        identifier("GetCurrentTest"),
+                        ResourceSnippetParametersBuilder()
+                            .tag(Tags.NOTIFICATION.tagName)
+                            .description(Tags.NOTIFICATION.descriptionWith("현재 디바이스 조회")),
+                        requestHeaders(
+                            headerWithName("X-USER-ID").description("사용자 ID"),
+                            headerWithName("X-Device-Agent-Id").description("디바이스 고유 식별자")
+                        ),
+                        responseFields(
+                            fieldsWithBasic(
+                                "data.id" type NUMBER means "알림 디바이스 ID",
+                                "data.userId" type NUMBER means "사용자 ID",
+                                "data.agentId" type STRING means "디바이스 고유 식별자",
+                                "data.osType" type STRING means "디바이스 운영체제 타입" withEnum NotificationDevice.OsType::class,
+                                "data.deviceName" type STRING means "디바이스 이름",
+                                "data.isActive" type BOOLEAN means "알림 수신 허용 여부"
+                            )
+                        )
+                    )
+                )
+                .status(HttpStatus.OK)
+        }
+    }
+
+    @Nested
     @DisplayName("PATCH /v1/notification-devices/{deviceId}/activation - 알림 활성화 상태 수정")
     inner class UpdateActivationTest {
         @Test
@@ -98,7 +139,7 @@ class NotificationDeviceV1ControllerTest : ControllerTestContext() {
                         identifier("UpdateActivationTest"),
                         ResourceSnippetParametersBuilder()
                             .tag(Tags.NOTIFICATION.tagName)
-                            .description(Tags.NOTIFICATION.descriptionWith("디바이스 알림 활성화 상태 수정")),
+                            .description(Tags.NOTIFICATION.descriptionWith("알림 on/off 상태 수정")),
                         requestHeaders(
                             headerWithName("X-USER-ID").description("사용자 ID")
                         ),

@@ -23,4 +23,9 @@ class NotificationDeviceReader(
     fun existsByAgentId(agentId: String): Boolean {
         return notificationDeviceRepository.existsByAgentId(agentId)
     }
+
+    fun findByUserIdAndAgentId(userId: Long, agentId: String): NotificationDeviceResult? {
+        return notificationDeviceRepository.findByUserIdAndAgentId(userId, agentId)
+            ?.let { NotificationDeviceResult.from(it) }
+    }
 }

@@ -1,6 +1,7 @@
 package org.balanceeat.api.notification
 
 import jakarta.validation.Valid
+import org.balanceeat.api.common.DEVICE_AGENT_ID_HEADER
 import org.balanceeat.api.common.USER_ID_HEADER
 import org.balanceeat.apibase.response.ApiResponse
 import org.springframework.http.HttpStatus
@@ -29,6 +30,15 @@ class NotificationDeviceV1Controller(
         @RequestBody @Valid request: NotificationDeviceV1Request.UpdateActivation
     ): ApiResponse<NotificationDeviceV1Response.Details> {
         val result = notificationDeviceService.updateActivation(deviceId, request, userId)
+        return ApiResponse.success(result)
+    }
+
+    @GetMapping("/current")
+    fun getCurrent(
+        @RequestHeader(USER_ID_HEADER) userId: Long,
+        @RequestHeader(DEVICE_AGENT_ID_HEADER) agentId: String
+    ): ApiResponse<NotificationDeviceV1Response.Details> {
+        val result = notificationDeviceService.getCurrent(userId, agentId)
         return ApiResponse.success(result)
     }
 }

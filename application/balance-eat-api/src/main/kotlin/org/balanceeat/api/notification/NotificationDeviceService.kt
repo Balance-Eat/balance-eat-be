@@ -51,4 +51,12 @@ class NotificationDeviceService(
 
         return NotificationDeviceV1Response.Details.from(result)
     }
+
+    @Transactional(readOnly = true)
+    fun getCurrent(userId: Long, agentId: String): NotificationDeviceV1Response.Details {
+        val device = notificationDeviceReader.findByUserIdAndAgentId(userId, agentId)
+            ?: throw NotFoundException(ApplicationStatus.NOTIFICATION_DEVICE_NOT_FOUND)
+
+        return NotificationDeviceV1Response.Details.from(device)
+    }
 }

@@ -10,6 +10,11 @@ X-USER-ID: 1
   "isActive": true
 }
 
+### 현재 디바이스 조회
+GET {{baseUrl}}/v1/notification-devices/current
+X-USER-ID: 1
+X-Device-Agent-Id: test-agent-id-456
+
 ### 알림 활성화 상태 수정 (활성화)
 PATCH {{baseUrl}}/v1/notification-devices/1/activation
 Content-Type: application/json

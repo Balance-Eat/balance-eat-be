@@ -74,6 +74,32 @@ class NotificationDeviceServiceTest : IntegrationTestContext() {
     }
 
     @Nested
+    @DisplayName("현재 디바이스 조회")
+    inner class GetCurrentTest {
+
+        @Test
+        fun `userId와 agentId로 디바이스를 조회할 수 있다`() {
+            // given
+            val userId = 1L
+            val agentId = "test-agent-id-123"
+            val device = createEntity(
+                notificationDeviceFixture {
+                    this.userId = userId
+                    this.agentId = agentId
+                }
+            )
+
+            // when
+            val result = notificationDeviceService.getCurrent(userId, agentId)
+
+            // then
+            assertThat(result)
+                .usingRecursiveComparison()
+                .isEqualTo(device)
+        }
+    }
+
+    @Nested
     @DisplayName("알림 활성화 상태 수정")
     inner class UpdateActivationTest {
 
