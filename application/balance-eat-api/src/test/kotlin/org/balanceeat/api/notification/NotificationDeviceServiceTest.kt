@@ -3,6 +3,9 @@ package org.balanceeat.api.notification
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import org.balanceeat.api.config.supports.IntegrationTestContext
+import org.balanceeat.apibase.ApplicationStatus
+import org.balanceeat.apibase.exception.BadRequestException
+import org.balanceeat.apibase.exception.NotFoundException
 import org.balanceeat.domain.common.DomainStatus
 import org.balanceeat.domain.common.exception.DomainException
 import org.balanceeat.domain.notification.notificationDeviceFixture
@@ -41,7 +44,7 @@ class NotificationDeviceServiceTest : IntegrationTestContext() {
             assertThat(result.agentId).isEqualTo(request.agentId)
             assertThat(result.deviceName).isEqualTo(request.deviceName)
             assertThat(result.osType).isEqualTo(request.osType)
-            assertThat(result.allowsNotification).isEqualTo(request.allowsNotification)
+            assertThat(result.isActive).isEqualTo(request.isActive)
         }
 
         @Test
@@ -67,6 +70,77 @@ class NotificationDeviceServiceTest : IntegrationTestContext() {
             // then
             assertThat(throwable).isInstanceOf(DomainException::class.java)
                 .hasFieldOrPropertyWithValue("status", DomainStatus.NOTIFICATION_DEVICE_ALREADY_EXISTS)
+        }
+    }
+
+    @Nested
+    @DisplayName("알림 활성화 상태 수정")
+    inner class UpdateActivationTest {
+
+        @Test
+        fun `알림 활성화 상태를 성공적으로 수정할 수 있다`() {
+            // given
+            val userId = 1L
+            val device = createEntity(
+                notificationDeviceFixture {
+                    this.userId = userId
+                    isActive = true
+                }
+            )
+
+            val request = notificationDeviceUpdateActivationV1RequestFixture {
+                isActive = false
+            }
+
+            // when
+            val result = notificationDeviceService.updateActivation(device.id, request, userId)
+
+            // then
+            assertThat(result.id).isEqualTo(device.id)
+            assertThat(result.isActive).isFalse()
+        }
+
+        @Test
+        fun `다른 사용자의 디바이스는 수정할 수 없다`() {
+            // given
+            val ownerId = 1L
+            val otherUserId = 2L
+            val device = createEntity(
+                notificationDeviceFixture {
+                    userId = ownerId
+                    isActive = true
+                }
+            )
+
+            val request = notificationDeviceUpdateActivationV1RequestFixture {
+                isActive = false
+            }
+
+            // when
+            val throwable = catchThrowable {
+                notificationDeviceService.updateActivation(device.id, request, otherUserId)
+            }
+
+            // then
+            assertThat(throwable).isInstanceOf(BadRequestException::class.java)
+                .hasFieldOrPropertyWithValue("status", ApplicationStatus.NOTIFICATION_DEVICE_UNAUTHORIZED)
+        }
+
+        @Test
+        fun `존재하지 않는 디바이스는 수정할 수 없다`() {
+            // given
+            val request = notificationDeviceUpdateActivationV1RequestFixture {
+                isActive = false
+            }
+
+            // when
+            val throwable = catchThrowable {
+                notificationDeviceService.updateActivation(999L, request, 1L)
+            }
+
+            // then
+            assertThat(throwable).isInstanceOf(NotFoundException::class.java)
+                .hasFieldOrPropertyWithValue("status", ApplicationStatus.NOTIFICATION_DEVICE_NOT_FOUND)
         }
     }
 }

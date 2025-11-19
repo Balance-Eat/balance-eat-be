@@ -24,8 +24,8 @@ class NotificationDevice(
     @Column(name = "device_name", nullable = false, length = 60)
     val deviceName: String,
 
-    @Column(name = "allows_notification", nullable = false)
-    var allowsNotification: Boolean = false
+    @Column(name = "is_active", nullable = false)
+    var isActive: Boolean = false
 ) : BaseEntity() {
 
     companion object {
@@ -41,8 +41,8 @@ class NotificationDevice(
         require(deviceName.length <= MAX_DEVICE_NAME_LENGTH) { "디바이스명은 ${MAX_DEVICE_NAME_LENGTH}자를 초과할 수 없습니다" }
     }
 
-    fun updateNotificationSetting(allows: Boolean) {
-        this.allowsNotification = allows
+    fun update(isActive: Boolean) {
+        this.isActive = isActive
     }
 
     enum class OsType {

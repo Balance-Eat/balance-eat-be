@@ -50,7 +50,7 @@ class NotificationDeviceV1ControllerTest : ControllerTestContext() {
                             "agentId" type STRING means "디바이스 고유 식별자",
                             "osType" type STRING means "디바이스 운영체제 타입" withEnum NotificationDevice.OsType::class,
                             "deviceName" type STRING means "디바이스 이름",
-                            "allowsNotification" type BOOLEAN means "알림 수신 허용 여부"
+                            "isActive" type BOOLEAN means "알림 수신 허용 여부"
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -59,7 +59,7 @@ class NotificationDeviceV1ControllerTest : ControllerTestContext() {
                                 "data.agentId" type STRING means "디바이스 고유 식별자",
                                 "data.osType" type STRING means "디바이스 운영체제 타입" withEnum NotificationDevice.OsType::class,
                                 "data.deviceName" type STRING means "디바이스 이름",
-                                "data.allowsNotification" type BOOLEAN means "알림 수신 허용 여부"
+                                "data.isActive" type BOOLEAN means "알림 수신 허용 여부"
                             )
                         )
                     )
@@ -72,7 +72,57 @@ class NotificationDeviceV1ControllerTest : ControllerTestContext() {
                 agentId = "test-agent-id-123",
                 osType = NotificationDevice.OsType.AOS,
                 deviceName = "갤럭시 S24",
-                allowsNotification = true
+                isActive = true
+            )
+        }
+    }
+
+    @Nested
+    @DisplayName("PATCH /v1/notification-devices/{deviceId}/activation - 알림 활성화 상태 수정")
+    inner class UpdateActivationTest {
+        @Test
+        fun success() {
+            // given
+            val request = mockUpdateActivationRequest()
+            every { notificationDeviceService.updateActivation(any(), any(), any()) } returns mockNotificationDeviceResponse()
+
+            // when & then
+            given()
+                .header("X-USER-ID", "1")
+                .body(request)
+                .patch("/v1/notification-devices/{deviceId}/activation", 1)
+                .then()
+                .log().all()
+                .apply(
+                    document(
+                        identifier("UpdateActivationTest"),
+                        ResourceSnippetParametersBuilder()
+                            .tag(Tags.NOTIFICATION.tagName)
+                            .description(Tags.NOTIFICATION.descriptionWith("디바이스 알림 활성화 상태 수정")),
+                        requestHeaders(
+                            headerWithName("X-USER-ID").description("사용자 ID")
+                        ),
+                        requestFields(
+                            "isActive" type BOOLEAN means "알림 수신 허용 여부"
+                        ),
+                        responseFields(
+                            fieldsWithBasic(
+                                "data.id" type NUMBER means "알림 디바이스 ID",
+                                "data.userId" type NUMBER means "사용자 ID",
+                                "data.agentId" type STRING means "디바이스 고유 식별자",
+                                "data.osType" type STRING means "디바이스 운영체제 타입" withEnum NotificationDevice.OsType::class,
+                                "data.deviceName" type STRING means "디바이스 이름",
+                                "data.isActive" type BOOLEAN means "알림 수신 허용 여부"
+                            )
+                        )
+                    )
+                )
+                .status(HttpStatus.OK)
+        }
+
+        private fun mockUpdateActivationRequest(): NotificationDeviceV1Request.UpdateActivation {
+            return NotificationDeviceV1Request.UpdateActivation(
+                isActive = false
             )
         }
     }
@@ -84,7 +134,7 @@ class NotificationDeviceV1ControllerTest : ControllerTestContext() {
             agentId = "test-agent-id-123",
             osType = NotificationDevice.OsType.AOS,
             deviceName = "갤럭시 S24",
-            allowsNotification = true
+            isActive = true
         )
     }
 }

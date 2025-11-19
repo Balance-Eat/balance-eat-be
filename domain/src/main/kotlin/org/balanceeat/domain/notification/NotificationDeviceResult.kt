@@ -9,7 +9,7 @@ data class NotificationDeviceResult(
     val agentId: String,
     val osType: NotificationDevice.OsType,
     val deviceName: String,
-    val allowsNotification: Boolean,
+    val isActive: Boolean,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime
 ) {
@@ -21,7 +21,7 @@ data class NotificationDeviceResult(
                 agentId = entity.agentId,
                 osType = entity.osType,
                 deviceName = entity.deviceName,
-                allowsNotification = entity.allowsNotification,
+                isActive = entity.isActive,
                 createdAt = entity.createdAt,
                 updatedAt = entity.updatedAt
             )

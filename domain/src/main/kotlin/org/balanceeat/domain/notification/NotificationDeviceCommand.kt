@@ -7,6 +7,11 @@ class NotificationDeviceCommand {
         val agentId: String,
         val osType: NotificationDevice.OsType,
         val deviceName: String,
-        val allowsNotification: Boolean
+        val isActive: Boolean
+    )
+
+    data class Update(
+        val id: Long,
+        val isActive: Boolean
     )
 }

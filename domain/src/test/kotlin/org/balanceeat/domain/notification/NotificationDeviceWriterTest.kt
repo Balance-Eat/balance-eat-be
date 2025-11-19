@@ -56,4 +56,31 @@ class NotificationDeviceWriterTest : IntegrationTestContext() {
                 .hasFieldOrPropertyWithValue("status", DomainStatus.NOTIFICATION_DEVICE_ALREADY_EXISTS)
         }
     }
+
+    @Nested
+    @DisplayName("수정 테스트")
+    inner class UpdateTest {
+
+        @Test
+        fun `알림 디바이스를 수정할 수 있다`() {
+            // given
+            val device = notificationDeviceRepository.save(
+                notificationDeviceFixture {
+                    isActive = true
+                }
+            )
+
+            val command = notificationDeviceUpdateCommandFixture {
+                id = device.id
+                isActive = false
+            }
+
+            // when
+            val result = notificationDeviceWriter.update(command)
+
+            // then
+            assertThat(result.isActive).isFalse()
+            assertThat(result.id).isEqualTo(device.id)
+        }
+    }
 }

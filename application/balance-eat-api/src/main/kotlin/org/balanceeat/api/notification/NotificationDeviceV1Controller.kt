@@ -21,4 +21,14 @@ class NotificationDeviceV1Controller(
         val result = notificationDeviceService.create(request, userId)
         return ApiResponse.success(result)
     }
+
+    @PatchMapping("/{deviceId}/activation")
+    fun updateActivation(
+        @PathVariable deviceId: Long,
+        @RequestHeader(USER_ID_HEADER) userId: Long,
+        @RequestBody @Valid request: NotificationDeviceV1Request.UpdateActivation
+    ): ApiResponse<NotificationDeviceV1Response.Details> {
+        val result = notificationDeviceService.updateActivation(deviceId, request, userId)
+        return ApiResponse.success(result)
+    }
 }

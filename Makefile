@@ -7,6 +7,10 @@ help: ## 사용 가능한 명령을 보여줍니다.
 	egrep -h '^[a-zA-Z_-]+:.*?##' $(MAKEFILE_LIST) | \
 	awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
 
+clean: ## Gradle 빌드 파일을 정리합니다.
+	@echo "🧹 Cleaning Gradle build files..."
+	@$(GRADLEW) clean
+
 test: ## 모든 유닛 테스트를 실행합니다.
 	@echo "🧪 Running tests..."
 	@$(GRADLEW) test

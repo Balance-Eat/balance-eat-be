@@ -9,14 +9,24 @@ class NotificationDeviceV1RequestFixture {
         var agentId: String = UUID.randomUUID().toString(),
         var osType: NotificationDevice.OsType = NotificationDevice.OsType.AOS,
         var deviceName: String = "테스트 디바이스",
-        var allowsNotification: Boolean = true
+        var isActive: Boolean = true
     ) : TestFixture<NotificationDeviceV1Request.Create> {
         override fun create(): NotificationDeviceV1Request.Create {
             return NotificationDeviceV1Request.Create(
                 agentId = agentId,
                 osType = osType,
                 deviceName = deviceName,
-                allowsNotification = allowsNotification
+                isActive = isActive
+            )
+        }
+    }
+
+    data class UpdateActivation(
+        var isActive: Boolean = true
+    ) : TestFixture<NotificationDeviceV1Request.UpdateActivation> {
+        override fun create(): NotificationDeviceV1Request.UpdateActivation {
+            return NotificationDeviceV1Request.UpdateActivation(
+                isActive = isActive
             )
         }
     }
@@ -24,4 +34,8 @@ class NotificationDeviceV1RequestFixture {
 
 fun notificationDeviceCreateV1RequestFixture(block: NotificationDeviceV1RequestFixture.Create.() -> Unit = {}): NotificationDeviceV1Request.Create {
     return NotificationDeviceV1RequestFixture.Create().copy().apply(block).create()
+}
+
+fun notificationDeviceUpdateActivationV1RequestFixture(block: NotificationDeviceV1RequestFixture.UpdateActivation.() -> Unit = {}): NotificationDeviceV1Request.UpdateActivation {
+    return NotificationDeviceV1RequestFixture.UpdateActivation().copy().apply(block).create()
 }

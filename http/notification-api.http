@@ -7,5 +7,23 @@ X-USER-ID: 1
   "agentId": "test-agent-id-456",
   "osType": "IOS",
   "deviceName": "iPhone 15 Pro",
-  "allowsNotification": true
+  "isActive": true
+}
+
+### 알림 활성화 상태 수정 (활성화)
+PATCH {{baseUrl}}/v1/notification-devices/1/activation
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "isActive": true
+}
+
+### 알림 활성화 상태 수정 (비활성화)
+PATCH {{baseUrl}}/v1/notification-devices/1/activation
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "isActive": false
 }

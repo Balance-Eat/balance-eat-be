@@ -10,7 +10,7 @@ class NotificationDeviceFixture(
     var agentId: String = UUID.randomUUID().toString(),
     var osType: NotificationDevice.OsType = NotificationDevice.OsType.AOS,
     var deviceName: String = "테스트 디바이스",
-    var allowsNotification: Boolean = true
+    var isActive: Boolean = true
 ) : TestFixture<NotificationDevice> {
     override fun create(): NotificationDevice {
         return NotificationDevice(
@@ -19,7 +19,7 @@ class NotificationDeviceFixture(
             agentId = agentId,
             osType = osType,
             deviceName = deviceName,
-            allowsNotification = allowsNotification
+            isActive = isActive
         )
     }
 }

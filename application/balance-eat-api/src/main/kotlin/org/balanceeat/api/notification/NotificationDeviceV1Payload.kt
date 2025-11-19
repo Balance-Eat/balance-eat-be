@@ -16,8 +16,13 @@ class NotificationDeviceV1Request {
         @field:NotBlank(message = "deviceName은 필수입니다")
         val deviceName: String,
 
-        @field:NotNull(message = "allowsNotification은 필수입니다")
-        val allowsNotification: Boolean
+        @field:NotNull(message = "isActive는 필수입니다")
+        val isActive: Boolean
+    )
+
+    data class UpdateActivation(
+        @field:NotNull(message = "isActive는 필수입니다")
+        val isActive: Boolean
     )
 }
 
@@ -28,7 +33,7 @@ class NotificationDeviceV1Response {
         val agentId: String,
         val osType: NotificationDevice.OsType,
         val deviceName: String,
-        val allowsNotification: Boolean
+        val isActive: Boolean
     ) {
         companion object {
             fun from(result: NotificationDeviceResult) = Details(
@@ -37,7 +42,7 @@ class NotificationDeviceV1Response {
                 agentId = result.agentId,
                 osType = result.osType,
                 deviceName = result.deviceName,
-                allowsNotification = result.allowsNotification
+                isActive = result.isActive
             )
         }
     }

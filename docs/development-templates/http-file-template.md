@@ -60,7 +60,7 @@ X-USER-ID: 1
   "agentId": "test-agent-id-123",
   "osType": "AOS",
   "deviceName": "갤럭시 S24",
-  "allowsNotification": true
+  "isActive": true
 }
 
 ###
