@@ -66,7 +66,7 @@ data class ApiResponse<T>(
             )
         }
 
-        fun <T> notFound(status: Status = ApiResponseStatus.NOT_FOUND, message: String? = null): ApiResponse<T> {
+        fun <T> notFound(status: Status = ApiResponseStatus.RESOURCE_NOT_FOUND, message: String? = null): ApiResponse<T> {
             return ApiResponse(
                 status = status.name,
                 message = message ?: status.message,
@@ -89,6 +89,6 @@ data class ApiResponse<T>(
         ERROR("에러가 발생하였습니다."),
         UNAUTHORIZED("토큰이 유효하지 않습니다."),
         FORBIDDEN("권한이 없습니다."),
-        NOT_FOUND("해당 리소스는 존재하지 않습니다.");
+        RESOURCE_NOT_FOUND("해당 리소스는 존재하지 않습니다.");
     }
 }

@@ -84,11 +84,13 @@ class RequestResponseLoggingFilter(
                 logger.info { logMsg }
 
                 if (HttpStatus.resolve(status)?.isError == true) {
-                    val sendingMessage = "--------------------------------".plus("\n")
-                        .plus(logMsg).plus("\n")
-                        .plus("--------------------------------");
+                    if (status != HttpStatus.NOT_FOUND.value() || !resPayload.contains("RESOURCE_NOT_FOUND")) {
+                        val sendingMessage = "--------------------------------".plus("\n")
+                            .plus(logMsg).plus("\n")
+                            .plus("--------------------------------");
 
-                    errorNotificationSender.send(sendingMessage)
+                        errorNotificationSender.send(sendingMessage)
+                    }
                 }
 
                 // Ensure body is written back to client
