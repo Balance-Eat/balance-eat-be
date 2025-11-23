@@ -4,6 +4,8 @@ include(
     "application:balance-eat-api",
     "application:balance-eat-admin-api",
     "application:api-base",
+    "client:base",
+//    "client:firebase",
     "common",
     "domain",
     "supports:jackson",
