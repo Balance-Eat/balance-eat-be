@@ -31,5 +31,8 @@ enum class DomainStatus(
     // notification_device
     NOTIFICATION_DEVICE_NOT_FOUND("알림 디바이스를 찾을 수 없습니다"),
     NOTIFICATION_DEVICE_ALREADY_EXISTS("이미 존재하는 디바이스입니다"),
+
+    // app_push_history
+    APP_PUSH_HISTORY_NOT_FOUND("앱 푸시 히스토리를 찾을 수 없습니다"),
     ;
 }

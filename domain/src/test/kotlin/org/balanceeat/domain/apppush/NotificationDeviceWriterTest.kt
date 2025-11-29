@@ -1,4 +1,4 @@
-package org.balanceeat.domain.notification
+package org.balanceeat.domain.apppush
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy

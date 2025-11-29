@@ -5,7 +5,7 @@ include(
     "application:balance-eat-admin-api",
     "application:api-base",
     "client:base",
-//    "client:firebase",
+    "client:firebase",
     "common",
     "domain",
     "supports:jackson",
@@ -35,3 +35,4 @@ pluginManagement {
         }
     }
 }
+include("client:firebase")

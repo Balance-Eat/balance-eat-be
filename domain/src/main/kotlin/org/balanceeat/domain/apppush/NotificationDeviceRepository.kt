@@ -1,4 +1,4 @@
-package org.balanceeat.domain.notification
+package org.balanceeat.domain.apppush
 
 import org.springframework.data.jpa.repository.JpaRepository
 

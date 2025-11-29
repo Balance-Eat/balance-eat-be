@@ -1,4 +1,4 @@
-package org.balanceeat.domain.notification
+package org.balanceeat.domain.apppush
 
 import org.balanceeat.domain.common.DomainStatus
 import org.balanceeat.domain.common.exception.DomainException

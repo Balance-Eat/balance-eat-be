@@ -8,8 +8,8 @@ import org.balanceeat.apibase.exception.BadRequestException
 import org.balanceeat.apibase.exception.NotFoundException
 import org.balanceeat.domain.common.DomainStatus
 import org.balanceeat.domain.common.exception.DomainException
-import org.balanceeat.domain.notification.notificationDeviceFixture
-import org.balanceeat.domain.notification.NotificationDeviceRepository
+import org.balanceeat.domain.apppush.notificationDeviceFixture
+import org.balanceeat.domain.apppush.NotificationDeviceRepository
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

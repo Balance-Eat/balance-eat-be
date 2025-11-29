@@ -1,4 +1,4 @@
-package org.balanceeat.domain.notification
+package org.balanceeat.domain.apppush
 
 import org.balanceeat.common.TestFixture
 import org.balanceeat.domain.config.NEW_ID

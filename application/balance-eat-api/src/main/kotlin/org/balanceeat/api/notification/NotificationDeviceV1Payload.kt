@@ -2,8 +2,8 @@ package org.balanceeat.api.notification
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
-import org.balanceeat.domain.notification.NotificationDevice
-import org.balanceeat.domain.notification.NotificationDeviceResult
+import org.balanceeat.domain.apppush.NotificationDevice
+import org.balanceeat.domain.apppush.NotificationDeviceResult
 
 class NotificationDeviceV1Request {
     data class Create(

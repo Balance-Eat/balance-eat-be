@@ -1,6 +1,7 @@
 
 dependencies {
     api(project(":domain"))
+    api(project(":client:firebase"))
     api(project(":supports:jackson"))
     
     // Spring Boot - API로 노출하여 사용하는 모듈에서 활용

@@ -4,7 +4,7 @@ import com.epages.restdocs.apispec.ResourceSnippetParametersBuilder
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.balanceeat.api.config.supports.ControllerTestContext
-import org.balanceeat.domain.notification.NotificationDevice
+import org.balanceeat.domain.apppush.NotificationDevice
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test

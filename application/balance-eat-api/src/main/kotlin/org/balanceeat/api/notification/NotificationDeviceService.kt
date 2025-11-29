@@ -3,9 +3,9 @@ package org.balanceeat.api.notification
 import org.balanceeat.apibase.ApplicationStatus
 import org.balanceeat.apibase.exception.BadRequestException
 import org.balanceeat.apibase.exception.NotFoundException
-import org.balanceeat.domain.notification.NotificationDeviceCommand
-import org.balanceeat.domain.notification.NotificationDeviceReader
-import org.balanceeat.domain.notification.NotificationDeviceWriter
+import org.balanceeat.domain.apppush.NotificationDeviceCommand
+import org.balanceeat.domain.apppush.NotificationDeviceReader
+import org.balanceeat.domain.apppush.NotificationDeviceWriter
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

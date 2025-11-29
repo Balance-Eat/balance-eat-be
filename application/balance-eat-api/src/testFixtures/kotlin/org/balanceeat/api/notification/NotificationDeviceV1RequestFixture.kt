@@ -1,7 +1,7 @@
 package org.balanceeat.api.notification
 
 import org.balanceeat.common.TestFixture
-import org.balanceeat.domain.notification.NotificationDevice
+import org.balanceeat.domain.apppush.NotificationDevice
 import java.util.UUID
 
 class NotificationDeviceV1RequestFixture {
