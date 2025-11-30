@@ -1,11 +1,16 @@
 package org.balanceeat.api.reminder
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.catchThrowable
 import org.balanceeat.api.config.supports.IntegrationTestContext
+import org.balanceeat.apibase.ApplicationStatus
+import org.balanceeat.apibase.exception.NotFoundException
+import org.balanceeat.domain.reminder.reminderFixture
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import java.time.LocalDateTime
 
 class ReminderServiceTest : IntegrationTestContext() {
 
@@ -20,7 +25,7 @@ class ReminderServiceTest : IntegrationTestContext() {
         fun `리마인더를 성공적으로 등록할 수 있다`() {
             // given
             val userId = 1L
-            val request = reminderCreateV1RequestFixture {}
+            val request = reminderCreateV1RequestFixture()
 
             // when
             val result = reminderService.create(request, userId)
@@ -29,6 +34,56 @@ class ReminderServiceTest : IntegrationTestContext() {
             assertThat(request)
                 .usingRecursiveComparison()
                 .isEqualTo(result)
+        }
+    }
+
+    @Nested
+    @DisplayName("리마인더 수정")
+    inner class UpdateTest {
+
+        @Test
+        fun `리마인더를 성공적으로 수정할 수 있다`() {
+            // given
+            val userId = 1L
+            val reminder = createEntity(
+                reminderFixture {
+                    this.userId = userId
+                    content = "수정 전 내용"
+                    sendDatetime = LocalDateTime.of(2025, 12, 2, 9, 0, 0)
+                }
+            )
+
+            val request = reminderUpdateV1RequestFixture {
+                content = "수정 후 내용"
+                sendDatetime = LocalDateTime.of(2025, 12, 2, 10, 0, 0)
+            }
+
+            // when
+            val result = reminderService.update(request, reminder.id, userId)
+
+            // then
+            assertThat(request)
+                .usingRecursiveComparison()
+                .isEqualTo(result)
+        }
+
+        @Test
+        fun `다른 사용자의 리마인더는 수정할 수 없다`() {
+            // given
+            val ownerId = 1L
+            val otherUserId = 2L
+            val reminder = createEntity(reminderFixture { userId = ownerId })
+
+            val request = reminderUpdateV1RequestFixture {}
+
+            // when
+            val throwable = catchThrowable {
+                reminderService.update(request, reminder.id, otherUserId)
+            }
+
+            // then
+            assertThat(throwable).isInstanceOf(NotFoundException::class.java)
+                .hasFieldOrPropertyWithValue("status", ApplicationStatus.REMINDER_NOT_FOUND)
         }
     }
 }

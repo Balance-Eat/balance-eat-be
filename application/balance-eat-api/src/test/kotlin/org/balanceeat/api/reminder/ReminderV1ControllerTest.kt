@@ -61,6 +61,47 @@ class ReminderV1ControllerTest : ControllerTestContext() {
         }
     }
 
+    @Nested
+    @DisplayName("PATCH /v1/reminders/{reminderId} - 리마인더 수정")
+    inner class UpdateTest {
+        @Test
+        fun success() {
+            // given
+            val request = reminderUpdateV1RequestFixture()
+            every { reminderService.update(any(), any(), any()) } returns mockDetailsResponse()
+
+            given()
+                .header("X-USER-ID", "1")
+                .body(JsonUtils.stringify(request))
+                .put("/v1/reminders/{reminderId}", 1L)
+                .then()
+                .log().all()
+                .apply(
+                    document(
+                        identifier("UpdateReminderTest"),
+                        ResourceSnippetParametersBuilder()
+                            .tag(Tags.REMINDER.tagName)
+                            .description(Tags.REMINDER.descriptionWith("수정")),
+                        requestFields(
+                            "content" type STRING means "수정할 리마인더 내용 (최대 500자)",
+                            "sendDatetime" type STRING means "수정할 발송 시각 (ISO 8601 형식)"
+                        ),
+                        responseFields(
+                            fieldsWithBasic(
+                                "data.id" type NUMBER means "리마인더 ID",
+                                "data.userId" type NUMBER means "사용자 ID",
+                                "data.content" type STRING means "수정된 리마인더 내용",
+                                "data.sendDatetime" type STRING means "수정된 발송 시각",
+                                "data.createdAt" type STRING means "생성 시간",
+                                "data.updatedAt" type STRING means "수정 시간"
+                            )
+                        )
+                    )
+                )
+                .status(HttpStatus.OK)
+        }
+    }
+
     private fun mockDetailsResponse(): ReminderV1Response.Details {
         return ReminderV1Response.Details(
             id = 1L,

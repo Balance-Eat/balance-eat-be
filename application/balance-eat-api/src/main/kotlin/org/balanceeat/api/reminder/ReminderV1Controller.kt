@@ -20,4 +20,14 @@ class ReminderV1Controller(
         val result = reminderService.create(request, userId)
         return ApiResponse.success(result)
     }
+
+    @PutMapping("/{reminderId}")
+    fun update(
+        @RequestHeader("X-USER-ID") userId: Long,
+        @PathVariable reminderId: Long,
+        @RequestBody @Valid request: ReminderV1Request.Update
+    ): ApiResponse<ReminderV1Response.Details> {
+        val result = reminderService.update(request, reminderId, userId)
+        return ApiResponse.success(result)
+    }
 }

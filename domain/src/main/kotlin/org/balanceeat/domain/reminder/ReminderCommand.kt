@@ -12,7 +12,7 @@ class ReminderCommand {
 
     data class Update(
         val id: Long,
-        val content: String,
-        val sendDatetime: LocalDateTime
+        val content: String?,
+        val sendDatetime: LocalDateTime?
     )
 }

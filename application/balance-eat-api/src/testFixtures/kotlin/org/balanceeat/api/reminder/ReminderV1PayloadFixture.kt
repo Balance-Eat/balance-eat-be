@@ -15,8 +15,24 @@ class ReminderV1RequestFixture {
             )
         }
     }
+
+    data class Update(
+        var content: String = "수정된 리마인더 내용",
+        var sendDatetime: LocalDateTime = LocalDateTime.of(2025, 12, 2, 10, 0, 0)
+    ) : TestFixture<ReminderV1Request.Update> {
+        override fun create(): ReminderV1Request.Update {
+            return ReminderV1Request.Update(
+                content = content,
+                sendDatetime = sendDatetime
+            )
+        }
+    }
 }
 
 fun reminderCreateV1RequestFixture(block: ReminderV1RequestFixture.Create.() -> Unit = {}): ReminderV1Request.Create {
     return ReminderV1RequestFixture.Create().apply(block).create()
+}
+
+fun reminderUpdateV1RequestFixture(block: ReminderV1RequestFixture.Update.() -> Unit = {}): ReminderV1Request.Update {
+    return ReminderV1RequestFixture.Update().apply(block).create()
 }

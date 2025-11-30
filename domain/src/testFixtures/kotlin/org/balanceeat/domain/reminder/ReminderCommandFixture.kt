@@ -21,8 +21,8 @@ class ReminderCommandFixture {
 
     class Update(
         var id: Long = 1L,
-        var content: String = "수정된 리마인더 내용",
-        var sendDatetime: LocalDateTime = LocalDateTime.of(2025, 12, 2, 10, 0, 0)
+        var content: String? = "수정된 리마인더 내용",
+        var sendDatetime: LocalDateTime? = LocalDateTime.of(2025, 12, 2, 10, 0, 0)
     ) : TestFixture<ReminderCommand.Update> {
         override fun create(): ReminderCommand.Update {
             return ReminderCommand.Update(

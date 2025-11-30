@@ -33,8 +33,8 @@ class Reminder(
         require(sendDatetime.second == 0) { "리마인더 전송 시간의 초는 0이어야 합니다" }
     }
 
-    fun update(content: String, sendDatetime: LocalDateTime) {
-        this.content = content
-        this.sendDatetime = sendDatetime.withSecond(0).withNano(0)
+    fun update(content: String?, sendDatetime: LocalDateTime?) {
+        content?.let { this.content = it }
+        sendDatetime?.let { this.sendDatetime = it.withSecond(0).withNano(0) }
     }
 }

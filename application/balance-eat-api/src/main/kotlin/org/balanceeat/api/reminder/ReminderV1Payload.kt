@@ -15,6 +15,15 @@ class ReminderV1Request {
         @field:NotNull(message = "발송 시각은 필수입니다")
         val sendDatetime: LocalDateTime
     )
+
+    data class Update(
+        @field:NotBlank(message = "리마인더 내용은 필수입니다")
+        @field:Size(max = 500, message = "리마인더 내용은 500자를 초과할 수 없습니다")
+        val content: String,
+
+        @field:NotNull(message = "발송 시각은 필수입니다")
+        val sendDatetime: LocalDateTime
+    )
 }
 
 class ReminderV1Response {

@@ -17,4 +17,7 @@ enum class ApplicationStatus(override val message: String): Status {
     // notification_device
     NOTIFICATION_DEVICE_NOT_FOUND("존재하지 않는 디바이스입니다."),
     NOTIFICATION_DEVICE_UNAUTHORIZED("디바이스를 수정할 권한이 없습니다."),
+
+    // reminder
+    REMINDER_NOT_FOUND("존재하지 않는 리마인더입니다."),
 }
