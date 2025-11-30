@@ -7,23 +7,26 @@ import com.google.firebase.FirebaseOptions
 import com.google.firebase.messaging.FirebaseMessaging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Conditional
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
+import org.springframework.context.annotation.Profile
 import java.net.URI
 
 @Configuration
+@Profile("!test")
 class FirebaseConfig {
-    @Value("\${firebase.project-id}")
+    @Value("\${application.firebase.project-id}")
     lateinit var projectId: String
-    @Value("\${firebase.private-key-id}")
+    @Value("\${application.firebase.private-key-id}")
     lateinit var privateKeyId: String
-    @Value("\${firebase.private-key}")
+    @Value("\${application.firebase.private-key}")
     lateinit var privateKey: String
-    @Value("\${firebase.client-email}")
+    @Value("\${application.firebase.client-email}")
     lateinit var clientEmail: String
-    @Value("\${firebase.client-id}")
+    @Value("\${application.firebase.client-id}")
     lateinit var clientId: String
-    @Value("\${firebase.token-uri}")
+    @Value("\${application.firebase.token-uri}")
     lateinit var tokenUri: String
 
     @Bean

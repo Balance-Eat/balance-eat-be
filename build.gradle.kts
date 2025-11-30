@@ -66,11 +66,12 @@ subprojects {
     dependencies {
         implementation(project(":common"))
         // Kotlin
-        runtimeOnly("org.springframework.boot:spring-boot-starter-validation")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         // Spring
         implementation("org.springframework.boot:spring-boot-starter")
+        implementation("org.springframework.boot:spring-boot-starter-validation")
+
         // Test
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
         testRuntimeOnly("org.postgresql:postgresql")

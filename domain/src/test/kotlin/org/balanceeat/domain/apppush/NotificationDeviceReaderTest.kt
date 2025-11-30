@@ -15,9 +15,6 @@ class NotificationDeviceReaderTest : IntegrationTestContext() {
     @Autowired
     private lateinit var notificationDeviceRepository: NotificationDeviceRepository
 
-    // BaseReader의 기본 메서드(findById, findByIdOrThrow 등)는 테스트 작성 불필요
-    // 아래는 도메인별 커스텀 조회 메서드만 테스트
-
     @Nested
     @DisplayName("사용자별 조회 테스트")
     inner class FindByUserIdTest {

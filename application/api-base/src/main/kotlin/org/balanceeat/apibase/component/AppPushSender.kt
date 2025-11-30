@@ -2,21 +2,41 @@ package org.balanceeat.apibase.component
 
 import org.balanceeat.client.firebase.FirebaseClient
 import org.balanceeat.client.firebase.FirebaseRequest
+import org.balanceeat.domain.apppush.AppPushHistoryCommand
+import org.balanceeat.domain.apppush.AppPushHistoryWriter
+import org.balanceeat.domain.apppush.NotificationDeviceReader
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class AppPushSender(
     private val firebaseClient: FirebaseClient,
+    private val appPushHistoryWriter: AppPushHistoryWriter,
+    private val notificationDeviceReader: NotificationDeviceReader
 ) {
-    fun sendPush(
-        agentId: String,
+    @Async
+    @Transactional
+    fun sendPushAsync(
+        deviceId: Long,
         title: String,
         content: String,
         deepLink: String
     ) {
+        val device = notificationDeviceReader.findByIdOrThrow(deviceId)
+
         firebaseClient.sendMessage(
             FirebaseRequest.SendMessage(
-                deviceToken = agentId,
+                deviceToken = device.agentId,
+                title = title,
+                content = content,
+                deepLink = deepLink
+            )
+        )
+
+        appPushHistoryWriter.create(
+            AppPushHistoryCommand.Create(
+                deviceId = deviceId,
                 title = title,
                 content = content,
                 deepLink = deepLink

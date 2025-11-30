@@ -1,4 +1,4 @@
-package org.balanceeat.api.config.supports
+package org.balanceeat.apibase.config
 
 import com.ninjasquad.springmockk.MockkBean
 import jakarta.persistence.EntityManager
@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 import org.testcontainers.junit.jupiter.Testcontainers
 import jakarta.persistence.criteria.CriteriaQuery
-import org.balanceeat.apibase.component.AppPushSender
 import org.balanceeat.client.firebase.FirebaseClient
 
 @Tag("integration")
