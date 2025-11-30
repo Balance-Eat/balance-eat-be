@@ -34,5 +34,8 @@ enum class DomainStatus(
 
     // app_push_history
     APP_PUSH_HISTORY_NOT_FOUND("앱 푸시 히스토리를 찾을 수 없습니다"),
+
+    // reminder
+    REMINDER_NOT_FOUND("리마인더를 찾을 수 없습니다"),
     ;
 }
