@@ -1,13 +1,9 @@
 package org.balanceeat.api.reminder
 
-import org.balanceeat.apibase.ApplicationStatus
 import org.balanceeat.apibase.ApplicationStatus.REMINDER_NOT_FOUND
 import org.balanceeat.apibase.exception.NotFoundException
-import org.balanceeat.domain.common.DomainStatus
-import org.balanceeat.domain.common.exception.EntityNotFoundException
 import org.balanceeat.domain.reminder.ReminderCommand
 import org.balanceeat.domain.reminder.ReminderReader
-import org.balanceeat.domain.reminder.ReminderRepository
 import org.balanceeat.domain.reminder.ReminderWriter
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -45,5 +41,18 @@ class ReminderService(
         )
 
         return ReminderV1Response.Details.from(result)
+    }
+
+    @Transactional
+    fun delete(reminderId: Long, userId: Long) {
+        val reminder = reminderReader.findById(reminderId)
+
+        if (reminder == null) return
+
+        if (reminder.userId != userId) {
+            throw NotFoundException(REMINDER_NOT_FOUND)
+        }
+
+        reminderWriter.delete(reminder.id)
     }
 }

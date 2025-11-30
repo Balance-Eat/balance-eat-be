@@ -30,4 +30,13 @@ class ReminderV1Controller(
         val result = reminderService.update(request, reminderId, userId)
         return ApiResponse.success(result)
     }
+
+    @DeleteMapping("/{reminderId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun delete(
+        @RequestHeader("X-USER-ID") userId: Long,
+        @PathVariable reminderId: Long
+    ) {
+        reminderService.delete(reminderId, userId)
+    }
 }

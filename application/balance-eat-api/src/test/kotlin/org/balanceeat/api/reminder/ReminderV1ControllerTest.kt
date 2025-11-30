@@ -102,6 +102,31 @@ class ReminderV1ControllerTest : ControllerTestContext() {
         }
     }
 
+    @Nested
+    @DisplayName("DELETE /v1/reminders/{reminderId} - 리마인더 삭제")
+    inner class DeleteTest {
+        @Test
+        fun success() {
+            // given
+            every { reminderService.delete(any(), any()) } returns Unit
+
+            given()
+                .header("X-USER-ID", "1")
+                .delete("/v1/reminders/{reminderId}", 1L)
+                .then()
+                .log().all()
+                .apply(
+                    document(
+                        identifier("DeleteReminderTest"),
+                        ResourceSnippetParametersBuilder()
+                            .tag(Tags.REMINDER.tagName)
+                            .description(Tags.REMINDER.descriptionWith("삭제"))
+                    )
+                )
+                .status(HttpStatus.NO_CONTENT)
+        }
+    }
+
     private fun mockDetailsResponse(): ReminderV1Response.Details {
         return ReminderV1Response.Details(
             id = 1L,

@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions.catchThrowable
 import org.balanceeat.api.config.supports.IntegrationTestContext
 import org.balanceeat.apibase.ApplicationStatus
 import org.balanceeat.apibase.exception.NotFoundException
+import org.balanceeat.domain.reminder.ReminderRepository
 import org.balanceeat.domain.reminder.reminderFixture
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -16,6 +17,9 @@ class ReminderServiceTest : IntegrationTestContext() {
 
     @Autowired
     private lateinit var reminderService: ReminderService
+
+    @Autowired
+    private lateinit var reminderRepository: ReminderRepository
 
     @Nested
     @DisplayName("리마인더 등록")
@@ -79,6 +83,41 @@ class ReminderServiceTest : IntegrationTestContext() {
             // when
             val throwable = catchThrowable {
                 reminderService.update(request, reminder.id, otherUserId)
+            }
+
+            // then
+            assertThat(throwable).isInstanceOf(NotFoundException::class.java)
+                .hasFieldOrPropertyWithValue("status", ApplicationStatus.REMINDER_NOT_FOUND)
+        }
+    }
+
+    @Nested
+    @DisplayName("리마인더 삭제")
+    inner class DeleteTest {
+
+        @Test
+        fun `리마인더를 성공적으로 삭제할 수 있다`() {
+            // given
+            val userId = 1L
+            val reminder = createEntity(reminderFixture())
+
+            // when
+            reminderService.delete(reminder.id, userId)
+
+            // then
+            assertThat(reminderRepository.findById(reminder.id)).isEmpty
+        }
+
+        @Test
+        fun `다른 사용자의 리마인더는 삭제할 수 없다`() {
+            // given
+            val ownerId = 1L
+            val otherUserId = 2L
+            val reminder = createEntity(reminderFixture { userId = ownerId })
+
+            // when
+            val throwable = catchThrowable {
+                reminderService.delete(reminder.id, otherUserId)
             }
 
             // then
