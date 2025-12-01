@@ -21,6 +21,15 @@ class ReminderV1Controller(
         return ApiResponse.success(result)
     }
 
+    @GetMapping("/{reminderId}")
+    fun getDetail(
+        @RequestHeader("X-USER-ID") userId: Long,
+        @PathVariable reminderId: Long
+    ): ApiResponse<ReminderV1Response.Details> {
+        val result = reminderService.getDetail(reminderId, userId)
+        return ApiResponse.success(result)
+    }
+
     @PutMapping("/{reminderId}")
     fun update(
         @RequestHeader("X-USER-ID") userId: Long,

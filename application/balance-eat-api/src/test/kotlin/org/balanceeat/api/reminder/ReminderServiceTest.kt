@@ -42,6 +42,50 @@ class ReminderServiceTest : IntegrationTestContext() {
     }
 
     @Nested
+    @DisplayName("리마인더 상세 조회")
+    inner class GetDetailTest {
+
+        @Test
+        fun `리마인더를 성공적으로 조회할 수 있다`() {
+            // given
+            val userId = 1L
+            val reminder = createEntity(
+                reminderFixture {
+                    this.userId = userId
+                    content = "아침 식사 기록하기"
+                    sendDatetime = LocalDateTime.of(2025, 12, 2, 9, 0, 0)
+                }
+            )
+
+            // when
+            val result = reminderService.getDetail(reminder.id, userId)
+
+            // then
+            assertThat(result.id).isEqualTo(reminder.id)
+            assertThat(result.userId).isEqualTo(userId)
+            assertThat(result.content).isEqualTo(reminder.content)
+            assertThat(result.sendDatetime).isEqualTo(reminder.sendDatetime)
+        }
+
+        @Test
+        fun `다른 사용자의 리마인더는 조회할 수 없다`() {
+            // given
+            val ownerId = 1L
+            val otherUserId = 2L
+            val reminder = createEntity(reminderFixture { userId = ownerId })
+
+            // when
+            val throwable = catchThrowable {
+                reminderService.getDetail(reminder.id, otherUserId)
+            }
+
+            // then
+            assertThat(throwable).isInstanceOf(NotFoundException::class.java)
+                .hasFieldOrPropertyWithValue("status", ApplicationStatus.REMINDER_NOT_FOUND)
+        }
+    }
+
+    @Nested
     @DisplayName("리마인더 수정")
     inner class UpdateTest {
 

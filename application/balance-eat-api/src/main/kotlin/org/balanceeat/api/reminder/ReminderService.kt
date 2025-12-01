@@ -43,6 +43,15 @@ class ReminderService(
         return ReminderV1Response.Details.from(result)
     }
 
+    @Transactional(readOnly = true)
+    fun getDetail(reminderId: Long, userId: Long): ReminderV1Response.Details {
+        val reminder = reminderReader.findById(reminderId)
+            ?.takeIf { it.userId == userId }
+            ?: throw NotFoundException(REMINDER_NOT_FOUND)
+
+        return ReminderV1Response.Details.from(reminder)
+    }
+
     @Transactional
     fun delete(reminderId: Long, userId: Long) {
         val reminder = reminderReader.findById(reminderId)
