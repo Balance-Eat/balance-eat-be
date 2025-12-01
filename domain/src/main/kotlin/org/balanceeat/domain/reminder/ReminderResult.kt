@@ -1,13 +1,17 @@
 package org.balanceeat.domain.reminder
 
 import org.balanceeat.domain.common.EntityMapper
+import java.time.DayOfWeek
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 data class ReminderResult(
     val id: Long,
     val userId: Long,
     val content: String,
-    val sendDatetime: LocalDateTime,
+    val sendTime: LocalTime,
+    val isActive: Boolean,
+    val dayOfWeeks: List<DayOfWeek>,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime
 ) {
@@ -17,7 +21,9 @@ data class ReminderResult(
                 id = entity.id,
                 userId = entity.userId,
                 content = entity.content,
-                sendDatetime = entity.sendDatetime,
+                sendTime = entity.sendTime,
+                isActive = entity.isActive,
+                dayOfWeeks = entity.dayOfWeeks,
                 createdAt = entity.createdAt,
                 updatedAt = entity.updatedAt
             )

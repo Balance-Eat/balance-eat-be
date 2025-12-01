@@ -6,7 +6,8 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import java.time.LocalDateTime
+import java.time.DayOfWeek
+import java.time.LocalTime
 
 class ReminderWriterTest : IntegrationTestContext() {
 
@@ -44,14 +45,18 @@ class ReminderWriterTest : IntegrationTestContext() {
                 reminderFixture {
                     userId = 1L
                     content = "수정 전 내용"
-                    sendDatetime = LocalDateTime.of(2025, 12, 2, 9, 0, 0)
+                    sendTime = LocalTime.of(9, 0, 0)
+                    isActive = true
+                    dayOfWeeks = listOf(DayOfWeek.MONDAY)
                 }
             )
 
             val command = reminderUpdateCommandFixture {
                 id = reminder.id
                 content = "수정 후 내용"
-                sendDatetime = LocalDateTime.of(2025, 12, 2, 10, 0, 0)
+                sendTime = LocalTime.of(10, 0, 0)
+                isActive = false
+                dayOfWeeks = listOf(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
             }
 
             // when

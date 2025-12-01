@@ -21,7 +21,9 @@ class ReminderService(
             command = ReminderCommand.Create(
                 userId = userId,
                 content = request.content,
-                sendDatetime = request.sendDatetime
+                sendTime = request.sendTime.withSecond(0).withNano(0),
+                isActive = request.isActive,
+                dayOfWeeks = request.dayOfWeeks
             )
         )
 
@@ -38,7 +40,9 @@ class ReminderService(
             command = ReminderCommand.Update(
                 id = reminder.id,
                 content = request.content,
-                sendDatetime = request.sendDatetime
+                sendTime = request.sendTime,
+                isActive = request.isActive,
+                dayOfWeeks = request.dayOfWeeks
             )
         )
 

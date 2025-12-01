@@ -22,6 +22,7 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.github.f4b6a3:uuid-creator:6.1.0")
+    implementation("com.vladmihalcea:hibernate-types-60:2.21.1")
 
     implementation("io.github.openfeign.querydsl:querydsl-jpa:$openfeignQuerydslVersion")
     ksp("io.github.openfeign.querydsl:querydsl-ksp-codegen:$openfeignQuerydslVersion")

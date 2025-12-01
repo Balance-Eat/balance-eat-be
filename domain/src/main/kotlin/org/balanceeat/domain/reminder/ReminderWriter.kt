@@ -14,7 +14,9 @@ class ReminderWriter(
         val reminder = Reminder(
             userId = command.userId,
             content = command.content,
-            sendDatetime = command.sendDatetime.withSecond(0).withNano(0)
+            sendTime = command.sendTime.withSecond(0).withNano(0),
+            isActive = command.isActive,
+            dayOfWeeks = command.dayOfWeeks
         )
 
         val savedReminder = reminderRepository.save(reminder)
@@ -28,7 +30,9 @@ class ReminderWriter(
 
         reminder.update(
             content = command.content,
-            sendDatetime = command.sendDatetime
+            sendTime = command.sendTime,
+            isActive = command.isActive,
+            dayOfWeeks = command.dayOfWeeks
         )
 
         val savedReminder = reminderRepository.save(reminder)

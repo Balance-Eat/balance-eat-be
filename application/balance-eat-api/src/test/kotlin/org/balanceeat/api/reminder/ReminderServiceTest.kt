@@ -11,7 +11,8 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import java.time.LocalDateTime
+import java.time.DayOfWeek
+import java.time.LocalTime
 
 class ReminderServiceTest : IntegrationTestContext() {
 
@@ -53,7 +54,9 @@ class ReminderServiceTest : IntegrationTestContext() {
                 reminderFixture {
                     this.userId = userId
                     content = "아침 식사 기록하기"
-                    sendDatetime = LocalDateTime.of(2025, 12, 2, 9, 0, 0)
+                    sendTime = LocalTime.of(9, 0, 0)
+                    isActive = true
+                    dayOfWeeks = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
                 }
             )
 
@@ -64,7 +67,9 @@ class ReminderServiceTest : IntegrationTestContext() {
             assertThat(result.id).isEqualTo(reminder.id)
             assertThat(result.userId).isEqualTo(userId)
             assertThat(result.content).isEqualTo(reminder.content)
-            assertThat(result.sendDatetime).isEqualTo(reminder.sendDatetime)
+            assertThat(result.sendTime).isEqualTo(reminder.sendTime)
+            assertThat(result.isActive).isEqualTo(reminder.isActive)
+            assertThat(result.dayOfWeeks).isEqualTo(reminder.dayOfWeeks)
         }
 
         @Test
@@ -97,22 +102,27 @@ class ReminderServiceTest : IntegrationTestContext() {
                 reminderFixture {
                     this.userId = userId
                     content = "수정 전 내용"
-                    sendDatetime = LocalDateTime.of(2025, 12, 2, 9, 0, 0)
+                    sendTime = LocalTime.of(9, 0, 0)
+                    isActive = true
+                    dayOfWeeks = listOf(DayOfWeek.MONDAY)
                 }
             )
 
             val request = reminderUpdateV1RequestFixture {
                 content = "수정 후 내용"
-                sendDatetime = LocalDateTime.of(2025, 12, 2, 10, 0, 0)
+                sendTime = LocalTime.of(10, 0, 0)
+                isActive = false
+                dayOfWeeks = listOf(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY) // 화, 목
             }
 
             // when
             val result = reminderService.update(request, reminder.id, userId)
 
             // then
-            assertThat(request)
-                .usingRecursiveComparison()
-                .isEqualTo(result)
+            assertThat(result.content).isEqualTo(request.content)
+            assertThat(result.sendTime).isEqualTo(request.sendTime)
+            assertThat(result.isActive).isEqualTo(request.isActive)
+            assertThat(result.dayOfWeeks).isEqualTo(request.dayOfWeeks)
         }
 
         @Test
