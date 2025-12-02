@@ -2,9 +2,11 @@ package org.balanceeat.api.reminder
 
 import org.balanceeat.apibase.ApplicationStatus.REMINDER_NOT_FOUND
 import org.balanceeat.apibase.exception.NotFoundException
+import org.balanceeat.apibase.response.PageResponse
 import org.balanceeat.domain.reminder.ReminderCommand
 import org.balanceeat.domain.reminder.ReminderReader
 import org.balanceeat.domain.reminder.ReminderWriter
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -43,15 +45,6 @@ class ReminderService(
         return ReminderV1Response.Details.from(result)
     }
 
-    @Transactional(readOnly = true)
-    fun getDetail(reminderId: Long, userId: Long): ReminderV1Response.Details {
-        val reminder = reminderReader.findById(reminderId)
-            ?.takeIf { it.userId == userId }
-            ?: throw NotFoundException(REMINDER_NOT_FOUND)
-
-        return ReminderV1Response.Details.from(reminder)
-    }
-
     @Transactional
     fun delete(reminderId: Long, userId: Long) {
         val reminder = reminderReader.findById(reminderId)
@@ -63,5 +56,21 @@ class ReminderService(
         }
 
         reminderWriter.delete(reminder.id)
+    }
+
+    @Transactional(readOnly = true)
+    fun getDetail(reminderId: Long, userId: Long): ReminderV1Response.Details {
+        val reminder = reminderReader.findById(reminderId)
+            ?.takeIf { it.userId == userId }
+            ?: throw NotFoundException(REMINDER_NOT_FOUND)
+
+        return ReminderV1Response.Details.from(reminder)
+    }
+
+    @Transactional(readOnly = true)
+    fun getSummaries(userId: Long, pageable: Pageable): PageResponse<ReminderV1Response.Summary> {
+        val reminders = reminderReader.findAllByUserId(userId, pageable)
+        val pageResult = reminders.map { ReminderV1Response.Summary.from(it) }
+        return PageResponse.from(pageResult)
     }
 }

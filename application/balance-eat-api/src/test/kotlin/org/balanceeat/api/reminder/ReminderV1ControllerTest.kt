@@ -4,6 +4,7 @@ import com.epages.restdocs.apispec.ResourceSnippetParametersBuilder
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import org.balanceeat.api.config.supports.ControllerTestContext
+import org.balanceeat.apibase.response.PageResponse
 import org.balanceeat.jackson.JsonUtils
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -162,6 +163,45 @@ class ReminderV1ControllerTest : ControllerTestContext() {
         }
     }
 
+    @Nested
+    @DisplayName("GET /v1/reminders - 리마인더 요약 목록 조회")
+    inner class GetSummariesTest {
+        @Test
+        fun success() {
+            // given
+            every { reminderService.getSummaries(any(), any()) } returns mockPageResponse()
+
+            given()
+                .header("X-USER-ID", "1")
+                .get("/v1/reminders")
+                .then()
+                .log().all()
+                .apply(
+                    document(
+                        identifier("GetSummariesReminderTest"),
+                        ResourceSnippetParametersBuilder()
+                            .tag(Tags.REMINDER.tagName)
+                            .description(Tags.REMINDER.descriptionWith("요약 목록 조회")),
+                        responseFields(
+                            fieldsWithBasic(
+                                "data.totalItems" type NUMBER means "전체 아이템 수",
+                                "data.totalItems" type NUMBER means "전체 아이템 수",
+                                "data.currentPage" type NUMBER means "현재 페이지 번호",
+                                "data.itemsPerPage" type NUMBER means "페이지당 아이템 수",
+                                "data.totalPages" type NUMBER means "전체 페이지 수",
+                                "data.items" type ARRAY means "검색 결과 목록",
+                                "data.items[].id" type NUMBER means "리마인더 ID",
+                                "data.items[].content" type STRING means "리마인더 내용",
+                                "data.items[].sendDatetime" type STRING means "발송 시각"
+                            )
+                        )
+                    )
+                )
+                .status(HttpStatus.OK)
+        }
+    }
+
+
     private fun mockDetailsResponse(): ReminderV1Response.Details {
         return ReminderV1Response.Details(
             id = 1L,
@@ -170,6 +210,20 @@ class ReminderV1ControllerTest : ControllerTestContext() {
             sendDatetime = LocalDateTime.of(2025, 12, 2, 9, 0, 0),
             createdAt = LocalDateTime.of(2025, 12, 1, 10, 0, 0),
             updatedAt = LocalDateTime.of(2025, 12, 1, 10, 0, 0)
+        )
+    }
+
+    private fun mockPageResponse(): PageResponse<ReminderV1Response.Summary> {
+        val item = ReminderV1Response.Summary(
+            id = 1L,
+            content = "아침 식사 기록하기",
+            sendDatetime = LocalDateTime.now().withSecond(0).withNano(0)
+        )
+        return PageResponse(
+            totalItems = 1,
+            currentPage = 0,
+            itemsPerPage = 10,
+            items = listOf(item)
         )
     }
 }

@@ -46,4 +46,18 @@ class ReminderV1Response {
             )
         }
     }
+
+    data class Summary(
+        val id: Long,
+        val content: String,
+        val sendDatetime: LocalDateTime
+    ) {
+        companion object {
+            fun from(result: ReminderResult) = Summary(
+                id = result.id,
+                content = result.content,
+                sendDatetime = result.sendDatetime
+            )
+        }
+    }
 }
