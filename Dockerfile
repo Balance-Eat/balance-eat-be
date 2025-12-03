@@ -21,6 +21,8 @@ COPY common/build.gradle.kts ./common/
 COPY domain/build.gradle.kts ./domain/
 COPY supports/jackson/build.gradle.kts ./supports/jackson/
 COPY supports/monitoring/build.gradle.kts ./supports/monitoring/
+COPY client/base/build.gradle.kts ./client/base/
+COPY client/firebase/build.gradle.kts ./client/firebase/
 
 # Gradle wrapper 실행 권한 부여
 RUN chmod +x ./gradlew
