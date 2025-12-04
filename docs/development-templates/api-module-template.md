@@ -1,4 +1,4 @@
-# Balance-Eat Application Layer 표준 템플릿
+# Balance-Eat API Module 표준 템플릿
 
 ## 필수 규칙
 
@@ -8,7 +8,7 @@
 
 ## 목적
 
-Balance-Eat 프로젝트의 Application 레이어 표준 템플릿을 제공합니다. 각 도메인은 Controller, Service, Payload(Request/Response) 구조를 가지며, Kotlin + Spring Boot + REST Docs를 기반으로 합니다.
+Balance-Eat 프로젝트의 API Module 표준 템플릿을 제공합니다. 각 도메인은 Controller, Service, Payload(Request/Response) 구조를 가지며, Kotlin + Spring Boot + REST Docs를 기반으로 합니다.
 
 ---
 

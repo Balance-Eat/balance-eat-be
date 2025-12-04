@@ -106,7 +106,7 @@ class ReminderTest {
 
             // then
             assertThat(reminder.content).isEqualTo(newContent)
-            assertThat(reminder.sendTime).isEqualTo(newSendTime)
+            assertThat(reminder.sendTime).isEqualTo(newSendTime.withSecond(0))
             assertThat(reminder.isActive).isEqualTo(newIsActive)
             assertThat(reminder.dayOfWeeks).isEqualTo(newDayOfWeeks)
         }

@@ -18,10 +18,6 @@ configurations {
     }
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation(project(":application:api-base"))
     implementation(project(":supports:monitoring"))

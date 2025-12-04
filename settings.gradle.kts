@@ -1,6 +1,7 @@
 rootProject.name = "balance-eat"
 
 include(
+    "application:balance-eat-batch",
     "application:balance-eat-api",
     "application:balance-eat-admin-api",
     "application:api-base",
@@ -35,4 +36,3 @@ pluginManagement {
         }
     }
 }
-include("client:firebase")

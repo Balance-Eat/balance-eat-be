@@ -4,8 +4,30 @@ application:
       url: ${DISCORD_WEBHOOK_URL}
 
 spring:
-  application:
-    name: balance-eat-api
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/balance_eat}
+    driverClassName: org.postgresql.Driver
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:password}
+    hikari:
+      pool-name: BalanceEat-Admin-Api-HikariPool
+      maximum-pool-size: 2
+      minimum-idle: 0
+      connection-timeout: 3000
+      idle-timeout: 10000       # 10초 후 연결 반환
+      max-lifetime: 300000      # 5분 (PgBouncer 기본값에 맞춤)
+      connection-test-query: SELECT 1
+      validation-timeout: 5000
+      data-source-properties:
+        socketTimeout: 3000
+        prepStmtCacheSize: 100
+        prepStmtCacheSqlLimit: 2048
+        cachePrepStmts: true
+        useServerPrepStmts: true
+        rewriteBatchedStatements: true
+        useSsl: false
+
+    name: balance-eat-admin-api
 
   profiles:
     active: local
