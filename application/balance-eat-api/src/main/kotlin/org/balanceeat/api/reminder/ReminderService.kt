@@ -77,4 +77,20 @@ class ReminderService(
         val pageResult = reminders.map { ReminderV1Response.Summary.from(it) }
         return PageResponse.from(pageResult)
     }
+
+    @Transactional
+    fun updateActivation(request: ReminderV1Request.UpdateActivation, reminderId: Long, userId: Long): ReminderV1Response.Details {
+        val reminder = reminderReader.findById(reminderId)
+            ?.takeIf { it.userId == userId }
+            ?: throw NotFoundException(REMINDER_NOT_FOUND)
+
+        val result = reminderWriter.updateActivation(
+            command = ReminderCommand.UpdateActivation(
+                id = reminder.id,
+                isActive = request.isActive
+            )
+        )
+
+        return ReminderV1Response.Details.from(result)
+    }
 }

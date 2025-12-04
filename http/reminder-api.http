@@ -33,3 +33,12 @@ X-USER-ID: 1
 ### 리마인더 삭제
 DELETE {{baseUrl}}/v1/reminders/1
 X-USER-ID: 1
+
+### 리마인더 활성화 상태 변경
+PATCH {{baseUrl}}/v1/reminders/1/activation
+Content-Type: application/json
+X-USER-ID: 1
+
+{
+  "isActive": true
+}

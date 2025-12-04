@@ -44,4 +44,15 @@ class ReminderWriter(
         reminderRepository.findById(id)
             .ifPresent { reminderRepository.delete(it) }
     }
+
+    @Transactional
+    fun updateActivation(command: ReminderCommand.UpdateActivation): ReminderResult {
+        val reminder = reminderRepository.findById(command.id)
+            .orElseThrow { EntityNotFoundException(REMINDER_NOT_FOUND) }
+
+        reminder.updateActivation(command.isActive)
+
+        val savedReminder = reminderRepository.save(reminder)
+        return ReminderResult.from(savedReminder)
+    }
 }

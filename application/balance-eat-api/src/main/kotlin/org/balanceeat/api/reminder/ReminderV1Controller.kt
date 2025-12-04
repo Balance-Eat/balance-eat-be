@@ -60,4 +60,14 @@ class ReminderV1Controller(
     ) {
         reminderService.delete(reminderId, userId)
     }
+
+    @PatchMapping("/{reminderId}/activation")
+    fun updateActivation(
+        @RequestHeader("X-USER-ID") userId: Long,
+        @PathVariable reminderId: Long,
+        @RequestBody @Valid request: ReminderV1Request.UpdateActivation
+    ): ApiResponse<ReminderV1Response.Details> {
+        val result = reminderService.updateActivation(request, reminderId, userId)
+        return ApiResponse.success(result)
+    }
 }

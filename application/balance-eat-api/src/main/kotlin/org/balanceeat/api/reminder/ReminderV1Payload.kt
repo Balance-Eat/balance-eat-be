@@ -38,6 +38,11 @@ class ReminderV1Request {
         @field:NotEmpty(message = "알림 요일은 최소 1개 이상 선택해야 합니다")
         val dayOfWeeks: List<DayOfWeek>
     )
+
+    data class UpdateActivation(
+        @field:NotNull(message = "활성 상태는 필수입니다")
+        val isActive: Boolean
+    )
 }
 
 class ReminderV1Response {

@@ -57,4 +57,8 @@ class Reminder(
         this.dayOfWeeks = dayOfWeeks
         guard()
     }
+
+    fun updateActivation(isActive: Boolean) {
+        this.isActive = isActive
+    }
 }

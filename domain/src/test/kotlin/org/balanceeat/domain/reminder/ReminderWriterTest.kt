@@ -84,4 +84,54 @@ class ReminderWriterTest : IntegrationTestContext() {
             assertThat(reminderRepository.findById(reminder.id)).isEmpty
         }
     }
+
+    @Nested
+    @DisplayName("활성화 상태 변경 테스트")
+    inner class UpdateActivationTest {
+        @Test
+        fun `리마인더 활성화 상태를 변경할 수 있다`() {
+            // given
+            val reminder = createEntity(
+                reminderFixture {
+                    userId = 1L
+                    isActive = true
+                }
+            )
+
+            val command = reminderUpdateActivationCommandFixture {
+                id = reminder.id
+                isActive = false
+            }
+
+            // when
+            val result = reminderWriter.updateActivation(command)
+
+            // then
+            assertThat(result.isActive).isFalse()
+            assertThat(result.id).isEqualTo(reminder.id)
+        }
+
+        @Test
+        fun `비활성화된 리마인더를 활성화할 수 있다`() {
+            // given
+            val reminder = createEntity(
+                reminderFixture {
+                    userId = 1L
+                    isActive = false
+                }
+            )
+
+            val command = reminderUpdateActivationCommandFixture {
+                id = reminder.id
+                isActive = true
+            }
+
+            // when
+            val result = reminderWriter.updateActivation(command)
+
+            // then
+            assertThat(result.isActive).isTrue()
+            assertThat(result.id).isEqualTo(reminder.id)
+        }
+    }
 }

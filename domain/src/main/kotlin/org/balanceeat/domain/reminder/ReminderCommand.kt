@@ -20,4 +20,9 @@ class ReminderCommand {
         val isActive: Boolean,
         val dayOfWeeks: List<DayOfWeek>
     )
+
+    data class UpdateActivation(
+        val id: Long,
+        val isActive: Boolean
+    )
 }

@@ -36,6 +36,16 @@ class ReminderV1RequestFixture {
             )
         }
     }
+
+    data class UpdateActivation(
+        var isActive: Boolean = false
+    ) : TestFixture<ReminderV1Request.UpdateActivation> {
+        override fun create(): ReminderV1Request.UpdateActivation {
+            return ReminderV1Request.UpdateActivation(
+                isActive = isActive
+            )
+        }
+    }
 }
 
 fun reminderCreateV1RequestFixture(block: ReminderV1RequestFixture.Create.() -> Unit = {}): ReminderV1Request.Create {
@@ -44,4 +54,8 @@ fun reminderCreateV1RequestFixture(block: ReminderV1RequestFixture.Create.() -> 
 
 fun reminderUpdateV1RequestFixture(block: ReminderV1RequestFixture.Update.() -> Unit = {}): ReminderV1Request.Update {
     return ReminderV1RequestFixture.Update().apply(block).create()
+}
+
+fun reminderUpdateActivationV1RequestFixture(block: ReminderV1RequestFixture.UpdateActivation.() -> Unit = {}): ReminderV1Request.UpdateActivation {
+    return ReminderV1RequestFixture.UpdateActivation().apply(block).create()
 }

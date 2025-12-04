@@ -57,7 +57,7 @@ class ReminderV1ControllerTest : ControllerTestContext() {
                                 "data.content" type STRING means "리마인더 내용",
                                 "data.sendTime" type STRING means "발송 시각",
                                 "data.isActive" type BOOLEAN means "활성화 여부",
-                                "data.dayOfWeeks" type ARRAY means "알림 요일",
+                                "data.dayOfWeeks" type ARRAY means "알림 요일" withEnum DayOfWeek::class,
                                 "data.createdAt" type STRING means "생성 시간",
                                 "data.updatedAt" type STRING means "수정 시간"
                             )
@@ -94,7 +94,7 @@ class ReminderV1ControllerTest : ControllerTestContext() {
                                 "data.content" type STRING means "리마인더 내용",
                                 "data.sendTime" type STRING means "발송 시각",
                                 "data.isActive" type BOOLEAN means "활성화 여부",
-                                "data.dayOfWeeks" type ARRAY means "알림 요일",
+                                "data.dayOfWeeks" type ARRAY means "알림 요일" withEnum DayOfWeek::class,
                                 "data.createdAt" type STRING means "생성 시간",
                                 "data.updatedAt" type STRING means "수정 시간"
                             )
@@ -139,7 +139,7 @@ class ReminderV1ControllerTest : ControllerTestContext() {
                                 "data.content" type STRING means "수정된 리마인더 내용",
                                 "data.sendTime" type STRING means "수정된 발송 시각",
                                 "data.isActive" type BOOLEAN means "활성화 여부",
-                                "data.dayOfWeeks" type ARRAY means "알림 요일",
+                                "data.dayOfWeeks" type ARRAY means "알림 요일" withEnum DayOfWeek::class,
                                 "data.createdAt" type STRING means "생성 시간",
                                 "data.updatedAt" type STRING means "수정 시간"
                             )
@@ -207,6 +207,48 @@ class ReminderV1ControllerTest : ControllerTestContext() {
                                 "data.items[].sendTime" type STRING means "발송 시각",
                                 "data.items[].isActive" type BOOLEAN means "활성화 여부",
                                 "data.items[].dayOfWeeks" type ARRAY means "알림 요일"
+                            )
+                        )
+                    )
+                )
+                .status(HttpStatus.OK)
+        }
+    }
+
+    @Nested
+    @DisplayName("PATCH /v1/reminders/{reminderId}/activation - 리마인더 활성화 상태 변경")
+    inner class UpdateActivationTest {
+        @Test
+        fun success() {
+            // given
+            val request = reminderUpdateActivationV1RequestFixture()
+            every { reminderService.updateActivation(any(), any(), any()) } returns mockDetailsResponse()
+
+            given()
+                .header("X-USER-ID", "1")
+                .body(JsonUtils.stringify(request))
+                .patch("/v1/reminders/{reminderId}/activation", 1L)
+                .then()
+                .log().all()
+                .apply(
+                    document(
+                        identifier("UpdateActivationReminderTest"),
+                        ResourceSnippetParametersBuilder()
+                            .tag(Tags.REMINDER.tagName)
+                            .description(Tags.REMINDER.descriptionWith("활성화 상태 변경")),
+                        requestFields(
+                            "isActive" type BOOLEAN means "변경할 활성화 여부 (true: 활성화, false: 비활성화)"
+                        ),
+                        responseFields(
+                            fieldsWithBasic(
+                                "data.id" type NUMBER means "리마인더 ID",
+                                "data.userId" type NUMBER means "사용자 ID",
+                                "data.content" type STRING means "리마인더 내용",
+                                "data.sendTime" type STRING means "발송 시각",
+                                "data.isActive" type BOOLEAN means "변경된 활성화 여부",
+                                "data.dayOfWeeks" type ARRAY means "알림 요일" withEnum DayOfWeek::class,
+                                "data.createdAt" type STRING means "생성 시간",
+                                "data.updatedAt" type STRING means "수정 시간"
                             )
                         )
                     )

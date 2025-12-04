@@ -179,4 +179,74 @@ class ReminderServiceTest : IntegrationTestContext() {
                 .hasFieldOrPropertyWithValue("status", ApplicationStatus.REMINDER_NOT_FOUND)
         }
     }
+
+    @Nested
+    @DisplayName("리마인더 활성화 상태 변경")
+    inner class UpdateActivationTest {
+
+        @Test
+        fun `리마인더 활성화 상태를 변경할 수 있다`() {
+            // given
+            val userId = 1L
+            val reminder = createEntity(
+                reminderFixture {
+                    this.userId = userId
+                    isActive = true
+                }
+            )
+
+            val request = reminderUpdateActivationV1RequestFixture {
+                isActive = false
+            }
+
+            // when
+            val result = reminderService.updateActivation(request, reminder.id, userId)
+
+            // then
+            assertThat(result.isActive).isFalse()
+            assertThat(result.id).isEqualTo(reminder.id)
+        }
+
+        @Test
+        fun `비활성화된 리마인더를 활성화할 수 있다`() {
+            // given
+            val userId = 1L
+            val reminder = createEntity(
+                reminderFixture {
+                    this.userId = userId
+                    isActive = false
+                }
+            )
+
+            val request = reminderUpdateActivationV1RequestFixture {
+                isActive = true
+            }
+
+            // when
+            val result = reminderService.updateActivation(request, reminder.id, userId)
+
+            // then
+            assertThat(result.isActive).isTrue()
+            assertThat(result.id).isEqualTo(reminder.id)
+        }
+
+        @Test
+        fun `다른 사용자의 리마인더 활성화 상태는 변경할 수 없다`() {
+            // given
+            val ownerId = 1L
+            val otherUserId = 2L
+            val reminder = createEntity(reminderFixture { userId = ownerId })
+
+            val request = reminderUpdateActivationV1RequestFixture {}
+
+            // when
+            val throwable = catchThrowable {
+                reminderService.updateActivation(request, reminder.id, otherUserId)
+            }
+
+            // then
+            assertThat(throwable).isInstanceOf(NotFoundException::class.java)
+                .hasFieldOrPropertyWithValue("status", ApplicationStatus.REMINDER_NOT_FOUND)
+        }
+    }
 }

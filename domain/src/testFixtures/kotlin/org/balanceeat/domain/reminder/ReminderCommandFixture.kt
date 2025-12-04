@@ -41,6 +41,18 @@ class ReminderCommandFixture {
             )
         }
     }
+
+    class UpdateActivation(
+        var id: Long = 1L,
+        var isActive: Boolean = false
+    ) : TestFixture<ReminderCommand.UpdateActivation> {
+        override fun create(): ReminderCommand.UpdateActivation {
+            return ReminderCommand.UpdateActivation(
+                id = id,
+                isActive = isActive
+            )
+        }
+    }
 }
 
 fun reminderCreateCommandFixture(block: ReminderCommandFixture.Create.() -> Unit = {}): ReminderCommand.Create {
@@ -49,4 +61,8 @@ fun reminderCreateCommandFixture(block: ReminderCommandFixture.Create.() -> Unit
 
 fun reminderUpdateCommandFixture(block: ReminderCommandFixture.Update.() -> Unit = {}): ReminderCommand.Update {
     return ReminderCommandFixture.Update().apply(block).create()
+}
+
+fun reminderUpdateActivationCommandFixture(block: ReminderCommandFixture.UpdateActivation.() -> Unit = {}): ReminderCommand.UpdateActivation {
+    return ReminderCommandFixture.UpdateActivation().apply(block).create()
 }
