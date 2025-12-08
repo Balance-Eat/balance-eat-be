@@ -6,11 +6,11 @@ import java.time.LocalDate
 
 @Component
 class StatsScheduler(
-    private val statsService: StatsService
+    private val statsScheduleService: StatsScheduleService
 ) {
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     fun aggregateDailyStats() {
         val statsDate = LocalDate.now().minusDays(1)
-        statsService.aggregateStats(statsDate)
+        statsScheduleService.aggregateStats(statsDate)
     }
 }

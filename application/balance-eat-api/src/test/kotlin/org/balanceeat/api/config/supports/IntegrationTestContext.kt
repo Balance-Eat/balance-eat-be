@@ -1,6 +1,7 @@
 package org.balanceeat.api.config.supports
 
 import com.ninjasquad.springmockk.MockkBean
+import io.mockk.justRun
 import jakarta.persistence.EntityManager
 import org.balanceeat.domain.config.DatabaseCleanUp
 import org.balanceeat.domain.config.PostgreSQLTestContainerConfig
@@ -23,6 +24,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import jakarta.persistence.criteria.CriteriaQuery
 import org.balanceeat.apibase.component.AppPushSender
 import org.balanceeat.client.firebase.FirebaseClient
+import org.junit.jupiter.api.BeforeEach
 
 @Tag("integration")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -33,11 +35,17 @@ abstract class IntegrationTestContext {
     @Autowired
     private lateinit var databaseCleanUp: DatabaseCleanUp
     @Autowired
-     protected lateinit var mockMvc: MockMvc
-    @Autowired
     protected lateinit var entityManager: EntityManager
     @MockkBean
     protected lateinit var firebaseClient: FirebaseClient
+    @MockkBean
+    protected lateinit var appPushSender: AppPushSender
+
+    @BeforeEach
+    fun setUp() {
+        // Mockk로 생성한 Mock 객체에 대한 기본 동작 설정 초기화
+        justRun { appPushSender.sendPushAsync(any()) }
+    }
 
     @AfterEach
     fun tearDown() {

@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import java.time.DayOfWeek
+import java.time.LocalTime
 
 @Component
 @Transactional(readOnly = true)
@@ -20,5 +22,20 @@ class ReminderReader(
     fun findAllByUserId(userId: Long, pageable: Pageable): Page<ReminderResult> {
         return reminderRepository.findAllByUserId(userId, pageable)
             .map { ReminderResult.from(it) }
+    }
+
+    fun findAllActiveCountBy(dayOfWeek: DayOfWeek, time: LocalTime): Long {
+        return reminderRepository.countAllActiveBy(
+            dayOfWeek = dayOfWeek,
+            time = time
+        )
+    }
+
+    fun findAllActiveBy(dayOfWeek: DayOfWeek, time: LocalTime, pageable: Pageable): List<Reminder> {
+        return reminderRepository.findAllActiveBy(
+            dayOfWeek = dayOfWeek,
+            time = time,
+            pageable = pageable
+        )
     }
 }

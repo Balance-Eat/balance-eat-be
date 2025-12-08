@@ -2,6 +2,7 @@ package org.balanceeat.domain.common.repository
 
 import com.querydsl.jpa.JPQLQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
+import org.balanceeat.domain.common.repository.BaseQueryRepository.Companion.BULK_SIZE_LIMIT
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.support.PageableExecutionUtils
@@ -31,5 +32,5 @@ abstract class BaseQueryRepository(
 }
 
 class ExceededBulkLimitException(
-    size: Int = 1000
+    size: Int = BULK_SIZE_LIMIT
 ) : RuntimeException("Bulk insert $size exceeds the limit")

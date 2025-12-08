@@ -17,12 +17,8 @@ class AppPushSender(
 ) {
     @Async
     @Transactional
-    fun sendPushAsync(
-        deviceId: Long,
-        title: String,
-        content: String,
-        deepLink: String
-    ) {
+    fun sendPushAsync(request: AppPushRequest.SendMessage) {
+        val (deviceId, title, content, deepLink) = request
         val device = notificationDeviceReader.findByIdOrThrow(deviceId)
 
         firebaseClient.sendMessage(

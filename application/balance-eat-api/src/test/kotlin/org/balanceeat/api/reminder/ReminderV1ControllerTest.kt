@@ -168,10 +168,15 @@ class ReminderV1ControllerTest : ControllerTestContext() {
                         identifier("DeleteReminderTest"),
                         ResourceSnippetParametersBuilder()
                             .tag(Tags.REMINDER.tagName)
-                            .description(Tags.REMINDER.descriptionWith("삭제"))
+                            .description(Tags.REMINDER.descriptionWith("삭제")),
+                        responseFields(
+                            fieldsWithBasic(
+                                "data" type NULL means "데이터 없음"
+                            )
+                        )
                     )
                 )
-                .status(HttpStatus.NO_CONTENT)
+                .status(HttpStatus.OK)
         }
     }
 

@@ -15,8 +15,13 @@ class NotificationDeviceReader(
         return findByIdOrThrow(id, DomainStatus.NOTIFICATION_DEVICE_NOT_FOUND)
     }
 
-    fun findByUserId(userId: Long): List<NotificationDeviceResult> {
-        return notificationDeviceRepository.findByUserId(userId)
+    fun findAllByUserId(userId: Long): List<NotificationDeviceResult> {
+        return notificationDeviceRepository.findAllByUserId(userId)
+            .map { NotificationDeviceResult.from(it) }
+    }
+
+    fun findAllByUserIds(userIds: List<Long>): List<NotificationDeviceResult> {
+        return notificationDeviceRepository.findAllByUserIdIn(userIds)
             .map { NotificationDeviceResult.from(it) }
     }
 

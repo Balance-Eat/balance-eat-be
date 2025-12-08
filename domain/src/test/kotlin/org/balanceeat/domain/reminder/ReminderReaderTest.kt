@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
+import java.time.DayOfWeek
+import java.time.LocalTime
 
 class ReminderReaderTest : IntegrationTestContext() {
 
@@ -52,6 +54,92 @@ class ReminderReaderTest : IntegrationTestContext() {
             // then
             assertThat(results.content).isEmpty()
             assertThat(results.totalElements).isEqualTo(0)
+        }
+    }
+
+    @Nested
+    @DisplayName("활성 리마인더 개수 조회 테스트")
+    inner class FindAllActiveCountByTest {
+
+        @Test
+        fun  `성공`() {
+            // given
+            val targetDayOfWeek = DayOfWeek.MONDAY
+            val targetTime = LocalTime.of(9, 0, 0)
+
+            reminderRepository.save(reminderFixture {
+                this.dayOfWeeks = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY)
+                this.sendTime = targetTime
+                this.isActive = true
+            })
+            reminderRepository.save(reminderFixture {
+                this.dayOfWeeks = listOf(DayOfWeek.MONDAY)
+                this.sendTime = targetTime
+                this.isActive = true
+            })
+            reminderRepository.save(reminderFixture {
+                this.dayOfWeeks = listOf(DayOfWeek.MONDAY)
+                this.sendTime = targetTime
+                this.isActive = false // 비활성
+            })
+            reminderRepository.save(reminderFixture {
+                this.dayOfWeeks = listOf(DayOfWeek.TUESDAY)
+                this.sendTime = targetTime
+                this.isActive = true // 다른 요일
+            })
+            reminderRepository.save(reminderFixture {
+                this.dayOfWeeks = listOf(DayOfWeek.MONDAY)
+                this.sendTime = targetTime.plusHours(1) // 다른 시간
+                this.isActive = true
+            })
+
+            // when
+            val count = reminderReader.findAllActiveCountBy(targetDayOfWeek, targetTime)
+
+            // then
+            assertThat(count).isEqualTo(2)
+        }
+    }
+
+    @Nested
+    @DisplayName("활성 리마인더 조회 테스트")
+    inner class FindAllActiveByTest {
+
+        @Test
+        fun `성공`() {
+            // given
+            val targetDayOfWeek = DayOfWeek.WEDNESDAY
+            val targetTime = LocalTime.of(14, 30, 0)
+
+            val reminder1 = reminderRepository.save(reminderFixture {
+                this.dayOfWeeks = listOf(DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+                this.sendTime = targetTime
+                this.isActive = true
+            })
+            val reminder2 = reminderRepository.save(reminderFixture {
+                this.dayOfWeeks = listOf(DayOfWeek.WEDNESDAY)
+                this.sendTime = targetTime
+                this.isActive = true
+            })
+            reminderRepository.save(reminderFixture {
+                this.dayOfWeeks = listOf(DayOfWeek.WEDNESDAY)
+                this.sendTime = targetTime
+                this.isActive = false // 비활성
+            })
+
+            val pageable = PageRequest.of(0, 10)
+
+            // when
+            val results = reminderReader.findAllActiveBy(targetDayOfWeek, targetTime, pageable)
+
+            // then
+            assertThat(results).hasSize(2)
+            assertThat(reminder1)
+                .usingRecursiveComparison()
+                .isEqualTo(results[0])
+            assertThat(reminder2)
+                .usingRecursiveComparison()
+                .isEqualTo(results[1])
         }
     }
 }

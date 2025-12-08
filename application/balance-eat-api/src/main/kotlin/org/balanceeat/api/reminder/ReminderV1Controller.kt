@@ -53,12 +53,12 @@ class ReminderV1Controller(
     }
 
     @DeleteMapping("/{reminderId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     fun delete(
         @RequestHeader("X-USER-ID") userId: Long,
         @PathVariable reminderId: Long
-    ) {
+    ): ApiResponse<Void> {
         reminderService.delete(reminderId, userId)
+        return ApiResponse.success()
     }
 
     @PatchMapping("/{reminderId}/activation")
