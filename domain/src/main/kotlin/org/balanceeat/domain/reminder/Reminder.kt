@@ -41,6 +41,7 @@ class Reminder(
         require(content.length <= MAX_CONTENT_LENGTH) { "리마인더 내용은 ${MAX_CONTENT_LENGTH}자를 초과할 수 없습니다" }
         require(userId > 0) { "사용자 ID는 0보다 큰 값이어야 합니다" }
         require(sendTime.second == 0) { "리마인더 전송 시간의 초는 0이어야 합니다" }
+        require(sendTime.minute % 5 == 0) { "리마인더 전송 시간의 분은 5분 단위로만 설정할 수 있습니다" }
         require(dayOfWeeks.isNotEmpty()) { "알림 요일은 최소 1개 이상 선택해야 합니다" }
         require(dayOfWeeks.size == dayOfWeeks.distinct().size) { "중복된 요일은 선택할 수 없습니다" }
     }
