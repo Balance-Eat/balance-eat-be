@@ -7,4 +7,11 @@ class AppPushRequest {
         val content: String,
         val deepLink: String? = null
     )
+
+    data class SendBatchMessages(
+        val deviceIds: List<Long>,
+        val title: String,
+        val content: String,
+        val deepLink: String? = null
+    )
 }

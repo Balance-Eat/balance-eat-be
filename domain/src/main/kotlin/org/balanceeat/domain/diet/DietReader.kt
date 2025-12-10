@@ -6,6 +6,7 @@ import org.balanceeat.domain.food.FoodRepository
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.YearMonth
 
 @Component
@@ -27,6 +28,10 @@ class DietReader(
     fun findMonthlyDietSummaries(userId: Long, yearMonth: YearMonth): List<DietSummary> {
         val diets = dietRepository.findMonthlyDiets(userId, yearMonth)
         return dietsToSummaries(diets)
+    }
+
+    fun findUserIdsWithoutDietForMealOnDate(mealType: Diet.MealType, targetDate: LocalDate): List<Long> {
+        return dietRepository.findUserIdsWithoutDietForMealOnDate(mealType, targetDate)
     }
 
     private fun dietsToSummaries(diets: List<Diet>): List<DietSummary> {

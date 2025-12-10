@@ -3,6 +3,8 @@ package org.balanceeat.apibase
 import org.balanceeat.common.Status
 
 enum class ApplicationStatus(override val message: String): Status {
+    INVALID_PARAMETER("잘못된 요청 파라미터입니다."),
+
     // user
     USER_NOT_FOUND("존재하지 않는 사용자입니다."),
 

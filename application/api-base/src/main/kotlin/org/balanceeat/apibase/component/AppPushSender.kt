@@ -41,4 +41,31 @@ class AppPushSender(
             )
         )
     }
+
+    @Async
+    @Transactional
+    fun sendBatchPushAsync(request: AppPushRequest.SendBatchMessages) {
+        val (deviceIds, title, content, deepLink) = request
+        val devices = notificationDeviceReader.findAllByIds(deviceIds).filter { it.isActive }
+
+        devices.forEach { device ->
+            firebaseClient.sendMessage(
+                FirebaseRequest.SendMessage(
+                    deviceToken = device.agentId,
+                    title = title,
+                    content = content,
+                    deepLink = deepLink
+                )
+            )
+
+            appPushHistoryWriter.create(
+                AppPushHistoryCommand.Create(
+                    deviceId = device.id,
+                    title = title,
+                    content = content,
+                    deepLink = deepLink
+                )
+            )
+        }
+    }
 }
