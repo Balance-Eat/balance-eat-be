@@ -4,6 +4,7 @@ import jakarta.validation.Valid
 import org.balanceeat.apibase.response.ApiResponse
 import org.balanceeat.apibase.response.PageResponse
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -27,7 +28,7 @@ class ReminderV1Controller(
     @GetMapping
     fun getSummaries(
         @RequestHeader("X-USER-ID") userId: Long,
-        @PageableDefault pageable: Pageable
+        @PageableDefault(sort = ["sendTime"], direction = Sort.Direction.ASC) pageable: Pageable
     ): ApiResponse<PageResponse<ReminderV1Response.Summary>> {
         val result = reminderService.getSummaries(userId, pageable)
         return ApiResponse.success(result)

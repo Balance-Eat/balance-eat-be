@@ -26,7 +26,7 @@ class ReminderScheduleService(
         for (offset in 0 until totalReminderCount step CHUNK_SIZE.toLong()) {
             val pageable = PageRequest.of((offset/ CHUNK_SIZE).toInt(), CHUNK_SIZE)
             val reminders = reminderReader.findAllActiveBy(dayOfWeek, time, pageable)
-            val notificationDevicesMap = notificationDeviceReader.findAllByUserIds(reminders.toIds())
+            val notificationDevicesMap = notificationDeviceReader.findAllActiveByUserIds(reminders.toIds())
                 .groupBy { it.userId }
 
             reminders.forEach { reminder ->

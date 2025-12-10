@@ -21,6 +21,8 @@ class AppPushSender(
         val (deviceId, title, content, deepLink) = request
         val device = notificationDeviceReader.findByIdOrThrow(deviceId)
 
+        if (!device.isActive) return
+
         firebaseClient.sendMessage(
             FirebaseRequest.SendMessage(
                 deviceToken = device.agentId,

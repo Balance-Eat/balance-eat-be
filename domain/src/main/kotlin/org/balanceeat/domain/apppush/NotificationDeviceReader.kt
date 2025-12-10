@@ -20,8 +20,8 @@ class NotificationDeviceReader(
             .map { NotificationDeviceResult.from(it) }
     }
 
-    fun findAllByUserIds(userIds: List<Long>): List<NotificationDeviceResult> {
-        return notificationDeviceRepository.findAllByUserIdIn(userIds)
+    fun findAllActiveByUserIds(userIds: List<Long>): List<NotificationDeviceResult> {
+        return notificationDeviceRepository.findAllActiveByUserIdIn(userIds)
             .map { NotificationDeviceResult.from(it) }
     }
 
