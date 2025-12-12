@@ -1,5 +1,6 @@
 package org.balanceeat.api.diet
 
+import mu.KotlinLogging
 import org.balanceeat.domain.diet.Diet
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
@@ -10,11 +11,14 @@ import java.time.LocalDateTime
 class DietScheduler(
     private val dietScheduleService: DietScheduleService,
 ) {
-    private val log = LoggerFactory.getLogger(DietScheduler::class.java)
+    private val log = KotlinLogging.logger {}
 
     @Scheduled(cron = "0 0 11,17,21 * * ?")
     fun aggregateDailyStats() {
+
+
         val targetDateTime = LocalDateTime.now()
+        log.info { "식단 미등록 알림 전송 스케줄러 시작 $targetDateTime" }
         val mealType = when (targetDateTime.hour) {
             11 -> Diet.MealType.BREAKFAST
             17 -> Diet.MealType.LUNCH
@@ -26,5 +30,7 @@ class DietScheduler(
         }
 
         dietScheduleService.sendNotRegisteredDietNotifications(mealType, targetDateTime.toLocalDate())
+
+        log.info { "식단 미등록 알림 전송 스케줄러 종료 $targetDateTime" }
     }
 }

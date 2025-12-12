@@ -3,7 +3,6 @@ package org.balanceeat.api.reminder
 import org.balanceeat.apibase.component.AppPushRequest
 import org.balanceeat.apibase.component.AppPushSender
 import org.balanceeat.domain.apppush.NotificationDeviceReader
-import org.balanceeat.domain.config.toIds
 import org.balanceeat.domain.reminder.ReminderReader
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -26,7 +25,7 @@ class ReminderScheduleService(
         for (offset in 0 until totalReminderCount step CHUNK_SIZE.toLong()) {
             val pageable = PageRequest.of((offset/ CHUNK_SIZE).toInt(), CHUNK_SIZE)
             val reminders = reminderReader.findAllActiveBy(dayOfWeek, time, pageable)
-            val notificationDevicesMap = notificationDeviceReader.findAllActiveByUserIds(reminders.toIds())
+            val notificationDevicesMap = notificationDeviceReader.findAllActiveByUserIds(reminders.map{ it.userId }.toList())
                 .groupBy { it.userId }
 
             reminders.forEach { reminder ->
