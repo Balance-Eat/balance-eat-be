@@ -14,6 +14,7 @@ COPY settings.gradle.kts ./
 COPY build.gradle.kts ./
 
 # 각 모듈의 build.gradle.kts 파일들 복사
+COPY application/balance-eat-batch/build.gradle.kts ./application/balance-eat-batch/
 COPY application/balance-eat-api/build.gradle.kts ./application/balance-eat-api/
 COPY application/balance-eat-admin-api/build.gradle.kts ./application/balance-eat-admin-api/
 COPY application/api-base/build.gradle.kts ./application/api-base/

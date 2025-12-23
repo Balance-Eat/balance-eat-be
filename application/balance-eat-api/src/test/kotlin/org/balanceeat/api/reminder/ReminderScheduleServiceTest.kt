@@ -38,8 +38,8 @@ class ReminderScheduleServiceTest : IntegrationTestContext() {
             // given
             val targetDateTime = LocalDateTime.of(2024, 1, 8, 9, 0, 0) // 월요일 09:00
             val targetTime = LocalTime.of(9, 0, 0)
-            val userId1 = 1L
-            val userId2 = 2L
+            val userId1 = 100L
+            val userId2 = 200L
 
             // 활성 리마인더 생성
             reminderRepository.saveAll(listOf(

@@ -12,7 +12,7 @@ import org.springframework.util.ErrorHandler
 
 @EnableScheduling
 @Configuration
-class ScheduledConfig : SchedulingConfigurer {
+class SchedulingConfig : SchedulingConfigurer {
 
     @Bean
     fun taskScheduler(): TaskScheduler {
