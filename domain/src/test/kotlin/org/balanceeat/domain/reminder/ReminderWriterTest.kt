@@ -10,7 +10,6 @@ import java.time.DayOfWeek
 import java.time.LocalTime
 
 class ReminderWriterTest : IntegrationTestContext() {
-
     @Autowired
     private lateinit var reminderWriter: ReminderWriter
 
@@ -41,23 +40,25 @@ class ReminderWriterTest : IntegrationTestContext() {
         @Test
         fun `리마인더를 수정할 수 있다`() {
             // given
-            val reminder = createEntity(
-                reminderFixture {
-                    userId = 1L
-                    content = "수정 전 내용"
-                    sendTime = LocalTime.of(9, 0, 0)
-                    isActive = true
-                    dayOfWeeks = listOf(DayOfWeek.MONDAY)
-                }
-            )
+            val reminder =
+                createEntity(
+                    reminderFixture {
+                        userId = 1L
+                        content = "수정 전 내용"
+                        sendTime = LocalTime.of(9, 0, 0)
+                        isActive = true
+                        dayOfWeeks = listOf(DayOfWeek.MONDAY)
+                    },
+                )
 
-            val command = reminderUpdateCommandFixture {
-                id = reminder.id
-                content = "수정 후 내용"
-                sendTime = LocalTime.of(10, 0, 0)
-                isActive = false
-                dayOfWeeks = listOf(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
-            }
+            val command =
+                reminderUpdateCommandFixture {
+                    id = reminder.id
+                    content = "수정 후 내용"
+                    sendTime = LocalTime.of(10, 0, 0)
+                    isActive = false
+                    dayOfWeeks = listOf(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+                }
 
             // when
             val result = reminderWriter.update(command)
@@ -91,17 +92,19 @@ class ReminderWriterTest : IntegrationTestContext() {
         @Test
         fun `리마인더 활성화 상태를 변경할 수 있다`() {
             // given
-            val reminder = createEntity(
-                reminderFixture {
-                    userId = 1L
-                    isActive = true
-                }
-            )
+            val reminder =
+                createEntity(
+                    reminderFixture {
+                        userId = 1L
+                        isActive = true
+                    },
+                )
 
-            val command = reminderUpdateActivationCommandFixture {
-                id = reminder.id
-                isActive = false
-            }
+            val command =
+                reminderUpdateActivationCommandFixture {
+                    id = reminder.id
+                    isActive = false
+                }
 
             // when
             val result = reminderWriter.updateActivation(command)
@@ -114,17 +117,19 @@ class ReminderWriterTest : IntegrationTestContext() {
         @Test
         fun `비활성화된 리마인더를 활성화할 수 있다`() {
             // given
-            val reminder = createEntity(
-                reminderFixture {
-                    userId = 1L
-                    isActive = false
-                }
-            )
+            val reminder =
+                createEntity(
+                    reminderFixture {
+                        userId = 1L
+                        isActive = false
+                    },
+                )
 
-            val command = reminderUpdateActivationCommandFixture {
-                id = reminder.id
-                isActive = true
-            }
+            val command =
+                reminderUpdateActivationCommandFixture {
+                    id = reminder.id
+                    isActive = true
+                }
 
             // when
             val result = reminderWriter.updateActivation(command)

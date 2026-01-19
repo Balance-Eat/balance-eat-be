@@ -5,23 +5,20 @@ import java.time.DayOfWeek
 import java.time.LocalTime
 
 class ReminderCommandFixture {
-
     class Create(
         var userId: Long = 1L,
         var content: String = "아침 식사 기록하기",
         var sendTime: LocalTime = LocalTime.of(9, 0, 0),
         var isActive: Boolean = true,
-        var dayOfWeeks: List<DayOfWeek> = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+        var dayOfWeeks: List<DayOfWeek> = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
     ) : TestFixture<ReminderCommand.Create> {
-        override fun create(): ReminderCommand.Create {
-            return ReminderCommand.Create(
+        override fun create(): ReminderCommand.Create = ReminderCommand.Create(
                 userId = userId,
                 content = content,
                 sendTime = sendTime,
                 isActive = isActive,
-                dayOfWeeks = dayOfWeeks
+                dayOfWeeks = dayOfWeeks,
             )
-        }
     }
 
     class Update(
@@ -29,40 +26,33 @@ class ReminderCommandFixture {
         var content: String = "수정된 리마인더 내용",
         var sendTime: LocalTime = LocalTime.of(10, 0, 0),
         var isActive: Boolean = true,
-        var dayOfWeeks: List<DayOfWeek> = listOf(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+        var dayOfWeeks: List<DayOfWeek> = listOf(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY),
     ) : TestFixture<ReminderCommand.Update> {
-        override fun create(): ReminderCommand.Update {
-            return ReminderCommand.Update(
+        override fun create(): ReminderCommand.Update = ReminderCommand.Update(
                 id = id,
                 content = content,
                 sendTime = sendTime,
                 isActive = isActive,
-                dayOfWeeks = dayOfWeeks
+                dayOfWeeks = dayOfWeeks,
             )
-        }
     }
 
     class UpdateActivation(
         var id: Long = 1L,
-        var isActive: Boolean = false
+        var isActive: Boolean = false,
     ) : TestFixture<ReminderCommand.UpdateActivation> {
-        override fun create(): ReminderCommand.UpdateActivation {
-            return ReminderCommand.UpdateActivation(
+        override fun create(): ReminderCommand.UpdateActivation = ReminderCommand.UpdateActivation(
                 id = id,
-                isActive = isActive
+                isActive = isActive,
             )
-        }
     }
 }
 
-fun reminderCreateCommandFixture(block: ReminderCommandFixture.Create.() -> Unit = {}): ReminderCommand.Create {
-    return ReminderCommandFixture.Create().apply(block).create()
-}
+fun reminderCreateCommandFixture(block: ReminderCommandFixture.Create.() -> Unit = {}): ReminderCommand.Create = ReminderCommandFixture.Create().apply(block).create()
 
-fun reminderUpdateCommandFixture(block: ReminderCommandFixture.Update.() -> Unit = {}): ReminderCommand.Update {
-    return ReminderCommandFixture.Update().apply(block).create()
-}
+fun reminderUpdateCommandFixture(block: ReminderCommandFixture.Update.() -> Unit = {}): ReminderCommand.Update = ReminderCommandFixture.Update().apply(block).create()
 
-fun reminderUpdateActivationCommandFixture(block: ReminderCommandFixture.UpdateActivation.() -> Unit = {}): ReminderCommand.UpdateActivation {
-    return ReminderCommandFixture.UpdateActivation().apply(block).create()
-}
+fun reminderUpdateActivationCommandFixture(
+    block: ReminderCommandFixture.UpdateActivation.() -> Unit = {
+    },
+): ReminderCommand.UpdateActivation = ReminderCommandFixture.UpdateActivation().apply(block).create()

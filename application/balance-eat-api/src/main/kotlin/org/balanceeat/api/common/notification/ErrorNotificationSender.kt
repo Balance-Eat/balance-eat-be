@@ -9,29 +9,34 @@ import org.springframework.stereotype.Component
 @ConditionalOnBean(DiscordClient::class)
 class ErrorNotificationSender(
     private val discordClient: DiscordClient,
-    private val environment: Environment
+    private val environment: Environment,
 ) {
     @Async
-    fun send(message: String, e: Throwable) {
-        val errorMessage = """
+    fun send(
+        message: String,
+        e: Throwable,
+    ) {
+        val errorMessage =
+            """
             message: %s
             stacktrace: %s
             """.trimIndent().format(
-            message,
-            e.toLimitedStackTrace()
-        )
+                message,
+                e.toLimitedStackTrace(),
+            )
         send(errorMessage)
     }
 
     @Async
     fun send(e: Throwable) {
-        val errorMessage = """
+        val errorMessage =
+            """
             message: %s
             stacktrace: %s
             """.trimIndent().format(
-            e.message,
-            e.toLimitedStackTrace()
-        )
+                e.message,
+                e.toLimitedStackTrace(),
+            )
         send(errorMessage)
     }
 
@@ -40,16 +45,15 @@ class ErrorNotificationSender(
         val sendableProfiles = setOf("dev", "prod")
         val activeProfiles = environment.activeProfiles.toSet()
         val shouldSend = activeProfiles.any { it in sendableProfiles }
-        
+
         if (shouldSend) {
             discordClient.sendMessage(message)
         }
     }
 
-    private fun Throwable.toLimitedStackTrace(maxLines: Int = 5): String {
-        return this.stackTraceToString()
+    private fun Throwable.toLimitedStackTrace(maxLines: Int = 5): String = this
+        .stackTraceToString()
             .lineSequence()
             .take(maxLines)
             .joinToString("\n")
-    }
 }

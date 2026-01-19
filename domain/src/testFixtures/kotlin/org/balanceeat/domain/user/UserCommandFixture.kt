@@ -24,10 +24,9 @@ class UserCommandFixture {
         var targetProtein: Double? = 120.0,
         var targetFat: Double? = 80.0,
         var providerId: String? = "google123",
-        var providerType: String? = "GOOGLE"
+        var providerType: String? = "GOOGLE",
     ) : TestFixture<UserCommand.Create> {
-        override fun create(): UserCommand.Create {
-            return UserCommand.Create(
+        override fun create(): UserCommand.Create = UserCommand.Create(
                 uuid = uuid,
                 name = name,
                 gender = gender,
@@ -47,9 +46,8 @@ class UserCommandFixture {
                 targetProtein = targetProtein,
                 targetFat = targetFat,
                 providerId = providerId,
-                providerType = providerType
+                providerType = providerType,
             )
-        }
     }
 
     class Update(
@@ -70,10 +68,9 @@ class UserCommandFixture {
         var targetFatPercentage: Double? = 15.0,
         var targetCarbohydrates: Double? = 250.0,
         var targetProtein: Double? = 100.0,
-        var targetFat: Double? = 60.0
+        var targetFat: Double? = 60.0,
     ) : TestFixture<UserCommand.Update> {
-        override fun create(): UserCommand.Update {
-            return UserCommand.Update(
+        override fun create(): UserCommand.Update = UserCommand.Update(
                 id = id,
                 name = name,
                 gender = gender,
@@ -91,16 +88,11 @@ class UserCommandFixture {
                 targetFatPercentage = targetFatPercentage,
                 targetCarbohydrates = targetCarbohydrates,
                 targetProtein = targetProtein,
-                targetFat = targetFat
+                targetFat = targetFat,
             )
-        }
     }
 }
 
-fun userCreateCommandFixture(block: UserCommandFixture.Create.() -> Unit = {}): UserCommand.Create {
-    return UserCommandFixture.Create().apply(block).create()
-}
+fun userCreateCommandFixture(block: UserCommandFixture.Create.() -> Unit = {}): UserCommand.Create = UserCommandFixture.Create().apply(block).create()
 
-fun userUpdateCommandFixture(block: UserCommandFixture.Update.() -> Unit = {}): UserCommand.Update {
-    return UserCommandFixture.Update().apply(block).create()
-}
+fun userUpdateCommandFixture(block: UserCommandFixture.Update.() -> Unit = {}): UserCommand.Update = UserCommandFixture.Update().apply(block).create()

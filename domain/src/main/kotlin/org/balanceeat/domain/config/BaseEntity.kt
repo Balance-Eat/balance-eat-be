@@ -38,11 +38,12 @@ abstract class BaseEntity {
     }
 }
 
-fun List<BaseEntity>.toIds(): List<Long> = this.map {
+fun List<BaseEntity>.toIds(): List<Long> =
+    this
+        .map {
         val field = it::class.java.getDeclaredField("id")
         field.isAccessible = true
         field.get(it) as Long
-    }
-    .toList()
+    }.toList()
 
 const val NEW_ID = 0L

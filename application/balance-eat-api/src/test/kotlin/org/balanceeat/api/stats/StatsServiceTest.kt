@@ -21,8 +21,10 @@ import java.time.LocalDate
 class StatsServiceTest : IntegrationTestContext() {
     @Autowired
     private lateinit var statsService: StatsService
+
     @Autowired
     private lateinit var dietRepository: DietRepository
+
     @Autowired
     private lateinit var dietStatsRepository: DietStatsRepository
 
@@ -35,33 +37,37 @@ class StatsServiceTest : IntegrationTestContext() {
             val user = createEntity(UserFixture().create())
             val food = createEntity(FoodFixture().create())
 
-            val diet1 = dietRepository.save(
-                DietFixture(
-                    userId = user.id,
-                    mealType = Diet.MealType.BREAKFAST,
-                    consumedAt = statsDate.atStartOfDay(),
-                    dietFoods = mutableListOf(
-                        DietFoodFixture(
-                            foodId = food.id,
-                            intake = 100
-                        ).create()
-                    )
-                ).create()
-            )
+            val diet1 =
+                dietRepository.save(
+                    DietFixture(
+                        userId = user.id,
+                        mealType = Diet.MealType.BREAKFAST,
+                        consumedAt = statsDate.atStartOfDay(),
+                        dietFoods =
+                            mutableListOf(
+                                DietFoodFixture(
+                                    foodId = food.id,
+                                    intake = 100,
+                                ).create(),
+                            ),
+                    ).create(),
+                )
 
-            val diet2 = dietRepository.save(
-                DietFixture(
-                    userId = user.id,
-                    mealType = Diet.MealType.LUNCH,
-                    consumedAt = statsDate.atStartOfDay().plusHours(5),
-                    dietFoods = mutableListOf(
-                        DietFoodFixture(
-                            foodId = food.id,
-                            intake = 80
-                        ).create()
-                    )
-                ).create()
-            )
+            val diet2 =
+                dietRepository.save(
+                    DietFixture(
+                        userId = user.id,
+                        mealType = Diet.MealType.LUNCH,
+                        consumedAt = statsDate.atStartOfDay().plusHours(5),
+                        dietFoods =
+                            mutableListOf(
+                                DietFoodFixture(
+                                    foodId = food.id,
+                                    intake = 80,
+                                ).create(),
+                            ),
+                    ).create(),
+                )
             val expectedTotalCalories = food.perServingCalories * (100 + 80) / food.servingSize
             val expectedTotalCarbohydrates = food.carbohydrates * (100 + 80) / food.servingSize
             val expectedTotalProtein = food.protein * (100 + 80) / food.servingSize
@@ -77,11 +83,11 @@ class StatsServiceTest : IntegrationTestContext() {
                 .hasSize(1)
                 .allMatch { stat ->
                     stat.userId == user.id &&
-                    stat.statsDate == statsDate &&
-                    stat.totalCalories == expectedTotalCalories &&
-                    stat.totalCarbohydrates == expectedTotalCarbohydrates &&
-                    stat.totalProtein == expectedTotalProtein &&
-                    stat.totalFat == expectedTotalFat
+                        stat.statsDate == statsDate &&
+                        stat.totalCalories == expectedTotalCalories &&
+                        stat.totalCarbohydrates == expectedTotalCarbohydrates &&
+                        stat.totalProtein == expectedTotalProtein &&
+                        stat.totalFat == expectedTotalFat
                 }
         }
 
@@ -92,24 +98,29 @@ class StatsServiceTest : IntegrationTestContext() {
             val user = createEntity(UserFixture().create())
             val food = createEntity(FoodFixture().create())
 
-            val alreadyExistStats = createEntity(DietStatsFixture(
-                userId = user.id,
-                statsDate = statsDate
-            ).create())
+            val alreadyExistStats =
+                createEntity(
+                    DietStatsFixture(
+                        userId = user.id,
+                        statsDate = statsDate,
+                    ).create(),
+                )
 
-            val diet = dietRepository.save(
-                DietFixture(
-                    userId = user.id,
-                    mealType = Diet.MealType.SNACK,
-                    consumedAt = statsDate.atStartOfDay(),
-                    dietFoods = mutableListOf(
-                        DietFoodFixture(
-                            foodId = food.id,
-                            intake = 100
-                        ).create()
-                    )
-                ).create()
-            )
+            val diet =
+                dietRepository.save(
+                    DietFixture(
+                        userId = user.id,
+                        mealType = Diet.MealType.SNACK,
+                        consumedAt = statsDate.atStartOfDay(),
+                        dietFoods =
+                            mutableListOf(
+                                DietFoodFixture(
+                                    foodId = food.id,
+                                    intake = 100,
+                                ).create(),
+                            ),
+                    ).create(),
+                )
             val expectedTotalCalories = food.perServingCalories * 100 / food.servingSize
             val expectedTotalCarbohydrates = food.carbohydrates * 100 / food.servingSize
             val expectedTotalProtein = food.protein * 100 / food.servingSize
@@ -125,11 +136,11 @@ class StatsServiceTest : IntegrationTestContext() {
                 .hasSize(1)
                 .allMatch { stat ->
                     stat.userId == user.id &&
-                    stat.statsDate == statsDate &&
-                    stat.totalCalories == expectedTotalCalories &&
-                    stat.totalCarbohydrates == expectedTotalCarbohydrates &&
-                    stat.totalProtein == expectedTotalProtein &&
-                    stat.totalFat == expectedTotalFat
+                        stat.statsDate == statsDate &&
+                        stat.totalCalories == expectedTotalCalories &&
+                        stat.totalCarbohydrates == expectedTotalCarbohydrates &&
+                        stat.totalProtein == expectedTotalProtein &&
+                        stat.totalFat == expectedTotalFat
                 }
         }
 
@@ -150,11 +161,11 @@ class StatsServiceTest : IntegrationTestContext() {
                 .hasSize(2)
                 .allMatch { stat ->
                     stat.userId != 0L &&
-                    stat.statsDate == statsDate &&
-                    stat.totalCalories == 0.0 &&
-                    stat.totalCarbohydrates == 0.0 &&
-                    stat.totalProtein == 0.0 &&
-                    stat.totalFat == 0.0
+                        stat.statsDate == statsDate &&
+                        stat.totalCalories == 0.0 &&
+                        stat.totalCarbohydrates == 0.0 &&
+                        stat.totalProtein == 0.0 &&
+                        stat.totalFat == 0.0
                 }
         }
     }
@@ -164,26 +175,27 @@ class StatsServiceTest : IntegrationTestContext() {
     inner class GetStatsTest {
         @Test
         fun `데이터가 없으면 날짜별로 빈값 반환`() {
-            //given
+            // given
             val limit = 5
 
             // when
-            val result = statsService.getStats(
-                userId = 1L,
-                type = StatsType.DAILY,
-                from = LocalDate.now().minusDays(limit - 1L),
-                to = LocalDate.now()
-            )
+            val result =
+                statsService.getStats(
+                    userId = 1L,
+                    type = StatsType.DAILY,
+                    from = LocalDate.now().minusDays(limit - 1L),
+                    to = LocalDate.now(),
+                )
 
             // then
             assertThat(result)
                 .hasSize(limit)
                 .allMatch { stat ->
                     stat.type == StatsType.DAILY &&
-                    stat.totalCalories == 0.0 &&
-                    stat.totalCarbohydrates == 0.0 &&
-                    stat.totalProtein == 0.0 &&
-                    stat.totalFat == 0.0
+                        stat.totalCalories == 0.0 &&
+                        stat.totalCarbohydrates == 0.0 &&
+                        stat.totalProtein == 0.0 &&
+                        stat.totalFat == 0.0
                 }
         }
 
@@ -194,26 +206,29 @@ class StatsServiceTest : IntegrationTestContext() {
             val today = LocalDate.now()
 
             // 최근 5일간의 통계 데이터 생성
-            val statsList = (0..limit - 1).map { daysAgo ->
-                val date = today.minusDays(daysAgo.toLong())
-                DietStatsFixture(
-                    userId = 1L,
-                    statsDate = date,
-                    totalCalories = 2000.0 + daysAgo * 100,
-                    totalCarbohydrates = 250.0 + daysAgo * 10,
-                    totalProtein = 100.0 + daysAgo * 5,
-                    totalFat = 60.0 + daysAgo * 3,
-                ).create()
-            }.reversed() // 날짜 오름차순 정렬을 위해 역순으로 변경
+            val statsList =
+                (0..limit - 1)
+                    .map { daysAgo ->
+                    val date = today.minusDays(daysAgo.toLong())
+                    DietStatsFixture(
+                        userId = 1L,
+                        statsDate = date,
+                        totalCalories = 2000.0 + daysAgo * 100,
+                        totalCarbohydrates = 250.0 + daysAgo * 10,
+                        totalProtein = 100.0 + daysAgo * 5,
+                        totalFat = 60.0 + daysAgo * 3,
+                    ).create()
+                }.reversed() // 날짜 오름차순 정렬을 위해 역순으로 변경
             dietStatsRepository.createAll(statsList)
 
             // when
-            val result = statsService.getStats(
-                userId = 1L,
-                type = StatsType.DAILY,
-                from = LocalDate.now().minusDays(limit - 1L),
-                to = LocalDate.now(),
-            )
+            val result =
+                statsService.getStats(
+                    userId = 1L,
+                    type = StatsType.DAILY,
+                    from = LocalDate.now().minusDays(limit - 1L),
+                    to = LocalDate.now(),
+                )
 
             // then
             assertThat(result).hasSize(limit)
@@ -235,26 +250,28 @@ class StatsServiceTest : IntegrationTestContext() {
             val today = LocalDate.now()
 
             // 3일치 데이터만 생성
-            val statsList = (0..2).map { daysAgo ->
-                val date = today.minusDays(daysAgo.toLong())
-                DietStatsFixture(
-                    userId = 1L,
-                    statsDate = date,
-                    totalCalories = 2000.0,
-                    totalCarbohydrates = 250.0,
-                    totalProtein = 100.0,
-                    totalFat = 60.0
-                ).create()
-            }
+            val statsList =
+                (0..2).map { daysAgo ->
+                    val date = today.minusDays(daysAgo.toLong())
+                    DietStatsFixture(
+                        userId = 1L,
+                        statsDate = date,
+                        totalCalories = 2000.0,
+                        totalCarbohydrates = 250.0,
+                        totalProtein = 100.0,
+                        totalFat = 60.0,
+                    ).create()
+                }
             dietStatsRepository.createAll(statsList)
 
             // when
-            val result = statsService.getStats(
-                userId = 1L,
-                type = StatsType.DAILY,
-                from = LocalDate.now().minusDays(limit - 1L),
-                to = LocalDate.now(),
-            )
+            val result =
+                statsService.getStats(
+                    userId = 1L,
+                    type = StatsType.DAILY,
+                    from = LocalDate.now().minusDays(limit - 1L),
+                    to = LocalDate.now(),
+                )
 
             // then
             val emptyStatsCount = result.count { it.totalCalories == 0.0 }
@@ -279,8 +296,8 @@ class StatsServiceTest : IntegrationTestContext() {
                         totalCalories = 2000.0,
                         totalCarbohydrates = 250.0,
                         totalProtein = 100.0,
-                        totalFat = 60.0
-                    ).create()
+                        totalFat = 60.0,
+                    ).create(),
                 )
             }
 
@@ -294,8 +311,8 @@ class StatsServiceTest : IntegrationTestContext() {
                         totalCalories = 2000.0,
                         totalCarbohydrates = 250.0,
                         totalProtein = 100.0,
-                        totalFat = 60.0
-                    ).create()
+                        totalFat = 60.0,
+                    ).create(),
                 )
             }
 
@@ -309,19 +326,20 @@ class StatsServiceTest : IntegrationTestContext() {
                         totalCalories = 2000.0,
                         totalCarbohydrates = 250.0,
                         totalProtein = 100.0,
-                        totalFat = 60.0
-                    ).create()
+                        totalFat = 60.0,
+                    ).create(),
                 )
             }
             dietStatsRepository.createAll(statsList)
 
             // when
-            val result = statsService.getStats(
-                userId = 1L,
-                type = StatsType.WEEKLY,
-                from = requestDate.minusWeeks(limit - 1L),
-                to = requestDate,
-            )
+            val result =
+                statsService.getStats(
+                    userId = 1L,
+                    type = StatsType.WEEKLY,
+                    from = requestDate.minusWeeks(limit - 1L),
+                    to = requestDate,
+                )
 
             // then
             assertThat(result.size).isEqualTo(limit)
@@ -353,8 +371,8 @@ class StatsServiceTest : IntegrationTestContext() {
                         totalCalories = 2000.0,
                         totalCarbohydrates = 250.0,
                         totalProtein = 100.0,
-                        totalFat = 60.0
-                    ).create()
+                        totalFat = 60.0,
+                    ).create(),
                 )
             }
 
@@ -368,8 +386,8 @@ class StatsServiceTest : IntegrationTestContext() {
                         totalCalories = 2000.0,
                         totalCarbohydrates = 250.0,
                         totalProtein = 100.0,
-                        totalFat = 60.0
-                    ).create()
+                        totalFat = 60.0,
+                    ).create(),
                 )
             }
 
@@ -383,19 +401,20 @@ class StatsServiceTest : IntegrationTestContext() {
                         totalCalories = 2000.0,
                         totalCarbohydrates = 250.0,
                         totalProtein = 100.0,
-                        totalFat = 60.0
-                    ).create()
+                        totalFat = 60.0,
+                    ).create(),
                 )
             }
             dietStatsRepository.createAll(statsList)
 
             // when
-            val result = statsService.getStats(
-                userId = 1L,
-                type = StatsType.MONTHLY,
-                from = today.minusMonths(limit - 1L),
-                to = today,
-            )
+            val result =
+                statsService.getStats(
+                    userId = 1L,
+                    type = StatsType.MONTHLY,
+                    from = today.minusMonths(limit - 1L),
+                    to = today,
+                )
 
             // then
             assertThat(result.size).isEqualTo(limit)

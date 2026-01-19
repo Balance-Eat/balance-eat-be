@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 class AppPushSender(
     private val firebaseClient: FirebaseClient,
     private val appPushHistoryWriter: AppPushHistoryWriter,
-    private val notificationDeviceReader: NotificationDeviceReader
+    private val notificationDeviceReader: NotificationDeviceReader,
 ) {
     @Async
     @Transactional
@@ -28,8 +28,8 @@ class AppPushSender(
                 deviceToken = device.agentId,
                 title = title,
                 content = content,
-                deepLink = deepLink
-            )
+                deepLink = deepLink,
+            ),
         )
 
         appPushHistoryWriter.create(
@@ -37,8 +37,8 @@ class AppPushSender(
                 deviceId = deviceId,
                 title = title,
                 content = content,
-                deepLink = deepLink
-            )
+                deepLink = deepLink,
+            ),
         )
     }
 
@@ -54,8 +54,8 @@ class AppPushSender(
                     deviceToken = device.agentId,
                     title = title,
                     content = content,
-                    deepLink = deepLink
-                )
+                    deepLink = deepLink,
+                ),
             )
 
             appPushHistoryWriter.create(
@@ -63,8 +63,8 @@ class AppPushSender(
                     deviceId = device.id,
                     title = title,
                     content = content,
-                    deepLink = deepLink
-                )
+                    deepLink = deepLink,
+                ),
             )
         }
     }

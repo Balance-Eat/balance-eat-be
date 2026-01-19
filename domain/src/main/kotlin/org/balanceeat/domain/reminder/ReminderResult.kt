@@ -13,11 +13,10 @@ data class ReminderResult(
     val isActive: Boolean,
     val dayOfWeeks: List<DayOfWeek>,
     val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
+    val updatedAt: LocalDateTime,
 ) {
     companion object : EntityMapper<Reminder, ReminderResult> {
-        override fun from(entity: Reminder): ReminderResult {
-            return ReminderResult(
+        override fun from(entity: Reminder): ReminderResult = ReminderResult(
                 id = entity.id,
                 userId = entity.userId,
                 content = entity.content,
@@ -25,8 +24,7 @@ data class ReminderResult(
                 isActive = entity.isActive,
                 dayOfWeeks = entity.dayOfWeeks,
                 createdAt = entity.createdAt,
-                updatedAt = entity.updatedAt
+                updatedAt = entity.updatedAt,
             )
-        }
     }
 }

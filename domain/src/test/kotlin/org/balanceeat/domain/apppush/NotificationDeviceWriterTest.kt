@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
 class NotificationDeviceWriterTest : IntegrationTestContext() {
-
     @Autowired
     private lateinit var notificationDeviceWriter: NotificationDeviceWriter
 
@@ -21,7 +20,6 @@ class NotificationDeviceWriterTest : IntegrationTestContext() {
     @Nested
     @DisplayName("생성 테스트")
     inner class CreateTest {
-
         @Test
         fun `알림 디바이스를 생성할 수 있다`() {
             // given
@@ -40,15 +38,17 @@ class NotificationDeviceWriterTest : IntegrationTestContext() {
         @Test
         fun `중복된 agentId로 알림 디바이스를 생성하면 예외가 발생한다`() {
             // given
-            val existingDevice = notificationDeviceRepository.save(
-                notificationDeviceFixture {
+            val existingDevice =
+                notificationDeviceRepository.save(
+                    notificationDeviceFixture {
+                        agentId = "duplicate-agent-id"
+                    },
+                )
+
+            val command =
+                notificationDeviceCreateCommandFixture {
                     agentId = "duplicate-agent-id"
                 }
-            )
-
-            val command = notificationDeviceCreateCommandFixture {
-                agentId = "duplicate-agent-id"
-            }
 
             // when & then
             assertThatThrownBy { notificationDeviceWriter.create(command) }
@@ -60,20 +60,21 @@ class NotificationDeviceWriterTest : IntegrationTestContext() {
     @Nested
     @DisplayName("수정 테스트")
     inner class UpdateTest {
-
         @Test
         fun `알림 디바이스를 수정할 수 있다`() {
             // given
-            val device = notificationDeviceRepository.save(
-                notificationDeviceFixture {
-                    isActive = true
-                }
-            )
+            val device =
+                notificationDeviceRepository.save(
+                    notificationDeviceFixture {
+                        isActive = true
+                    },
+                )
 
-            val command = notificationDeviceUpdateCommandFixture {
-                id = device.id
-                isActive = false
-            }
+            val command =
+                notificationDeviceUpdateCommandFixture {
+                    id = device.id
+                    isActive = false
+                }
 
             // when
             val result = notificationDeviceWriter.update(command)

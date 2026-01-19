@@ -3,11 +3,11 @@ package org.balanceeat.domain.stats
 import org.assertj.core.api.Assertions.assertThat
 import org.balanceeat.domain.config.supports.IntegrationTestContext
 import org.balanceeat.domain.diet.Diet
+import org.balanceeat.domain.diet.DietRepository
 import org.balanceeat.domain.diet.dietFixture
 import org.balanceeat.domain.diet.dietFoodFixture
-import org.balanceeat.domain.diet.DietRepository
-import org.balanceeat.domain.food.foodFixture
 import org.balanceeat.domain.food.FoodRepository
+import org.balanceeat.domain.food.foodFixture
 import org.balanceeat.domain.user.userFixture
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -35,31 +35,35 @@ class DietStatsWriterTest : IntegrationTestContext() {
             // given
             val user = createEntity(userFixture())
             val food = createEntity(foodFixture())
-            val breakfast = dietRepository.save(
-                dietFixture {
-                    userId = user.id
-                    mealType = Diet.MealType.BREAKFAST
-                    dietFoods = mutableListOf(
-                        dietFoodFixture {
-                            foodId = food.id
-                            intake = food.servingSize.toInt()
-                        }
-                    )
-                }
-            )
-            val lunch = dietRepository.save(
-                dietFixture {
-                    userId = user.id
-                    mealType = Diet.MealType.LUNCH
-                    consumedAt = breakfast.consumedAt.plusHours(4)
-                    dietFoods = mutableListOf(
-                        dietFoodFixture {
-                            foodId = food.id
-                            intake = food.servingSize.toInt() * 2
-                        }
-                    )
-                }
-            )
+            val breakfast =
+                dietRepository.save(
+                    dietFixture {
+                        userId = user.id
+                        mealType = Diet.MealType.BREAKFAST
+                        dietFoods =
+                            mutableListOf(
+                                dietFoodFixture {
+                                    foodId = food.id
+                                    intake = food.servingSize.toInt()
+                                },
+                            )
+                    },
+                )
+            val lunch =
+                dietRepository.save(
+                    dietFixture {
+                        userId = user.id
+                        mealType = Diet.MealType.LUNCH
+                        consumedAt = breakfast.consumedAt.plusHours(4)
+                        dietFoods =
+                            mutableListOf(
+                                dietFoodFixture {
+                                    foodId = food.id
+                                    intake = food.servingSize.toInt() * 2
+                                },
+                            )
+                    },
+                )
 
             val statsDate = lunch.consumedAt.toLocalDate()
 
@@ -81,29 +85,32 @@ class DietStatsWriterTest : IntegrationTestContext() {
             // given
             val user = createEntity(userFixture())
             val food = createEntity(foodFixture())
-            val diet = dietRepository.save(
-                dietFixture {
-                    userId = user.id
-                    dietFoods = mutableListOf(
-                        dietFoodFixture {
-                            foodId = food.id
-                            intake = food.servingSize.toInt()
-                        }
-                    )
-                }
-            )
+            val diet =
+                dietRepository.save(
+                    dietFixture {
+                        userId = user.id
+                        dietFoods =
+                            mutableListOf(
+                                dietFoodFixture {
+                                    foodId = food.id
+                                    intake = food.servingSize.toInt()
+                                },
+                            )
+                    },
+                )
 
             val statsDate = diet.consumedAt.toLocalDate()
 
             // 기존 통계 생성
-            val existingStats = DietStats(
-                userId = diet.userId,
-                statsDate = statsDate,
-                totalCalories = 100.0,
-                totalCarbohydrates = 10.0,
-                totalProtein = 10.0,
-                totalFat = 5.0
-            )
+            val existingStats =
+                DietStats(
+                    userId = diet.userId,
+                    statsDate = statsDate,
+                    totalCalories = 100.0,
+                    totalCarbohydrates = 10.0,
+                    totalProtein = 10.0,
+                    totalFat = 5.0,
+                )
             createEntity(existingStats)
 
             val beforeUpdate = dietStatsRepository.findByUserIdAndStatsDate(diet.userId, statsDate)

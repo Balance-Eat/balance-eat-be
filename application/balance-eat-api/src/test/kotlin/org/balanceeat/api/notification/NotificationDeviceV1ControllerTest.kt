@@ -36,7 +36,8 @@ class NotificationDeviceV1ControllerTest : ControllerTestContext() {
                 .body(request)
                 .post("/v1/notification-devices")
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("CreateTest"),
@@ -44,13 +45,13 @@ class NotificationDeviceV1ControllerTest : ControllerTestContext() {
                             .tag(Tags.NOTIFICATION.tagName)
                             .description(Tags.NOTIFICATION.descriptionWith("디바이스 등록")),
                         requestHeaders(
-                            headerWithName("X-USER-ID").description("사용자 ID")
+                            headerWithName("X-USER-ID").description("사용자 ID"),
                         ),
                         requestFields(
                             "agentId" type STRING means "디바이스 고유 식별자",
                             "osType" type STRING means "디바이스 운영체제 타입" withEnum NotificationDevice.OsType::class,
                             "deviceName" type STRING means "디바이스 이름",
-                            "isActive" type BOOLEAN means "알림 수신 허용 여부"
+                            "isActive" type BOOLEAN means "알림 수신 허용 여부",
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -59,22 +60,19 @@ class NotificationDeviceV1ControllerTest : ControllerTestContext() {
                                 "data.agentId" type STRING means "디바이스 고유 식별자",
                                 "data.osType" type STRING means "디바이스 운영체제 타입" withEnum NotificationDevice.OsType::class,
                                 "data.deviceName" type STRING means "디바이스 이름",
-                                "data.isActive" type BOOLEAN means "알림 수신 허용 여부"
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.CREATED)
+                                "data.isActive" type BOOLEAN means "알림 수신 허용 여부",
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.CREATED)
         }
 
-        private fun mockCreateRequest(): NotificationDeviceV1Request.Create {
-            return NotificationDeviceV1Request.Create(
+        private fun mockCreateRequest(): NotificationDeviceV1Request.Create = NotificationDeviceV1Request.Create(
                 agentId = "test-agent-id-123",
                 osType = NotificationDevice.OsType.AOS,
                 deviceName = "갤럭시 S24",
-                isActive = true
+                isActive = true,
             )
-        }
     }
 
     @Nested
@@ -91,7 +89,8 @@ class NotificationDeviceV1ControllerTest : ControllerTestContext() {
                 .header("X-Device-Agent-Id", "test-agent-id-123")
                 .get("/v1/notification-devices/current")
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("GetCurrentTest"),
@@ -100,7 +99,7 @@ class NotificationDeviceV1ControllerTest : ControllerTestContext() {
                             .description(Tags.NOTIFICATION.descriptionWith("현재 디바이스 조회")),
                         requestHeaders(
                             headerWithName("X-USER-ID").description("사용자 ID"),
-                            headerWithName("X-Device-Agent-Id").description("디바이스 고유 식별자")
+                            headerWithName("X-Device-Agent-Id").description("디바이스 고유 식별자"),
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -109,12 +108,11 @@ class NotificationDeviceV1ControllerTest : ControllerTestContext() {
                                 "data.agentId" type STRING means "디바이스 고유 식별자",
                                 "data.osType" type STRING means "디바이스 운영체제 타입" withEnum NotificationDevice.OsType::class,
                                 "data.deviceName" type STRING means "디바이스 이름",
-                                "data.isActive" type BOOLEAN means "알림 수신 허용 여부"
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK)
+                                "data.isActive" type BOOLEAN means "알림 수신 허용 여부",
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
     }
 
@@ -133,7 +131,8 @@ class NotificationDeviceV1ControllerTest : ControllerTestContext() {
                 .body(request)
                 .patch("/v1/notification-devices/{deviceId}/activation", 1)
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("UpdateActivationTest"),
@@ -141,10 +140,10 @@ class NotificationDeviceV1ControllerTest : ControllerTestContext() {
                             .tag(Tags.NOTIFICATION.tagName)
                             .description(Tags.NOTIFICATION.descriptionWith("알림 on/off 상태 수정")),
                         requestHeaders(
-                            headerWithName("X-USER-ID").description("사용자 ID")
+                            headerWithName("X-USER-ID").description("사용자 ID"),
                         ),
                         requestFields(
-                            "isActive" type BOOLEAN means "알림 수신 허용 여부"
+                            "isActive" type BOOLEAN means "알림 수신 허용 여부",
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -153,29 +152,24 @@ class NotificationDeviceV1ControllerTest : ControllerTestContext() {
                                 "data.agentId" type STRING means "디바이스 고유 식별자",
                                 "data.osType" type STRING means "디바이스 운영체제 타입" withEnum NotificationDevice.OsType::class,
                                 "data.deviceName" type STRING means "디바이스 이름",
-                                "data.isActive" type BOOLEAN means "알림 수신 허용 여부"
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK)
+                                "data.isActive" type BOOLEAN means "알림 수신 허용 여부",
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
 
-        private fun mockUpdateActivationRequest(): NotificationDeviceV1Request.UpdateActivation {
-            return NotificationDeviceV1Request.UpdateActivation(
-                isActive = false
+        private fun mockUpdateActivationRequest(): NotificationDeviceV1Request.UpdateActivation = NotificationDeviceV1Request.UpdateActivation(
+                isActive = false,
             )
-        }
     }
 
-    private fun mockNotificationDeviceResponse(): NotificationDeviceV1Response.Details {
-        return NotificationDeviceV1Response.Details(
+    private fun mockNotificationDeviceResponse(): NotificationDeviceV1Response.Details = NotificationDeviceV1Response.Details(
             id = 1L,
             userId = 1L,
             agentId = "test-agent-id-123",
             osType = NotificationDevice.OsType.AOS,
             deviceName = "갤럭시 S24",
-            isActive = true
+            isActive = true,
         )
-    }
 }

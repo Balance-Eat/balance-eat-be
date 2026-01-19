@@ -14,10 +14,9 @@ class FoodV1RequestFixture {
         val protein: Double = 8.0,
         val fat: Double = 3.0,
         val perServingCalories: Double = CalorieCalculator.calculate(carbohydrates, protein, fat),
-        val brand: String = "테스트 브랜드"
-    ): TestFixture<FoodV1Request.Create> {
-        override fun create(): FoodV1Request.Create {
-            return FoodV1Request.Create(
+        val brand: String = "테스트 브랜드",
+    ) : TestFixture<FoodV1Request.Create> {
+        override fun create(): FoodV1Request.Create = FoodV1Request.Create(
                 uuid = uuid,
                 name = name,
                 servingSize = servingSize,
@@ -26,9 +25,8 @@ class FoodV1RequestFixture {
                 protein = protein,
                 fat = fat,
                 perServingCalories = perServingCalories,
-                brand = brand
+                brand = brand,
             )
-        }
     }
 
     data class Update(
@@ -39,10 +37,9 @@ class FoodV1RequestFixture {
         val protein: Double = 8.0,
         val fat: Double = 3.0,
         val perServingCalories: Double = 159.0, // 25*4 + 8*4 + 3*9 = 159
-        val brand: String = "테스트 브랜드"
-    ): TestFixture<FoodV1Request.Update> {
-        override fun create(): FoodV1Request.Update {
-            return FoodV1Request.Update(
+        val brand: String = "테스트 브랜드",
+    ) : TestFixture<FoodV1Request.Update> {
+        override fun create(): FoodV1Request.Update = FoodV1Request.Update(
                 name = name,
                 servingSize = servingSize,
                 unit = unit,
@@ -50,32 +47,35 @@ class FoodV1RequestFixture {
                 protein = protein,
                 fat = fat,
                 perServingCalories = perServingCalories,
-                brand = brand
+                brand = brand,
             )
-        }
     }
 
     data class Search(
         val foodName: String? = null,
-        val userId: Long? = null
-    ): TestFixture<FoodV1Request.Search> {
-        override fun create(): FoodV1Request.Search {
-            return FoodV1Request.Search(
+        val userId: Long? = null,
+    ) : TestFixture<FoodV1Request.Search> {
+        override fun create(): FoodV1Request.Search = FoodV1Request.Search(
                 foodName = foodName,
-                userId = userId
+                userId = userId,
             )
-        }
     }
 }
 
-fun foodCreateV1RequestFixture(block: FoodV1RequestFixture.Create.() -> Unit = {}): FoodV1Request.Create {
-    return FoodV1RequestFixture.Create().copy().apply(block).create()
-}
+fun foodCreateV1RequestFixture(block: FoodV1RequestFixture.Create.() -> Unit = {}): FoodV1Request.Create = FoodV1RequestFixture
+    .Create()
+    .copy()
+    .apply(block)
+    .create()
 
-fun foodUpdateV1RequestFixture(block: FoodV1RequestFixture.Update.() -> Unit = {}): FoodV1Request.Update {
-    return FoodV1RequestFixture.Update().copy().apply(block).create()
-}
+fun foodUpdateV1RequestFixture(block: FoodV1RequestFixture.Update.() -> Unit = {}): FoodV1Request.Update = FoodV1RequestFixture
+    .Update()
+    .copy()
+    .apply(block)
+    .create()
 
-fun foodSearchV1RequestFixture(block: FoodV1RequestFixture.Search.() -> Unit = {}): FoodV1Request.Search {
-    return FoodV1RequestFixture.Search().copy().apply(block).create()
-}
+fun foodSearchV1RequestFixture(block: FoodV1RequestFixture.Search.() -> Unit = {}): FoodV1Request.Search = FoodV1RequestFixture
+    .Search()
+    .copy()
+    .apply(block)
+    .create()

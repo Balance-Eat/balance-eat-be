@@ -9,21 +9,23 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 class AppPushHistoryWriter(
     private val notificationDeviceRepository: NotificationDeviceRepository,
-    private val appPushHistoryRepository: AppPushHistoryRepository
+    private val appPushHistoryRepository: AppPushHistoryRepository,
 ) {
     @Transactional
     fun create(command: AppPushHistoryCommand.Create): AppPushHistoryResult {
-        val device = notificationDeviceRepository.findByIdOrNull(command.deviceId)
-            ?: throw EntityNotFoundException(NOTIFICATION_DEVICE_NOT_FOUND)
+        val device =
+            notificationDeviceRepository.findByIdOrNull(command.deviceId)
+                ?: throw EntityNotFoundException(NOTIFICATION_DEVICE_NOT_FOUND)
 
-        val appPushHistory = AppPushHistory(
-            deviceId = device.id,
-            userId = device.userId,
-            agentId = device.agentId,
-            title = command.title,
-            content = command.content,
-            deepLink = command.deepLink
-        )
+        val appPushHistory =
+            AppPushHistory(
+                deviceId = device.id,
+                userId = device.userId,
+                agentId = device.agentId,
+                title = command.title,
+                content = command.content,
+                deepLink = command.deepLink,
+            )
 
         val savedAppPushHistory = appPushHistoryRepository.save(appPushHistory)
         return AppPushHistoryResult.from(savedAppPushHistory)

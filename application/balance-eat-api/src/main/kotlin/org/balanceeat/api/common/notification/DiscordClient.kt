@@ -11,11 +11,12 @@ import org.springframework.web.client.RestClient
 class DiscordClient(
     private val restClient: RestClient,
     @Value("\${application.discord.webhook.url}")
-    private val webhookUrl: String
+    private val webhookUrl: String,
 ) {
     fun sendMessage(message: String) {
         val payload = mapOf("content" to message)
-        restClient.post()
+        restClient
+            .post()
             .uri(webhookUrl)
             .contentType(MediaType.APPLICATION_JSON)
             .body(payload)

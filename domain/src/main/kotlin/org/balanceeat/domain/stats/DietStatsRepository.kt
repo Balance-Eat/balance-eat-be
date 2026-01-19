@@ -6,11 +6,17 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.time.LocalDate
 
-interface DietStatsRepository : JpaRepository<DietStats, Long>, DietStatsRepositoryCustom {
+interface DietStatsRepository :
+    JpaRepository<DietStats, Long>,
+    DietStatsRepositoryCustom {
     @Modifying
     @Query("DELETE FROM DietStats ds WHERE ds.statsDate = :statsDate")
-    fun deleteByStatsDate(@Param("statsDate") statsDate: LocalDate): Int
+    fun deleteByStatsDate(
+        @Param("statsDate") statsDate: LocalDate,
+    ): Int
 
-    fun findByUserIdAndStatsDate(userId: Long, statsDate: LocalDate): DietStats?
+    fun findByUserIdAndStatsDate(
+        userId: Long,
+        statsDate: LocalDate,
+    ): DietStats?
 }
-

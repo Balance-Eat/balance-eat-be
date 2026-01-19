@@ -11,16 +11,14 @@ class DietFood(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = NEW_ID,
-
     @Column(name = "food_id", nullable = false)
     val foodId: Long,
-
     @Column(name = "intake", nullable = false)
-    var intake: Int
+    var intake: Int,
 ) : BaseEntity() {
     constructor(food: Food, intake: Int) : this(
         foodId = food.id,
-        intake = intake
+        intake = intake,
     )
 
     override fun guard() {

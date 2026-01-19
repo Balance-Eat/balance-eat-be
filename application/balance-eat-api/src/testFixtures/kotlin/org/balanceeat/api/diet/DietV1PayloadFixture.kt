@@ -8,56 +8,58 @@ class DietV1RequestFixture {
     data class Create(
         val mealType: Diet.MealType = Diet.MealType.BREAKFAST,
         val consumedAt: LocalDateTime = LocalDateTime.now(),
-        val dietFoods: List<DietV1Request.Create.DietFood> = listOf(
-            DietV1Request.Create.DietFood(foodId = 1L, intake = 2),
-            DietV1Request.Create.DietFood(foodId = 2L, intake = 1)
-        )
+        val dietFoods: List<DietV1Request.Create.DietFood> =
+            listOf(
+                DietV1Request.Create.DietFood(foodId = 1L, intake = 2),
+                DietV1Request.Create.DietFood(foodId = 2L, intake = 1),
+            ),
     ) : TestFixture<DietV1Request.Create> {
-        override fun create(): DietV1Request.Create {
-            return DietV1Request.Create(
+        override fun create(): DietV1Request.Create = DietV1Request.Create(
                 mealType = mealType,
                 consumedAt = consumedAt,
-                dietFoods = dietFoods
+                dietFoods = dietFoods,
             )
-        }
     }
 
     data class Update(
         val mealType: Diet.MealType = Diet.MealType.DINNER,
         val consumedAt: LocalDateTime = LocalDateTime.now(),
-        val dietFoods: List<DietV1Request.Update.DietFood> = listOf(
-            DietV1Request.Update.DietFood(foodId = 1L, intake = 3),
-            DietV1Request.Update.DietFood(foodId = 3L, intake = 2)
-        )
+        val dietFoods: List<DietV1Request.Update.DietFood> =
+            listOf(
+                DietV1Request.Update.DietFood(foodId = 1L, intake = 3),
+                DietV1Request.Update.DietFood(foodId = 3L, intake = 2),
+            ),
     ) : TestFixture<DietV1Request.Update> {
-        override fun create(): DietV1Request.Update {
-            return DietV1Request.Update(
+        override fun create(): DietV1Request.Update = DietV1Request.Update(
                 mealType = mealType,
                 consumedAt = consumedAt,
-                dietFoods = dietFoods
+                dietFoods = dietFoods,
             )
-        }
     }
 
     data class UpdateDietFood(
-        val intake: Int = 3
+        val intake: Int = 3,
     ) : TestFixture<DietV1Request.UpdateDietFood> {
-        override fun create(): DietV1Request.UpdateDietFood {
-            return DietV1Request.UpdateDietFood(
-                intake = intake
+        override fun create(): DietV1Request.UpdateDietFood = DietV1Request.UpdateDietFood(
+                intake = intake,
             )
-        }
     }
 }
 
-fun dietCreateV1RequestFixture(block: DietV1RequestFixture.Create.() -> Unit = {}): DietV1Request.Create {
-    return DietV1RequestFixture.Create().copy().apply(block).create()
-}
+fun dietCreateV1RequestFixture(block: DietV1RequestFixture.Create.() -> Unit = {}): DietV1Request.Create = DietV1RequestFixture
+    .Create()
+    .copy()
+    .apply(block)
+    .create()
 
-fun dietUpdateV1RequestFixture(block: DietV1RequestFixture.Update.() -> Unit = {}): DietV1Request.Update {
-    return DietV1RequestFixture.Update().copy().apply(block).create()
-}
+fun dietUpdateV1RequestFixture(block: DietV1RequestFixture.Update.() -> Unit = {}): DietV1Request.Update = DietV1RequestFixture
+    .Update()
+    .copy()
+    .apply(block)
+    .create()
 
-fun dietUpdateDietFoodV1RequestFixture(block: DietV1RequestFixture.UpdateDietFood.() -> Unit = {}): DietV1Request.UpdateDietFood {
-    return DietV1RequestFixture.UpdateDietFood().copy().apply(block).create()
-}
+fun dietUpdateDietFoodV1RequestFixture(block: DietV1RequestFixture.UpdateDietFood.() -> Unit = {}): DietV1Request.UpdateDietFood = DietV1RequestFixture
+    .UpdateDietFood()
+    .copy()
+    .apply(block)
+    .create()

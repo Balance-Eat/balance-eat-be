@@ -10,14 +10,13 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/v1/notification-devices")
 class NotificationDeviceV1Controller(
-    private val notificationDeviceService: NotificationDeviceService
+    private val notificationDeviceService: NotificationDeviceService,
 ) {
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(
         @RequestHeader(USER_ID_HEADER) userId: Long,
-        @RequestBody @Valid request: NotificationDeviceV1Request.Create
+        @RequestBody @Valid request: NotificationDeviceV1Request.Create,
     ): ApiResponse<NotificationDeviceV1Response.Details> {
         val result = notificationDeviceService.create(request, userId)
         return ApiResponse.success(result)
@@ -27,7 +26,7 @@ class NotificationDeviceV1Controller(
     fun updateActivation(
         @PathVariable deviceId: Long,
         @RequestHeader(USER_ID_HEADER) userId: Long,
-        @RequestBody @Valid request: NotificationDeviceV1Request.UpdateActivation
+        @RequestBody @Valid request: NotificationDeviceV1Request.UpdateActivation,
     ): ApiResponse<NotificationDeviceV1Response.Details> {
         val result = notificationDeviceService.updateActivation(deviceId, request, userId)
         return ApiResponse.success(result)
@@ -36,7 +35,7 @@ class NotificationDeviceV1Controller(
     @GetMapping("/current")
     fun getCurrent(
         @RequestHeader(USER_ID_HEADER) userId: Long,
-        @RequestHeader(DEVICE_AGENT_ID_HEADER) agentId: String
+        @RequestHeader(DEVICE_AGENT_ID_HEADER) agentId: String,
     ): ApiResponse<NotificationDeviceV1Response.Details> {
         val result = notificationDeviceService.getCurrent(userId, agentId)
         return ApiResponse.success(result)

@@ -14,24 +14,18 @@ class Reminder(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = NEW_ID,
-
     @Column(name = "user_id", nullable = false)
     val userId: Long,
-
     @Column(nullable = false, length = 500)
     var content: String,
-
     @Column(name = "send_time", nullable = false)
     var sendTime: LocalTime,
-
     @Column(name = "is_active", nullable = false)
     var isActive: Boolean = true,
-
     @Column(name = "day_of_weeks", nullable = false, columnDefinition = "jsonb")
     @Type(JsonType::class)
-    var dayOfWeeks: List<DayOfWeek>
+    var dayOfWeeks: List<DayOfWeek>,
 ) : BaseEntity() {
-
     companion object {
         const val MAX_CONTENT_LENGTH = 500
     }
@@ -50,7 +44,7 @@ class Reminder(
         content: String,
         sendTime: LocalTime,
         isActive: Boolean,
-        dayOfWeeks: List<DayOfWeek>
+        dayOfWeeks: List<DayOfWeek>,
     ) {
         this.content = content
         this.sendTime = sendTime.withSecond(0)

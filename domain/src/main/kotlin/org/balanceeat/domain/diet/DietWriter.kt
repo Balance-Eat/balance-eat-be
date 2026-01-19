@@ -14,28 +14,30 @@ import java.time.LocalDateTime
 class DietWriter(
     private val dietRepository: DietRepository,
     private val foodRepository: FoodRepository,
-    private val eventPublisher: ApplicationEventPublisher
+    private val eventPublisher: ApplicationEventPublisher,
 ) {
     @Transactional
     fun create(command: DietCommand.Create): DietDetails {
         checkDuplication(
             userId = command.userId,
             consumedAt = command.consumedAt,
-            mealType = command.mealType
+            mealType = command.mealType,
         )
 
         val foodIds = command.dietFoods.map { it.foodId }
         val foodMap = foodRepository.findAllById(foodIds).associateBy { it.id }
 
-        val diet = Diet(
-            userId = command.userId,
-            mealType = command.mealType,
-            consumedAt = command.consumedAt
-        )
+        val diet =
+            Diet(
+                userId = command.userId,
+                mealType = command.mealType,
+                consumedAt = command.consumedAt,
+            )
 
         command.dietFoods.forEach { foodInfo ->
-            val food = foodMap[foodInfo.foodId]
-                ?: throw EntityNotFoundException(DomainStatus.FOOD_NOT_FOUND)
+            val food =
+                foodMap[foodInfo.foodId]
+                    ?: throw EntityNotFoundException(DomainStatus.FOOD_NOT_FOUND)
             diet.addFood(food, foodInfo.intake)
         }
 
@@ -48,23 +50,26 @@ class DietWriter(
 
     @Transactional
     fun update(command: DietCommand.Update): DietDetails {
-        val diet = dietRepository.findByIdOrNull(command.id)
-            ?: throw EntityNotFoundException(DomainStatus.DIET_NOT_FOUND)
+        val diet =
+            dietRepository.findByIdOrNull(command.id)
+                ?: throw EntityNotFoundException(DomainStatus.DIET_NOT_FOUND)
 
         checkDuplication(
             userId = diet.userId,
             consumedAt = command.consumedAt,
             mealType = command.mealType,
-            excludeId = diet.id
+            excludeId = diet.id,
         )
 
         val foodIds = command.dietFoods.map { it.foodId }
         val foodMap = foodRepository.findAllById(foodIds).associateBy { it.id }
-        val newDietFoods = command.dietFoods.map {
-            val food = foodMap[it.foodId]
-                ?: throw EntityNotFoundException(DomainStatus.FOOD_NOT_FOUND)
-            DietFood(food, it.intake)
-        }
+        val newDietFoods =
+            command.dietFoods.map {
+                val food =
+                    foodMap[it.foodId]
+                        ?: throw EntityNotFoundException(DomainStatus.FOOD_NOT_FOUND)
+                DietFood(food, it.intake)
+            }
 
         diet.update(command.mealType, command.consumedAt)
         diet.updateFoods(newDietFoods)
@@ -78,7 +83,8 @@ class DietWriter(
 
     @Transactional
     fun delete(id: Long) {
-        dietRepository.findById(id)
+        dietRepository
+            .findById(id)
             .ifPresent {
                 eventPublisher.publishEvent(DietDeletedEvent(it))
                 dietRepository.delete(it)
@@ -87,8 +93,9 @@ class DietWriter(
 
     @Transactional
     fun deleteDietFood(command: DietCommand.DeleteDietFood) {
-        val diet = dietRepository.findByIdOrNull(command.dietId)
-            ?: throw EntityNotFoundException(DomainStatus.DIET_NOT_FOUND)
+        val diet =
+            dietRepository.findByIdOrNull(command.dietId)
+                ?: throw EntityNotFoundException(DomainStatus.DIET_NOT_FOUND)
 
         diet.removeFood(command.dietFoodId)
         dietRepository.save(diet)
@@ -97,8 +104,9 @@ class DietWriter(
 
     @Transactional
     fun updateDietFood(command: DietCommand.UpdateDietFood): DietDetails {
-        val diet = dietRepository.findByIdOrNull(command.dietId)
-            ?: throw EntityNotFoundException(DomainStatus.DIET_NOT_FOUND)
+        val diet =
+            dietRepository.findByIdOrNull(command.dietId)
+                ?: throw EntityNotFoundException(DomainStatus.DIET_NOT_FOUND)
 
         diet.updateFood(command.dietFoodId, command.intake)
         val savedDiet = dietRepository.save(diet)
@@ -114,12 +122,14 @@ class DietWriter(
         userId: Long,
         consumedAt: LocalDateTime,
         mealType: Diet.MealType,
-        excludeId: Long = 0L
+        excludeId: Long = 0L,
     ) {
         val diets = dietRepository.findDailyDiets(userId, consumedAt.toLocalDate())
-        val isDuplicate = diets.filter { it.id != excludeId }
-            .map { it.mealType }
-            .any { it == mealType }
+        val isDuplicate =
+            diets
+                .filter { it.id != excludeId }
+                .map { it.mealType }
+                .any { it == mealType }
 
         if (isDuplicate) {
             throw DomainException(DomainStatus.DIET_MEAL_TYPE_ALREADY_EXISTS)

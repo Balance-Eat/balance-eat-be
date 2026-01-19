@@ -18,7 +18,7 @@ import org.springframework.restdocs.request.RequestDocumentation.pathParameters
 import org.springframework.restdocs.request.RequestDocumentation.queryParameters
 
 @WebMvcTest(UserV1Controller::class)
-class UserV1ControllerTest: ControllerTestContext() {
+class UserV1ControllerTest : ControllerTestContext() {
     @MockkBean(relaxed = true)
     private lateinit var userService: UserService
 
@@ -34,7 +34,8 @@ class UserV1ControllerTest: ControllerTestContext() {
                 .body(request)
                 .post("/v1/users")
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("CreateTest"),
@@ -61,7 +62,7 @@ class UserV1ControllerTest: ControllerTestContext() {
                             "targetProtein" type NUMBER means "사용자 목표 단백질 (g, 선택)" isOptional true,
                             "targetFat" type NUMBER means "사용자 목표 지방 (g, 선택)" isOptional true,
                             "providerId" type STRING means "제공자 ID (선택)" isOptional true,
-                            "providerType" type STRING means "제공자 유형 (선택)" isOptional true
+                            "providerType" type STRING means "제공자 유형 (선택)" isOptional true,
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -85,16 +86,14 @@ class UserV1ControllerTest: ControllerTestContext() {
                                 "data.targetProtein" type NUMBER means "사용자 목표 단백질" isOptional true,
                                 "data.targetFat" type NUMBER means "사용자 목표 지방" isOptional true,
                                 "data.providerId" type STRING means "제공자 ID" isOptional true,
-                                "data.providerType" type STRING means "제공자 유형" isOptional true
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.CREATED)
+                                "data.providerType" type STRING means "제공자 유형" isOptional true,
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.CREATED)
         }
 
-        private fun mockCreateRequest(): UserV1Request.Create {
-            return UserV1Request.Create(
+        private fun mockCreateRequest(): UserV1Request.Create = UserV1Request.Create(
                 uuid = "test-uuid-456",
                 name = "새로운 사용자",
                 gender = User.Gender.FEMALE,
@@ -114,9 +113,8 @@ class UserV1ControllerTest: ControllerTestContext() {
                 targetProtein = 80.0,
                 targetFat = 50.0,
                 providerId = "kakao123",
-                providerType = "KAKAO"
+                providerType = "KAKAO",
             )
-        }
     }
 
     @Nested
@@ -130,7 +128,8 @@ class UserV1ControllerTest: ControllerTestContext() {
                 .params("uuid", "test-uuid-123")
                 .get("/v1/users/me")
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("GetMeTest"),
@@ -138,7 +137,7 @@ class UserV1ControllerTest: ControllerTestContext() {
                             .tag(Tags.USER.tagName)
                             .description(Tags.USER.descriptionWith("정보 조회")),
                         queryParameters(
-                            "uuid" queryMeans "사용자 UUID" isOptional true
+                            "uuid" queryMeans "사용자 UUID" isOptional true,
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -162,12 +161,11 @@ class UserV1ControllerTest: ControllerTestContext() {
                                 "data.targetProtein" type NUMBER means "사용자 목표 단백질" isOptional true,
                                 "data.targetFat" type NUMBER means "사용자 목표 지방" isOptional true,
                                 "data.providerId" type STRING means "제공자 ID" isOptional true,
-                                "data.providerType" type STRING means "제공자 유형" isOptional true
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK)
+                                "data.providerType" type STRING means "제공자 유형" isOptional true,
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
     }
 
@@ -183,7 +181,8 @@ class UserV1ControllerTest: ControllerTestContext() {
                 .body(request)
                 .put("/v1/users/{id}", 1)
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("UpdateTest"),
@@ -191,7 +190,7 @@ class UserV1ControllerTest: ControllerTestContext() {
                             .tag(Tags.USER.tagName)
                             .description(Tags.USER.descriptionWith("수정")),
                         pathParameters(
-                            "id" pathMeans "사용자 ID"
+                            "id" pathMeans "사용자 ID",
                         ),
                         requestFields(
                             "name" type STRING means "사용자 이름",
@@ -210,7 +209,7 @@ class UserV1ControllerTest: ControllerTestContext() {
                             "targetFatPercentage" type NUMBER means "사용자 목표 체지방률 (선택)" isOptional true,
                             "targetCarbohydrates" type NUMBER means "사용자 목표 탄수화물 (g, 선택)" isOptional true,
                             "targetProtein" type NUMBER means "사용자 목표 단백질 (g, 선택)" isOptional true,
-                            "targetFat" type NUMBER means "사용자 목표 지방 (g, 선택)" isOptional true
+                            "targetFat" type NUMBER means "사용자 목표 지방 (g, 선택)" isOptional true,
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -234,21 +233,17 @@ class UserV1ControllerTest: ControllerTestContext() {
                                 "data.targetProtein" type NUMBER means "사용자 목표 단백질" isOptional true,
                                 "data.targetFat" type NUMBER means "사용자 목표 지방" isOptional true,
                                 "data.providerId" type STRING means "제공자 ID" isOptional true,
-                                "data.providerType" type STRING means "제공자 유형" isOptional true
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK)
+                                "data.providerType" type STRING means "제공자 유형" isOptional true,
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
 
-        private fun mockUpdateRequest(): UserV1Request.Update {
-            return UserV1RequestFixture.Update()
+        private fun mockUpdateRequest(): UserV1Request.Update = UserV1RequestFixture
+            .Update()
                 .create()
-        }
     }
 
-    private fun mockUser(): UserV1Response.Details {
-        return UserV1ResponseFixture.Details().create()
-    }
+    private fun mockUser(): UserV1Response.Details = UserV1ResponseFixture.Details().create()
 }

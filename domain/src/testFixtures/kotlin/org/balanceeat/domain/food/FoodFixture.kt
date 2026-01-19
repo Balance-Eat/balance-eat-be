@@ -17,10 +17,9 @@ class FoodFixture(
     var fat: Double = 2.0,
     var perServingCalories: Double = CalorieCalculator.calculate(20.0, 5.0, 2.0),
     var brand: String = "테스트 브랜드",
-    var isAdminApproved: Boolean = false
+    var isAdminApproved: Boolean = false,
 ) : TestFixture<Food> {
-    override fun create(): Food {
-        return Food(
+    override fun create(): Food = Food(
             id = id,
             name = name,
             uuid = uuid,
@@ -32,11 +31,8 @@ class FoodFixture(
             fat = fat,
             perServingCalories = perServingCalories,
             brand = brand,
-            isAdminApproved = isAdminApproved
+            isAdminApproved = isAdminApproved,
         )
-    }
 }
 
-fun foodFixture(block: FoodFixture.() -> Unit = {}): Food {
-    return FoodFixture().apply(block).create()
-}
+fun foodFixture(block: FoodFixture.() -> Unit = {}): Food = FoodFixture().apply(block).create()

@@ -3,7 +3,7 @@ package org.balanceeat.domain.common
 import org.balanceeat.common.Status
 
 enum class DomainStatus(
-    override val message: String
+    override val message: String,
 ) : Status {
     // common
     INVALID_REQUEST("잘못된 요청입니다"),
@@ -37,5 +37,4 @@ enum class DomainStatus(
 
     // reminder
     REMINDER_NOT_FOUND("리마인더를 찾을 수 없습니다"),
-    ;
 }

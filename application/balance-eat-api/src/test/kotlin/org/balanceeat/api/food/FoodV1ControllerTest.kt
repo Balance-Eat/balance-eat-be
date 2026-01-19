@@ -22,9 +22,10 @@ import org.springframework.restdocs.request.RequestDocumentation.queryParameters
 import java.time.LocalDateTime
 
 @WebMvcTest(FoodV1Controller::class)
-class FoodV1ControllerTest: ControllerTestContext() {
+class FoodV1ControllerTest : ControllerTestContext() {
     @Autowired
     private lateinit var objectMapper: ObjectMapper
+
     @MockkBean(relaxed = true)
     private lateinit var foodService: FoodService
 
@@ -40,7 +41,8 @@ class FoodV1ControllerTest: ControllerTestContext() {
                 .body(request)
                 .post("/v1/foods")
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("CreateTest"),
@@ -56,7 +58,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
                             "protein" type NUMBER means "단백질 함량 (g)",
                             "fat" type NUMBER means "지방 함량 (g)",
                             "perServingCalories" type NUMBER means "1회 제공량 기준 칼로리 (kcal)",
-                            "brand" type STRING means "브랜드명"
+                            "brand" type STRING means "브랜드명",
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -71,15 +73,13 @@ class FoodV1ControllerTest: ControllerTestContext() {
                                 "data.fat" type NUMBER means "지방 (g)",
                                 "data.brand" type STRING means "브랜드명",
                                 "data.createdAt" type STRING means "생성일시",
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.CREATED);
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.CREATED)
         }
 
-        private fun mockCreateRequest(): FoodV1Request.Create {
-            return FoodV1Request.Create(
+        private fun mockCreateRequest(): FoodV1Request.Create = FoodV1Request.Create(
                 uuid = "test-uuid-456",
                 name = "새로운 음식",
                 servingSize = 150.0,
@@ -88,9 +88,8 @@ class FoodV1ControllerTest: ControllerTestContext() {
                 protein = 10.0,
                 fat = 5.0,
                 perServingCalories = 185.0, // 30*4 + 10*4 + 5*9 = 185
-                brand = "테스트 브랜드"
+                brand = "테스트 브랜드",
             )
-        }
     }
 
     @Nested
@@ -105,7 +104,8 @@ class FoodV1ControllerTest: ControllerTestContext() {
                 .body(request)
                 .put("/v1/foods/{id}", 1)
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("UpdateTest"),
@@ -113,7 +113,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
                             .tag(Tags.FOOD.tagName)
                             .description(Tags.FOOD.descriptionWith("수정")),
                         pathParameters(
-                            "id" pathMeans "음식 ID"
+                            "id" pathMeans "음식 ID",
                         ),
                         requestFields(
                             "name" type STRING means "음식명",
@@ -123,7 +123,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
                             "protein" type NUMBER means "단백질 함량 (g)",
                             "fat" type NUMBER means "지방 함량 (g)",
                             "perServingCalories" type NUMBER means "1회 제공량 기준 칼로리 (kcal)",
-                            "brand" type STRING means "브랜드명"
+                            "brand" type STRING means "브랜드명",
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -138,15 +138,13 @@ class FoodV1ControllerTest: ControllerTestContext() {
                                 "data.fat" type NUMBER means "지방 (g)",
                                 "data.brand" type STRING means "브랜드명",
                                 "data.createdAt" type STRING means "생성일시",
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK);
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
 
-        private fun mockUpdateRequest(): FoodV1Request.Update {
-            return FoodV1Request.Update(
+        private fun mockUpdateRequest(): FoodV1Request.Update = FoodV1Request.Update(
                 name = "수정된 음식",
                 servingSize = 200.0,
                 unit = "g",
@@ -154,9 +152,8 @@ class FoodV1ControllerTest: ControllerTestContext() {
                 protein = 15.0,
                 fat = 8.0,
                 perServingCalories = 292.0, // 40*4 + 15*4 + 8*9 = 292
-                brand = "수정된 브랜드"
+                brand = "수정된 브랜드",
             )
-        }
     }
 
     @Nested
@@ -169,7 +166,8 @@ class FoodV1ControllerTest: ControllerTestContext() {
             given()
                 .get("/v1/foods/{id}", 1)
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("GetDetailsTest"),
@@ -177,7 +175,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
                             .tag(Tags.FOOD.tagName)
                             .description(Tags.FOOD.descriptionWith("상세 조회")),
                         pathParameters(
-                            "id" pathMeans "음식 ID"
+                            "id" pathMeans "음식 ID",
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -192,11 +190,10 @@ class FoodV1ControllerTest: ControllerTestContext() {
                                 "data.fat" type NUMBER means "지방 (g)",
                                 "data.brand" type STRING means "브랜드명",
                                 "data.createdAt" type STRING means "생성일시",
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK);
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
     }
 
@@ -211,7 +208,8 @@ class FoodV1ControllerTest: ControllerTestContext() {
                 .params("limit", 10)
                 .get("/v1/foods/recommendations")
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("GetRecommendationsTest"),
@@ -219,7 +217,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
                             .tag(Tags.FOOD.tagName)
                             .description(Tags.FOOD.descriptionWith("목록 조회")),
                         queryParameters(
-                            "limit" queryMeans "조회 개수" isOptional true
+                            "limit" queryMeans "조회 개수" isOptional true,
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -235,11 +233,10 @@ class FoodV1ControllerTest: ControllerTestContext() {
                                 "data[].fat" type NUMBER means "지방 (g)",
                                 "data[].brand" type STRING means "브랜드명",
                                 "data[].createdAt" type STRING means "생성일시",
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK);
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
     }
 
@@ -257,7 +254,8 @@ class FoodV1ControllerTest: ControllerTestContext() {
                 .params("size", 10)
                 .get("/v1/foods/search")
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("SearchWithFoodNameTest"),
@@ -267,7 +265,7 @@ class FoodV1ControllerTest: ControllerTestContext() {
                         queryParameters(
                             "foodName" queryMeans "음식명 (부분 검색)" isOptional true,
                             "page" queryMeans "페이지 번호 (0부터 시작)" isOptional true,
-                            "size" queryMeans "페이지 크기" isOptional true
+                            "size" queryMeans "페이지 크기" isOptional true,
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -289,30 +287,26 @@ class FoodV1ControllerTest: ControllerTestContext() {
                                 "data.items[].brand" type STRING means "브랜드명",
                                 "data.items[].isAdminApproved" type BOOLEAN means "관리자 승인 여부",
                                 "data.items[].createdAt" type STRING means "생성일시",
-                                "data.items[].updatedAt" type STRING means "수정일시"
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK);
+                                "data.items[].updatedAt" type STRING means "수정일시",
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
 
-        private fun mockSearchPageResponse(): PageResponse<FoodSearchResult> {
-            return PageResponse(
+        private fun mockSearchPageResponse(): PageResponse<FoodSearchResult> = PageResponse(
                 totalItems = 2,
                 currentPage = 1,
                 itemsPerPage = 10,
-                items = listOf(
-                    FoodSearchResultFixture(id = 1L, name = "사과").create(),
-                    FoodSearchResultFixture(id = 2L, name = "사과주스").create()
-                )
+                items =
+                    listOf(
+                        FoodSearchResultFixture(id = 1L, name = "사과").create(),
+                        FoodSearchResultFixture(id = 2L, name = "사과주스").create(),
+                    ),
             )
-        }
-
     }
 
-    private fun mockFoodResponse(): FoodV1Response.Details {
-        return FoodV1Response.Details(
+    private fun mockFoodResponse(): FoodV1Response.Details = FoodV1Response.Details(
             id = 1L,
             uuid = "test-uuid-123",
             name = "테스트 음식",
@@ -323,7 +317,6 @@ class FoodV1ControllerTest: ControllerTestContext() {
             protein = 8.0,
             fat = 3.0,
             brand = "테스트 브랜드",
-            createdAt = LocalDateTime.now()
+            createdAt = LocalDateTime.now(),
         )
-    }
 }

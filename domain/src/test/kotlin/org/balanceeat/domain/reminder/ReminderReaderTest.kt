@@ -11,7 +11,6 @@ import java.time.DayOfWeek
 import java.time.LocalTime
 
 class ReminderReaderTest : IntegrationTestContext() {
-
     @Autowired
     private lateinit var reminderReader: ReminderReader
 
@@ -21,7 +20,6 @@ class ReminderReaderTest : IntegrationTestContext() {
     @Nested
     @DisplayName("사용자 ID로 전체 조회 테스트")
     inner class FindAllByUserIdTest {
-
         @Test
         fun `사용자 ID로 리마인더 목록을 페이지네이션하여 조회할 수 있다`() {
             // given
@@ -60,38 +58,47 @@ class ReminderReaderTest : IntegrationTestContext() {
     @Nested
     @DisplayName("활성 리마인더 개수 조회 테스트")
     inner class FindAllActiveCountByTest {
-
         @Test
-        fun  `성공`() {
+        fun `성공`() {
             // given
             val targetDayOfWeek = DayOfWeek.MONDAY
             val targetTime = LocalTime.of(9, 0, 0)
 
-            reminderRepository.save(reminderFixture {
-                this.dayOfWeeks = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY)
-                this.sendTime = targetTime
-                this.isActive = true
-            })
-            reminderRepository.save(reminderFixture {
-                this.dayOfWeeks = listOf(DayOfWeek.MONDAY)
-                this.sendTime = targetTime
-                this.isActive = true
-            })
-            reminderRepository.save(reminderFixture {
-                this.dayOfWeeks = listOf(DayOfWeek.MONDAY)
-                this.sendTime = targetTime
-                this.isActive = false // 비활성
-            })
-            reminderRepository.save(reminderFixture {
-                this.dayOfWeeks = listOf(DayOfWeek.TUESDAY)
-                this.sendTime = targetTime
-                this.isActive = true // 다른 요일
-            })
-            reminderRepository.save(reminderFixture {
-                this.dayOfWeeks = listOf(DayOfWeek.MONDAY)
-                this.sendTime = targetTime.plusHours(1) // 다른 시간
-                this.isActive = true
-            })
+            reminderRepository.save(
+                reminderFixture {
+                    this.dayOfWeeks = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY)
+                    this.sendTime = targetTime
+                    this.isActive = true
+                },
+            )
+            reminderRepository.save(
+                reminderFixture {
+                    this.dayOfWeeks = listOf(DayOfWeek.MONDAY)
+                    this.sendTime = targetTime
+                    this.isActive = true
+                },
+            )
+            reminderRepository.save(
+                reminderFixture {
+                    this.dayOfWeeks = listOf(DayOfWeek.MONDAY)
+                    this.sendTime = targetTime
+                    this.isActive = false // 비활성
+                },
+            )
+            reminderRepository.save(
+                reminderFixture {
+                    this.dayOfWeeks = listOf(DayOfWeek.TUESDAY)
+                    this.sendTime = targetTime
+                    this.isActive = true // 다른 요일
+                },
+            )
+            reminderRepository.save(
+                reminderFixture {
+                    this.dayOfWeeks = listOf(DayOfWeek.MONDAY)
+                    this.sendTime = targetTime.plusHours(1) // 다른 시간
+                    this.isActive = true
+                },
+            )
 
             // when
             val count = reminderReader.findAllActiveCountBy(targetDayOfWeek, targetTime)
@@ -104,28 +111,35 @@ class ReminderReaderTest : IntegrationTestContext() {
     @Nested
     @DisplayName("활성 리마인더 조회 테스트")
     inner class FindAllActiveByTest {
-
         @Test
         fun `성공`() {
             // given
             val targetDayOfWeek = DayOfWeek.WEDNESDAY
             val targetTime = LocalTime.of(14, 30, 0)
 
-            val reminder1 = reminderRepository.save(reminderFixture {
-                this.dayOfWeeks = listOf(DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
-                this.sendTime = targetTime
-                this.isActive = true
-            })
-            val reminder2 = reminderRepository.save(reminderFixture {
-                this.dayOfWeeks = listOf(DayOfWeek.WEDNESDAY)
-                this.sendTime = targetTime
-                this.isActive = true
-            })
-            reminderRepository.save(reminderFixture {
-                this.dayOfWeeks = listOf(DayOfWeek.WEDNESDAY)
-                this.sendTime = targetTime
-                this.isActive = false // 비활성
-            })
+            val reminder1 =
+                reminderRepository.save(
+                    reminderFixture {
+                        this.dayOfWeeks = listOf(DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+                        this.sendTime = targetTime
+                        this.isActive = true
+                    },
+                )
+            val reminder2 =
+                reminderRepository.save(
+                    reminderFixture {
+                        this.dayOfWeeks = listOf(DayOfWeek.WEDNESDAY)
+                        this.sendTime = targetTime
+                        this.isActive = true
+                    },
+                )
+            reminderRepository.save(
+                reminderFixture {
+                    this.dayOfWeeks = listOf(DayOfWeek.WEDNESDAY)
+                    this.sendTime = targetTime
+                    this.isActive = false // 비활성
+                },
+            )
 
             val pageable = PageRequest.of(0, 10)
 

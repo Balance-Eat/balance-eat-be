@@ -26,10 +26,9 @@ class UserResultFixture(
     var targetFat: Double? = 80.0,
     var providerId: String? = "google123",
     var providerType: String? = "GOOGLE",
-    var createdAt: LocalDateTime = LocalDateTime.now()
+    var createdAt: LocalDateTime = LocalDateTime.now(),
 ) : TestFixture<UserResult> {
-    override fun create(): UserResult {
-        return UserResult(
+    override fun create(): UserResult = UserResult(
             id = id,
             uuid = uuid,
             name = name,
@@ -51,11 +50,8 @@ class UserResultFixture(
             targetFat = targetFat,
             providerId = providerId,
             providerType = providerType,
-            createdAt = createdAt
+            createdAt = createdAt,
         )
-    }
 }
 
-fun userResultFixture(block: UserResultFixture.() -> Unit = {}): UserResult {
-    return UserResultFixture().apply(block).create()
-}
+fun userResultFixture(block: UserResultFixture.() -> Unit = {}): UserResult = UserResultFixture().apply(block).create()

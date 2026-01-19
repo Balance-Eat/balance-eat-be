@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
 class AppPushHistoryReaderTest : IntegrationTestContext() {
-
     @Autowired
     private lateinit var appPushHistoryReader: AppPushHistoryReader
 
@@ -18,7 +17,6 @@ class AppPushHistoryReaderTest : IntegrationTestContext() {
     @Nested
     @DisplayName("사용자별 조회 테스트")
     inner class FindByUserIdTest {
-
         @Test
         fun `사용자 ID로 앱 푸시 히스토리 목록을 조회할 수 있다`() {
             // given
@@ -38,7 +36,6 @@ class AppPushHistoryReaderTest : IntegrationTestContext() {
     @Nested
     @DisplayName("디바이스별 조회 테스트")
     inner class FindByDeviceIdTest {
-
         @Test
         fun `디바이스 ID로 앱 푸시 히스토리 목록을 조회할 수 있다`() {
             // given

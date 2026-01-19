@@ -23,7 +23,7 @@ import java.nio.charset.Charset
 @ConditionalOnBean(ErrorNotificationSender::class)
 class RequestResponseLoggingFilter(
     private val objectMapper: ObjectMapper,
-    private val errorNotificationSender: ErrorNotificationSender
+    private val errorNotificationSender: ErrorNotificationSender,
 ) : OncePerRequestFilter() {
     private val logger = KotlinLogging.logger {}
 
@@ -32,19 +32,20 @@ class RequestResponseLoggingFilter(
         private const val MDC_REQUEST_ID = "requestId"
         private const val MAX_PAYLOAD_LEN = 10_000 // 10 KB
 
-        private val TEXTUAL_MEDIA_TYPES = listOf(
-            MediaType.APPLICATION_JSON,
-            MediaType.APPLICATION_XML,
-            MediaType.TEXT_PLAIN,
-            MediaType.TEXT_XML,
-            MediaType.APPLICATION_FORM_URLENCODED
-        )
+        private val TEXTUAL_MEDIA_TYPES =
+            listOf(
+                MediaType.APPLICATION_JSON,
+                MediaType.APPLICATION_XML,
+                MediaType.TEXT_PLAIN,
+                MediaType.TEXT_XML,
+                MediaType.APPLICATION_FORM_URLENCODED,
+            )
     }
 
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        filterChain: FilterChain
+        filterChain: FilterChain,
     ) {
         val startTime = System.currentTimeMillis()
 
@@ -72,22 +73,37 @@ class RequestResponseLoggingFilter(
                 // Emit one consolidated log block without extra indentation
                 val pathQuerySuffix = querySuffixForPath(request)
 
-                val logMsg = StringBuilder()
-                    .append("[").append(request.method).append("] ")
-                    .append(request.requestURI).append(pathQuerySuffix)
-                    .append(" status=").append(status)
-                    .append(" duration=").append(durationMs).append("ms\n")
-                    .append("QueryParams=").append(queryForField).append("\n")
-                    .append("RequestBody=").append(reqPayload).append("\n")
-                    .append("ResponseBody=").append(resPayload)
-                    .toString()
+                val logMsg =
+                    StringBuilder()
+                        .append("[")
+                        .append(request.method)
+                        .append("] ")
+                        .append(request.requestURI)
+                        .append(pathQuerySuffix)
+                        .append(" status=")
+                        .append(status)
+                        .append(" duration=")
+                        .append(durationMs)
+                        .append("ms\n")
+                        .append("QueryParams=")
+                        .append(queryForField)
+                        .append("\n")
+                        .append("RequestBody=")
+                        .append(reqPayload)
+                        .append("\n")
+                        .append("ResponseBody=")
+                        .append(resPayload)
+                        .toString()
                 logger.info { logMsg }
 
                 if (HttpStatus.resolve(status)?.isError == true) {
                     if (status != HttpStatus.NOT_FOUND.value() || !resPayload.contains("RESOURCE_NOT_FOUND")) {
-                        val sendingMessage = "--------------------------------".plus("\n")
-                            .plus(logMsg).plus("\n")
-                            .plus("--------------------------------");
+                        val sendingMessage =
+                            "--------------------------------"
+                                .plus("\n")
+                                .plus(logMsg)
+                                .plus("\n")
+                                .plus("--------------------------------")
 
                         errorNotificationSender.send(sendingMessage)
                     }
@@ -144,7 +160,10 @@ class RequestResponseLoggingFilter(
         // Include request id if available
         val currentReqId = MDC.get(MDC_REQUEST_ID)
         if (!currentReqId.isNullOrBlank()) {
-            try { response.setHeader(REQ_ID_HEADER, currentReqId) } catch (_: Exception) {}
+            try {
+                response.setHeader(REQ_ID_HEADER, currentReqId)
+            } catch (_: Exception) {
+            }
             result[REQ_ID_HEADER] = currentReqId
         }
         return result
@@ -191,24 +210,35 @@ class RequestResponseLoggingFilter(
         }
     }
 
-    private fun resolveCharset(contentType: String?, encoding: String?): Charset {
+    private fun resolveCharset(
+        contentType: String?,
+        encoding: String?,
+    ): Charset {
         // Prefer UTF-8 for JSON per RFC 8259 when charset is missing or incorrectly set to ISO-8859-1 by container defaults
         val enc = (encoding ?: "").trim()
         val isIso88591 = enc.equals("ISO-8859-1", ignoreCase = true)
-        val mediaType = try {
-            if (contentType.isNullOrBlank()) null else MediaType.parseMediaType(contentType)
-        } catch (_: Exception) { null }
+        val mediaType =
+            try {
+                if (contentType.isNullOrBlank()) null else MediaType.parseMediaType(contentType)
+            } catch (_: Exception) {
+                null
+            }
 
-        val isJson = try {
-            if (mediaType == null) false else (mediaType.subtype.equals("json", true) || mediaType.subtype.endsWith("+json", true))
-        } catch (_: Exception) { false }
+        val isJson =
+            try {
+                if (mediaType == null) false else (mediaType.subtype.equals("json", true) || mediaType.subtype.endsWith("+json", true))
+            } catch (_: Exception) {
+                false
+            }
 
         return try {
             when {
                 // For JSON, default to UTF-8 if charset is missing or set to ISO-8859-1 (common container default)
                 isJson && (enc.isEmpty() || isIso88591) -> Charsets.UTF_8
+
                 // For other textual types, if charset missing, default to UTF-8
                 enc.isEmpty() -> Charsets.UTF_8
+
                 else -> Charset.forName(enc)
             }
         } catch (_: Exception) {
@@ -216,14 +246,22 @@ class RequestResponseLoggingFilter(
         }
     }
 
-    private fun minifyIfJsonOrTrim(text: String, contentType: String?): String {
+    private fun minifyIfJsonOrTrim(
+        text: String,
+        contentType: String?,
+    ): String {
         if (text.isBlank()) return "[None]"
-        val isJson = try {
-            if (contentType.isNullOrBlank()) false else {
-                val mt = MediaType.parseMediaType(contentType)
-                mt.subtype.equals("json", true) || mt.subtype.endsWith("+json", true)
+        val isJson =
+            try {
+                if (contentType.isNullOrBlank()) {
+                    false
+                } else {
+                    val mt = MediaType.parseMediaType(contentType)
+                    mt.subtype.equals("json", true) || mt.subtype.endsWith("+json", true)
+                }
+            } catch (_: Exception) {
+                false
             }
-        } catch (_: Exception) { false }
 
         if (isJson || text.trimStart().startsWith("{") || text.trimStart().startsWith("[")) {
             return try {
@@ -231,14 +269,22 @@ class RequestResponseLoggingFilter(
                 objectMapper.writeValueAsString(tree)
             } catch (_: Exception) {
                 // Fall back to removing newlines and excessive spaces
-                text.replace("\n", "").replace("\r", "").replace("\t", " ").replace(Regex("\\s+"), " ").trim()
+                text
+                    .replace("\n", "")
+                    .replace("\r", "")
+                    .replace("\t", " ")
+                    .replace(Regex("\\s+"), " ")
+                    .trim()
             }
         }
         // For non-JSON textual bodies, collapse excessive whitespace
-        return text.replace("\n", " ").replace("\r", " ").replace("\t", " ").replace(Regex("\\s+"), " ").trim()
+        return text
+            .replace("\n", " ")
+            .replace("\r", " ")
+            .replace("\t", " ")
+            .replace(Regex("\\s+"), " ")
+            .trim()
     }
 
-    private fun abbreviate(text: String): String {
-        return if (text.length <= MAX_PAYLOAD_LEN) text else text.substring(0, MAX_PAYLOAD_LEN) + "...<truncated>"
-    }
+    private fun abbreviate(text: String): String = if (text.length <= MAX_PAYLOAD_LEN) text else text.substring(0, MAX_PAYLOAD_LEN) + "...<truncated>"
 }

@@ -5,6 +5,6 @@ import java.time.LocalDate
 class DietQuery {
     data class FindDailyDiets(
         val userId: Long,
-        val date: LocalDate
+        val date: LocalDate,
     )
 }

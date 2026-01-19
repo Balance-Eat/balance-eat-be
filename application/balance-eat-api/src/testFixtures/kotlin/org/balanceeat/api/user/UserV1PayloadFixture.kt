@@ -26,10 +26,9 @@ class UserV1RequestFixture {
         var targetProtein: Double? = 120.0,
         var targetFat: Double? = 80.0,
         var providerId: String? = "google123",
-        var providerType: String? = "GOOGLE"
+        var providerType: String? = "GOOGLE",
     ) : TestFixture<UserV1Request.Create> {
-        override fun create(): UserV1Request.Create {
-            return UserV1Request.Create(
+        override fun create(): UserV1Request.Create = UserV1Request.Create(
                 uuid = uuid,
                 name = name,
                 gender = gender,
@@ -49,9 +48,8 @@ class UserV1RequestFixture {
                 targetProtein = targetProtein,
                 targetFat = targetFat,
                 providerId = providerId,
-                providerType = providerType
+                providerType = providerType,
             )
-        }
     }
 
     class Update(
@@ -71,10 +69,9 @@ class UserV1RequestFixture {
         var targetFatPercentage: Double? = 12.0,
         var targetCarbohydrates: Double? = 300.0,
         var targetProtein: Double? = 120.0,
-        var targetFat: Double? = 80.0
+        var targetFat: Double? = 80.0,
     ) : TestFixture<UserV1Request.Update> {
-        override fun create(): UserV1Request.Update {
-            return UserV1Request.Update(
+        override fun create(): UserV1Request.Update = UserV1Request.Update(
                 name = name,
                 email = email,
                 gender = gender,
@@ -91,19 +88,18 @@ class UserV1RequestFixture {
                 targetFatPercentage = targetFatPercentage,
                 targetCarbohydrates = targetCarbohydrates,
                 targetProtein = targetProtein,
-                targetFat = targetFat
+                targetFat = targetFat,
             )
-        }
     }
 }
 
 class UserV1ResponseFixture {
     class Details(
-        var id : Long = NEW_ID,
-        var uuid : String = UUID.randomUUID().toString(),
-        var name : String = "test-uuid-123",
-        var gender : User.Gender = User.Gender.MALE,
-        var age : Int = 30,
+        var id: Long = NEW_ID,
+        var uuid: String = UUID.randomUUID().toString(),
+        var name: String = "test-uuid-123",
+        var gender: User.Gender = User.Gender.MALE,
+        var age: Int = 30,
         var height: Double = 175.5,
         var weight: Double = 70.0,
         var goalType: User.GoalType = User.GoalType.MAINTAIN,
@@ -119,10 +115,9 @@ class UserV1ResponseFixture {
         var targetProtein: Double? = 120.0,
         var targetFat: Double? = 80.0,
         var providerId: String? = "google123",
-        var providerType: String? = "GOOGLE"
-    ): TestFixture<UserV1Response.Details> {
-        override fun create(): UserV1Response.Details {
-            return UserV1Response.Details(
+        var providerType: String? = "GOOGLE",
+    ) : TestFixture<UserV1Response.Details> {
+        override fun create(): UserV1Response.Details = UserV1Response.Details(
                 id = id,
                 uuid = uuid,
                 name = name,
@@ -143,20 +138,13 @@ class UserV1ResponseFixture {
                 targetProtein = targetProtein,
                 targetFat = targetFat,
                 providerId = providerId,
-                providerType = providerType
+                providerType = providerType,
             )
-        }
     }
 }
 
-fun userCreateV1RequestFixture(block: UserV1RequestFixture.Create.() -> Unit = {}): UserV1Request.Create {
-    return UserV1RequestFixture.Create().apply(block).create()
-}
+fun userCreateV1RequestFixture(block: UserV1RequestFixture.Create.() -> Unit = {}): UserV1Request.Create = UserV1RequestFixture.Create().apply(block).create()
 
-fun userUpdateV1RequestFixture(block: UserV1RequestFixture.Update.() -> Unit = {}): UserV1Request.Update {
-    return UserV1RequestFixture.Update().apply(block).create()
-}
+fun userUpdateV1RequestFixture(block: UserV1RequestFixture.Update.() -> Unit = {}): UserV1Request.Update = UserV1RequestFixture.Update().apply(block).create()
 
-fun userDetailsV1ResponseFixture(block: UserV1ResponseFixture.Details.() -> Unit = {}): UserV1Response.Details {
-    return UserV1ResponseFixture.Details().apply(block).create()
-}
+fun userDetailsV1ResponseFixture(block: UserV1ResponseFixture.Details.() -> Unit = {}): UserV1Response.Details = UserV1ResponseFixture.Details().apply(block).create()

@@ -12,8 +12,8 @@ import java.time.LocalDateTime
 class ReminderScheduleService(
     private val reminderReader: ReminderReader,
     private val appPushSender: AppPushSender,
-    private val notificationDeviceReader: NotificationDeviceReader
-){
+    private val notificationDeviceReader: NotificationDeviceReader,
+) {
     private val CHUNK_SIZE = 200
 
     fun sendAllBy(targetDateTime: LocalDateTime) {
@@ -23,10 +23,12 @@ class ReminderScheduleService(
         val totalReminderCount = reminderReader.findAllActiveCountBy(dayOfWeek, time)
 
         for (offset in 0 until totalReminderCount step CHUNK_SIZE.toLong()) {
-            val pageable = PageRequest.of((offset/ CHUNK_SIZE).toInt(), CHUNK_SIZE)
+            val pageable = PageRequest.of((offset / CHUNK_SIZE).toInt(), CHUNK_SIZE)
             val reminders = reminderReader.findAllActiveBy(dayOfWeek, time, pageable)
-            val notificationDevicesMap = notificationDeviceReader.findAllActiveByUserIds(reminders.map{ it.userId }.toList())
-                .groupBy { it.userId }
+            val notificationDevicesMap =
+                notificationDeviceReader
+                    .findAllActiveByUserIds(reminders.map { it.userId }.toList())
+                    .groupBy { it.userId }
 
             reminders.forEach { reminder ->
                 val devices = notificationDevicesMap[reminder.userId] ?: return@forEach
@@ -38,8 +40,8 @@ class ReminderScheduleService(
                                 deviceId = device.id,
                                 title = "밸런스잇 리마인더",
                                 content = reminder.content,
-                                deepLink = null
-                            )
+                                deepLink = null,
+                            ),
                         )
                     }
                 }

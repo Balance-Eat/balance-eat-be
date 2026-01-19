@@ -14,20 +14,16 @@ class Diet(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = NEW_ID,
-    
     @Column(name = "user_id", nullable = false)
     val userId: Long,
-    
     @Column(name = "meal_type", nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
     var mealType: MealType,
-
     @Column(name = "consumed_at", nullable = false)
     var consumedAt: LocalDateTime,
-
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "diet_id", nullable = false)
-    val dietFoods: MutableList<DietFood> = mutableListOf()
+    val dietFoods: MutableList<DietFood> = mutableListOf(),
 ) : BaseEntity() {
     companion object {
         const val MAX_FOOD_SIZE = 10
@@ -38,13 +34,19 @@ class Diet(
         require(dietFoods.isNotEmpty()) { "식단에는 최소 1개 이상의 음식이 포함되어야 합니다" }
         require(dietFoods.size <= MAX_FOOD_SIZE) { "식단에는 최대 50개까지 음식을 포함할 수 있습니다" }
     }
-    
-    fun addFood(food: Food, intake: Int) {
+
+    fun addFood(
+        food: Food,
+        intake: Int,
+    ) {
         val newDietFood = DietFood(food, intake)
         dietFoods.add(newDietFood)
     }
 
-    fun update(mealType: MealType, consumedAt: LocalDateTime) {
+    fun update(
+        mealType: MealType,
+        consumedAt: LocalDateTime,
+    ) {
         this.mealType = mealType
         this.consumedAt = consumedAt
     }
@@ -54,17 +56,18 @@ class Diet(
         this.dietFoods.addAll(dietFoods)
     }
 
-    fun getFood(dietFoodId: Long): DietFood {
-        return dietFoods.find { it.id == dietFoodId }
+    fun getFood(dietFoodId: Long): DietFood = dietFoods.find { it.id == dietFoodId }
             ?: throw DomainException(DomainStatus.DIET_FOOD_NOT_FOUND)
-    }
 
     fun removeFood(dietFoodId: Long) {
         val dietFood = getFood(dietFoodId)
         dietFoods.remove(dietFood)
     }
 
-    fun updateFood(dietFoodId: Long, newIntake: Int) {
+    fun updateFood(
+        dietFoodId: Long,
+        newIntake: Int,
+    ) {
         val dietFood = getFood(dietFoodId)
         dietFood.intake = newIntake
     }
@@ -73,6 +76,6 @@ class Diet(
         BREAKFAST,
         LUNCH,
         DINNER,
-        SNACK
+        SNACK,
     }
 }

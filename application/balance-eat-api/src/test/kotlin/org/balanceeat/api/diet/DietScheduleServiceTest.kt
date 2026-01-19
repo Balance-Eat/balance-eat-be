@@ -1,7 +1,6 @@
 package org.balanceeat.api.diet
 
 import io.mockk.verify
-import org.assertj.core.api.Assertions.assertThat
 import org.balanceeat.api.config.supports.IntegrationTestContext
 import org.balanceeat.domain.apppush.NotificationDeviceRepository
 import org.balanceeat.domain.apppush.notificationDeviceFixture
@@ -16,7 +15,6 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 
 class DietScheduleServiceTest : IntegrationTestContext() {
-
     @Autowired
     private lateinit var dietScheduleService: DietScheduleService
 
@@ -37,31 +35,36 @@ class DietScheduleServiceTest : IntegrationTestContext() {
         val user2 = 2L
         val user3 = 3L
 
-        dietRepository.saveAll(listOf(
-            dietFixture {
-                userId = user1
-                this.mealType = mealType
-                consumedAt = LocalDateTime.of(targetDate, LocalTime.of(9, 0))
-            }
-        ))
+        dietRepository.saveAll(
+            listOf(
+                dietFixture {
+                    userId = user1
+                    this.mealType = mealType
+                    consumedAt = LocalDateTime.of(targetDate, LocalTime.of(9, 0))
+                },
+            ),
+        )
 
-        val devices = notificationDeviceRepository.saveAll(listOf(
-            notificationDeviceFixture {
-                userId = user2
-                agentId = "device-user2-1"
-                isActive = true
-            },
-            notificationDeviceFixture {
-                userId = user2
-                agentId = "device-user2-2"
-                isActive = true
-            },
-            notificationDeviceFixture {
-                userId = user3
-                agentId = "device-user3-1"
-                isActive = true
-            }
-        ))
+        val devices =
+            notificationDeviceRepository.saveAll(
+                listOf(
+                    notificationDeviceFixture {
+                        userId = user2
+                        agentId = "device-user2-1"
+                        isActive = true
+                    },
+                    notificationDeviceFixture {
+                        userId = user2
+                        agentId = "device-user2-2"
+                        isActive = true
+                    },
+                    notificationDeviceFixture {
+                        userId = user3
+                        agentId = "device-user3-1"
+                        isActive = true
+                    },
+                ),
+            )
 
         // when
         dietScheduleService.sendNotRegisteredDietNotifications(mealType, targetDate)

@@ -12,30 +12,32 @@ import java.time.LocalTime
 @Component
 @Transactional(readOnly = true)
 class ReminderReader(
-    private val reminderRepository: ReminderRepository
-): BaseReader<Reminder, ReminderResult>(reminderRepository, ReminderResult) {
+    private val reminderRepository: ReminderRepository,
+) : BaseReader<Reminder, ReminderResult>(reminderRepository, ReminderResult) {
+    override fun findByIdOrThrow(id: Long): ReminderResult = findByIdOrThrow(id, DomainStatus.REMINDER_NOT_FOUND)
 
-    override fun findByIdOrThrow(id: Long): ReminderResult {
-        return findByIdOrThrow(id, DomainStatus.REMINDER_NOT_FOUND)
-    }
-
-    fun findAllByUserId(userId: Long, pageable: Pageable): Page<ReminderResult> {
-        return reminderRepository.findAllByUserId(userId, pageable)
+    fun findAllByUserId(
+        userId: Long,
+        pageable: Pageable,
+    ): Page<ReminderResult> = reminderRepository
+        .findAllByUserId(userId, pageable)
             .map { ReminderResult.from(it) }
-    }
 
-    fun findAllActiveCountBy(dayOfWeek: DayOfWeek, time: LocalTime): Long {
-        return reminderRepository.countAllActiveBy(
-            dayOfWeek = dayOfWeek,
-            time = time
-        )
-    }
-
-    fun findAllActiveBy(dayOfWeek: DayOfWeek, time: LocalTime, pageable: Pageable): List<Reminder> {
-        return reminderRepository.findAllActiveBy(
+    fun findAllActiveCountBy(
+        dayOfWeek: DayOfWeek,
+        time: LocalTime,
+    ): Long = reminderRepository.countAllActiveBy(
             dayOfWeek = dayOfWeek,
             time = time,
-            pageable = pageable
         )
-    }
+
+    fun findAllActiveBy(
+        dayOfWeek: DayOfWeek,
+        time: LocalTime,
+        pageable: Pageable,
+    ): List<Reminder> = reminderRepository.findAllActiveBy(
+            dayOfWeek = dayOfWeek,
+            time = time,
+            pageable = pageable,
+        )
 }

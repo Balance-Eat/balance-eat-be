@@ -54,13 +54,12 @@ class User(
     @Column(name = "goal_type", length = 20, nullable = false)
     var goalType: GoalType,
 ) : BaseEntity() {
-
     override fun guard() {
         // 기본 필드 검증
         require(name.length <= 100) { "이름은 100자를 초과할 수 없습니다" }
         require(uuid.isNotBlank()) { "UUID는 필수값입니다" }
         require(uuid.length <= 36) { "UUID는 36자를 초과할 수 없습니다" }
-        
+
         // 이메일 검증
         email?.let {
             require(it.length <= 255) { "이메일은 255자를 초과할 수 없습니다" }
@@ -68,47 +67,47 @@ class User(
                 "유효한 이메일 형식이 아닙니다"
             }
         }
-        
+
         // 나이 검증
         require(age in 1..150) { "나이는 1세 이상 150세 이하여야 합니다" }
-        
+
         // 몸무게 검증
         require(weight in 10.0..1000.0) { "몸무게는 10kg 이상 1000kg 이하여야 합니다" }
         require(weight.toString().substringAfter(".").length <= 2) { "몸무게는 소수점 2자리까지만 입력 가능합니다" }
-        
+
         // 키 검증 (10-300cm)
         require(height in 10.0..300.0) { "키는 10cm 이상 300cm 이하여야 합니다" }
         require(height.toString().substringAfter(".").length <= 2) { "키는 소수점 2자리까지만 입력 가능합니다" }
-        
+
         // SMI 검증
         smi?.let {
             require(it in 0.0..50.0) { "SMI는 0 이상 50 이하여야 합니다" }
             require(it.toString().substringAfter(".").length <= 2) { "SMI는 소수점 2자리까지만 입력 가능합니다" }
         }
-        
+
         // 체지방률 검증
         fatPercentage?.let {
             require(it in 0.0..100.0) { "체지방률은 0% 이상 100% 이하여야 합니다" }
             require(it.toString().substringAfter(".").length <= 2) { "체지방률은 소수점 2자리까지만 입력 가능합니다" }
         }
-        
+
         // 목표 몸무게 검증
         targetWeight?.let {
             require(it in 10.0..1000.0) { "목표 몸무게는 10kg 이상 1000kg 이하여야 합니다" }
             require(it.toString().substringAfter(".").length <= 2) { "목표 몸무게는 소수점 2자리까지만 입력 가능합니다" }
         }
-        
+
         // 목표 칼로리 검증
         targetCalorie?.let {
             require(it in 500..10000) { "목표 칼로리는 500kcal 이상 10000kcal 이하여야 합니다" }
         }
-        
+
         // 목표 SMI 검증
         targetSmi?.let {
             require(it in 0.0..50.0) { "목표 SMI는 0 이상 50 이하여야 합니다" }
             require(it.toString().substringAfter(".").length <= 2) { "목표 SMI는 소수점 2자리까지만 입력 가능합니다" }
         }
-        
+
         // 목표 체지방률 검증
         targetFatPercentage?.let {
             require(it in 0.0..100.0) { "목표 체지방률은 0% 이상 100% 이하여야 합니다" }
@@ -132,12 +131,12 @@ class User(
             require(it in 0.0..1000.0) { "목표 지방은 0g 이상 1000g 이하여야 합니다" }
             require(it.toString().substringAfter(".").length <= 2) { "목표 지방은 소수점 2자리까지만 입력 가능합니다" }
         }
-        
+
         // Provider 필드 검증
         providerId?.let {
             require(it.length <= 255) { "Provider ID는 255자를 초과할 수 없습니다" }
         }
-        
+
         providerType?.let {
             require(it.length <= 50) { "Provider Type은 50자를 초과할 수 없습니다" }
         }
@@ -149,23 +148,30 @@ class User(
         OTHER,
     }
 
-    enum class ActivityLevel(val factor: Double) {
+    enum class ActivityLevel(
+        val factor: Double
+    ) {
         // 거의 활동 안 함
         SEDENTARY(1.2),
+
         // 가벼운 활동 (주 1~3회)
         LIGHT(1.375),
+
         // 보통 활동 (주 3~5회)
         MODERATE(1.55),
+
         // 활발한 활동 (매일 격렬)
-        ACTIVE(1.725)
+        ACTIVE(1.725),
     }
 
     enum class GoalType {
         // 다이어트
         DIET,
+
         // 벌크업
         BULK_UP,
+
         // 체중 유지
-        MAINTAIN
+        MAINTAIN,
     }
 }

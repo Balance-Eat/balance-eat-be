@@ -6,7 +6,7 @@ import java.time.LocalDate
 
 @Component
 class StatsScheduler(
-    private val statsScheduleService: StatsScheduleService
+    private val statsScheduleService: StatsScheduleService,
 ) {
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     fun aggregateDailyStats() {

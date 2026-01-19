@@ -10,20 +10,16 @@ class ReminderFixture(
     var content: String = "아침 식사 기록하기",
     var sendTime: LocalTime = LocalTime.of(9, 0, 0),
     var isActive: Boolean = true,
-    var dayOfWeeks: List<DayOfWeek> = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+    var dayOfWeeks: List<DayOfWeek> = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY),
 ) : TestFixture<Reminder> {
-    override fun create(): Reminder {
-        return Reminder(
+    override fun create(): Reminder = Reminder(
             id = 0L,
             userId = userId,
             content = content,
             sendTime = sendTime,
             isActive = isActive,
-            dayOfWeeks = dayOfWeeks
+            dayOfWeeks = dayOfWeeks,
         )
-    }
 }
 
-fun reminderFixture(block: ReminderFixture.() -> Unit = {}): Reminder {
-    return ReminderFixture().apply(block).create()
-}
+fun reminderFixture(block: ReminderFixture.() -> Unit = {}): Reminder = ReminderFixture().apply(block).create()

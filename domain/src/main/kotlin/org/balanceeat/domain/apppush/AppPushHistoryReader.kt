@@ -8,20 +8,15 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 @Transactional(readOnly = true)
 class AppPushHistoryReader(
-    private val appPushHistoryRepository: AppPushHistoryRepository
+    private val appPushHistoryRepository: AppPushHistoryRepository,
 ) : BaseReader<AppPushHistory, AppPushHistoryResult>(appPushHistoryRepository, AppPushHistoryResult) {
+    override fun findByIdOrThrow(id: Long): AppPushHistoryResult = findByIdOrThrow(id, DomainStatus.APP_PUSH_HISTORY_NOT_FOUND)
 
-    override fun findByIdOrThrow(id: Long): AppPushHistoryResult {
-        return findByIdOrThrow(id, DomainStatus.APP_PUSH_HISTORY_NOT_FOUND)
-    }
-
-    fun findAllByUserId(userId: Long): List<AppPushHistoryResult> {
-        return appPushHistoryRepository.findByUserId(userId)
+    fun findAllByUserId(userId: Long): List<AppPushHistoryResult> = appPushHistoryRepository
+        .findByUserId(userId)
             .map { AppPushHistoryResult.from(it) }
-    }
 
-    fun findAllByDeviceId(deviceId: Long): List<AppPushHistoryResult> {
-        return appPushHistoryRepository.findByDeviceId(deviceId)
+    fun findAllByDeviceId(deviceId: Long): List<AppPushHistoryResult> = appPushHistoryRepository
+        .findByDeviceId(deviceId)
             .map { AppPushHistoryResult.from(it) }
-    }
 }

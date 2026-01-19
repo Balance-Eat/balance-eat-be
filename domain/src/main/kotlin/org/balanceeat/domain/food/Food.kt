@@ -11,48 +11,37 @@ class Food(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = NEW_ID,
-
     @Column(name = "name", nullable = false, length = 100)
     var name: String,
-
     @Column(name = "uuid", nullable = false, unique = true, length = 36)
     val uuid: String,
-
     @Column(name = "user_id", nullable = false)
     val userId: Long,
-
     // 1회 기준 섭취량
     @Column(name = "serving_size", nullable = false)
     var servingSize: Double,
-
     @Column(name = "per_serving_calories", nullable = false)
     var perServingCalories: Double,
-
     // 단위 (예: mg, ml, g 등)
     @Column(name = "unit", length = 20, nullable = false)
     var unit: String,
-
     @Column(name = "carbohydrates", nullable = false)
     var carbohydrates: Double = 0.0,
-
     @Column(name = "protein", nullable = false)
     var protein: Double = 0.0,
-
     @Column(name = "fat", nullable = false)
     var fat: Double = 0.0,
-
     // 브랜드명
     @Column(name = "brand", length = 50, nullable = false)
     var brand: String,
-
     // 관리자 검수 여부
     @Column(name = "isAdminApproved", nullable = false)
-    var isAdminApproved: Boolean = false
+    var isAdminApproved: Boolean = false,
 ) : BaseEntity() {
     override fun guard() {
         require(name.isNotBlank()) { "음식명은 필수값입니다" }
         require(name.length <= 100) { "음식명은 100자를 초과할 수 없습니다" }
-        
+
         require(uuid.isNotBlank()) { "UUID는 필수값입니다" }
         require(uuid.length <= 36) { "UUID는 36자를 초과할 수 없습니다" }
 
@@ -77,14 +66,16 @@ class Food(
         require(brand.isNotBlank()) { "브랜드명은 필수값입니다" }
         require(brand.length <= 50) { "브랜드명은 50자를 초과할 수 없습니다" }
     }
-    
-    fun update(name: String,
-                    servingSize: Double,
-                    unit: String,
-                    carbohydrates: Double,
-                    protein: Double,
-                    fat: Double,
-                    brand: String) {
+
+    fun update(
+        name: String,
+        servingSize: Double,
+        unit: String,
+        carbohydrates: Double,
+        protein: Double,
+        fat: Double,
+        brand: String,
+    ) {
         this.name = name
         this.servingSize = servingSize
         this.unit = unit
@@ -101,12 +92,12 @@ class Food(
 
     fun calculateNutrition(intake: Double): NutritionInfo {
         val ratio = intake / servingSize
-        
+
         return NutritionInfo(
             calories = perServingCalories * ratio,
             carbohydrates = carbohydrates * ratio,
             protein = protein * ratio,
-            fat = fat * ratio
+            fat = fat * ratio,
         )
     }
 }

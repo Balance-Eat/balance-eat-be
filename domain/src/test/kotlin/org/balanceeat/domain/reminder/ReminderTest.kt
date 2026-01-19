@@ -9,11 +9,9 @@ import java.time.DayOfWeek
 import java.time.LocalTime
 
 class ReminderTest {
-
     @Nested
     @DisplayName("guard 메서드 테스트")
     inner class GuardTest {
-
         @Test
         fun `리마인더 내용은 필수값이다`() {
             // given
@@ -86,16 +84,16 @@ class ReminderTest {
     @Nested
     @DisplayName("update 메서드 테스트")
     inner class UpdateTest {
-
         @Test
         fun `리마인더 모든 필드를 수정할 수 있다`() {
             // given
-            val reminder = reminderFixture {
-                content = "기존 내용"
-                sendTime = LocalTime.of(9, 0, 0)
-                isActive = true
-                dayOfWeeks = listOf(DayOfWeek.MONDAY)
-            }
+            val reminder =
+                reminderFixture {
+                    content = "기존 내용"
+                    sendTime = LocalTime.of(9, 0, 0)
+                    isActive = true
+                    dayOfWeeks = listOf(DayOfWeek.MONDAY)
+                }
             val newContent = "새로운 내용"
             val newSendTime = LocalTime.of(10, 30, 15) // Seconds will be truncated
             val newIsActive = false

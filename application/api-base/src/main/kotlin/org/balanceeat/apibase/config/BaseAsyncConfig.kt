@@ -14,7 +14,6 @@ import java.util.concurrent.Executor
 @EnableAsync
 @Configuration
 class BaseAsyncConfig : AsyncConfigurer {
-
     @Bean
     fun asyncExecutor(): TaskExecutor {
         val executor = ThreadPoolTaskExecutor()
@@ -45,23 +44,31 @@ class BaseAsyncConfig : AsyncConfigurer {
 
         // 메모리 크기에 따라 작업 큐 크기 계산
         return when {
-            maxMemoryInMB <= 1024 -> 200      // 1GB 이하 메모리: 작은 큐 크기
-            maxMemoryInMB <= 4096 -> 500      // 1GB ~ 4GB 메모리: 중간 큐 크기
-            else -> 1000                      // 4GB 이상 메모리: 큰 큐 크기
+            maxMemoryInMB <= 1024 -> 200
+
+            // 1GB 이하 메모리: 작은 큐 크기
+            maxMemoryInMB <= 4096 -> 500
+
+            // 1GB ~ 4GB 메모리: 중간 큐 크기
+            else -> 1000 // 4GB 이상 메모리: 큰 큐 크기
         }
     }
 
     class AsyncExceptionHandler : AsyncUncaughtExceptionHandler {
         private val log = LoggerFactory.getLogger(AsyncExceptionHandler::class.java)
 
-        override fun handleUncaughtException(ex: Throwable, method: Method, vararg params: Any) {
+        override fun handleUncaughtException(
+            ex: Throwable,
+            method: Method,
+            vararg params: Any,
+        ) {
             log.error(
                 "Async execution error in message: {} / method: {}.{}() with params: {}",
                 ex.message,
                 method.declaringClass.simpleName,
                 method.name,
                 params.contentToString(),
-                ex
+                ex,
             )
         }
     }

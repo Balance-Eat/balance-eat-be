@@ -14,7 +14,5 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @EnableJpaRepositories(basePackages = ["org.balanceeat.domain"])
 class JpaConfig {
     @Bean
-    fun jpaQueryFactory(entityManager: EntityManager): JPAQueryFactory {
-        return JPAQueryFactory(entityManager)
-    }
+    fun jpaQueryFactory(entityManager: EntityManager): JPAQueryFactory = JPAQueryFactory(entityManager)
 }

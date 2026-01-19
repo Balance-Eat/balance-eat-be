@@ -28,7 +28,7 @@ class AdminUserV1Request {
         val targetFatPercentage: Double? = null,
         val targetCarbohydrates: Double? = null,
         val targetProtein: Double? = null,
-        val targetFat: Double? = null
+        val targetFat: Double? = null,
     )
 }
 
@@ -54,32 +54,33 @@ class AdminUserV1Response {
         val targetProtein: Double?,
         val targetFat: Double?,
         val providerId: String?,
-        val providerType: String?
+        val providerType: String?,
     ) {
         companion object {
-            fun from(user: UserResult) = Details(
-                id = user.id,
-                uuid = user.uuid,
-                name = user.name,
-                email = user.email,
-                gender = user.gender,
-                age = user.age,
-                height = user.height,
-                weight = user.weight,
-                goalType = user.goalType,
-                activityLevel = user.activityLevel,
-                smi = user.smi,
-                fatPercentage = user.fatPercentage,
-                targetWeight = user.targetWeight,
-                targetCalorie = user.targetCalorie,
-                targetSmi = user.targetSmi,
-                targetFatPercentage = user.targetFatPercentage,
-                targetCarbohydrates = user.targetCarbohydrates,
-                targetProtein = user.targetProtein,
-                targetFat = user.targetFat,
-                providerId = user.providerId,
-                providerType = user.providerType
-            )
+            fun from(user: UserResult) =
+                Details(
+                    id = user.id,
+                    uuid = user.uuid,
+                    name = user.name,
+                    email = user.email,
+                    gender = user.gender,
+                    age = user.age,
+                    height = user.height,
+                    weight = user.weight,
+                    goalType = user.goalType,
+                    activityLevel = user.activityLevel,
+                    smi = user.smi,
+                    fatPercentage = user.fatPercentage,
+                    targetWeight = user.targetWeight,
+                    targetCalorie = user.targetCalorie,
+                    targetSmi = user.targetSmi,
+                    targetFatPercentage = user.targetFatPercentage,
+                    targetCarbohydrates = user.targetCarbohydrates,
+                    targetProtein = user.targetProtein,
+                    targetFat = user.targetFat,
+                    providerId = user.providerId,
+                    providerType = user.providerType,
+                )
         }
     }
 }

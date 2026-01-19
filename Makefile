@@ -1,4 +1,4 @@
-.PHONY: help test docker build
+.PHONY: help test docker build coverage lint lint-fix
 
 GRADLEW = ./gradlew
 
@@ -27,4 +27,16 @@ build: ## 테스트 후 Docker 이미지 빌드까지 수행합니다.
 	@$(MAKE) openapi || (echo "❌ OpenAPI 스펙 생성 실패. 빌드를 중단합니다." && exit 1)
 	@$(MAKE) docker
 	@echo "✅ Build completed successfully."
+
+coverage: test ## 테스트 커버리지를 확인합니다 (80% 이상).
+	@echo "📊 Checking test coverage..."
+	@$(GRADLEW) jacocoTestReport jacocoTestCoverageVerification
+
+lint: ## 코드 스타일을 검사합니다.
+	@echo "🔍 Running ktlint..."
+	@$(GRADLEW) ktlintCheck
+
+lint-fix: ## 코드 스타일을 자동 수정합니다.
+	@echo "🔧 Fixing code style..."
+	@$(GRADLEW) ktlintFormat
 

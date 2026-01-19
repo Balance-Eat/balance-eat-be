@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
 class FoodWriterTest : IntegrationTestContext() {
-
     @Autowired
     private lateinit var foodWriter: FoodWriter
 
@@ -19,7 +18,6 @@ class FoodWriterTest : IntegrationTestContext() {
     @Nested
     @DisplayName("생성 테스트")
     inner class CreateTest {
-
         @Test
         fun `음식을 생성할 수 있다`() {
             // given
@@ -41,21 +39,21 @@ class FoodWriterTest : IntegrationTestContext() {
     @Nested
     @DisplayName("수정 테스트")
     inner class UpdateTest {
-
         @Test
         fun `수정 성공`() {
             // given
             val food = foodRepository.save(foodFixture())
 
-            val updateCommand = foodUpdateCommandFixture {
-                foodId = food.id
-                name = "수정 후 음식"
-                servingSize = 150.0
-                unit = "mg"
-                carbohydrates = 30.0
-                protein = 10.0
-                fat = 11.0
-            }
+            val updateCommand =
+                foodUpdateCommandFixture {
+                    foodId = food.id
+                    name = "수정 후 음식"
+                    servingSize = 150.0
+                    unit = "mg"
+                    carbohydrates = 30.0
+                    protein = 10.0
+                    fat = 11.0
+                }
 
             // when
             val result = foodWriter.update(updateCommand)
@@ -72,15 +70,16 @@ class FoodWriterTest : IntegrationTestContext() {
             val userId = 1L
             val food = foodRepository.save(foodFixture())
 
-            val updateCommand = foodUpdateCommandFixture {
-                foodId = food.id
-                name = "새로운 이름만 변경"
-                unit = food.unit
-                servingSize = food.servingSize
-                carbohydrates = 30.0
-                protein = 10.0
-                fat = food.fat
-            }
+            val updateCommand =
+                foodUpdateCommandFixture {
+                    foodId = food.id
+                    name = "새로운 이름만 변경"
+                    unit = food.unit
+                    servingSize = food.servingSize
+                    carbohydrates = 30.0
+                    protein = 10.0
+                    fat = food.fat
+                }
 
             // when
             val result = foodWriter.update(updateCommand)

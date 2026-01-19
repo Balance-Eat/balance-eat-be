@@ -9,18 +9,14 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 @Transactional
 class UserReader(
-    private val userRepository: UserRepository
-): BaseReader<User, UserResult>(userRepository, UserResult) {
+    private val userRepository: UserRepository,
+) : BaseReader<User, UserResult>(userRepository, UserResult) {
+    override fun findByIdOrThrow(id: Long): UserResult = findByIdOrThrow(id, DomainStatus.USER_NOT_FOUND)
 
-    override fun findByIdOrThrow(id: Long): UserResult {
-        return findByIdOrThrow(id, DomainStatus.USER_NOT_FOUND)
-    }
-
-    fun findByUuidOrThrow(uuid: String): UserResult {
-        return userRepository.findByUuid(uuid)
+    fun findByUuidOrThrow(uuid: String): UserResult = userRepository
+        .findByUuid(uuid)
             ?.let { UserResult.from(it) }
             ?: throw EntityNotFoundException(DomainStatus.USER_NOT_FOUND)
-    }
 
     fun validateExistsUser(id: Long) {
         if (userRepository.existsById(id).not()) {

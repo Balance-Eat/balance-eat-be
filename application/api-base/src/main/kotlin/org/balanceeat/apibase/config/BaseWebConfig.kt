@@ -15,7 +15,8 @@ private val logger = KotlinLogging.logger {}
 @Configuration
 class BaseWebConfig : WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/**")
+        registry
+            .addMapping("/**")
             .allowedOriginPatterns("*")
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
             .allowedHeaders("*")
@@ -32,24 +33,20 @@ class BaseWebConfig : WebMvcConfigurer {
     }
 
     private class StringToLocalDateConverter : Converter<String, LocalDate> {
-        override fun convert(source: String): LocalDate {
-            return try {
+        override fun convert(source: String): LocalDate = try {
                 LocalDate.parse(source, DateTimeFormatter.ISO_LOCAL_DATE)
             } catch (e: Exception) {
                 logger.warn { "Failed to parse date: $source, using ISO_DATE format" }
                 LocalDate.parse(source, DateTimeFormatter.ISO_DATE)
             }
-        }
     }
 
     private class StringToLocalDateTimeConverter : Converter<String, LocalDateTime> {
-        override fun convert(source: String): LocalDateTime {
-            return try {
+        override fun convert(source: String): LocalDateTime = try {
                 LocalDateTime.parse(source, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
             } catch (e: Exception) {
                 logger.warn { "Failed to parse datetime: $source, using ISO_DATE_TIME format" }
                 LocalDateTime.parse(source, DateTimeFormatter.ISO_DATE_TIME)
             }
-        }
     }
 }

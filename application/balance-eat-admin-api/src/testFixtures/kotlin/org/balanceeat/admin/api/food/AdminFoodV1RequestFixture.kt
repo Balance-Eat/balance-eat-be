@@ -11,10 +11,9 @@ class AdminFoodV1RequestFixture {
         var protein: Double = 10.0,
         var fat: Double = 5.0,
         var brand: String = "수정된 브랜드",
-        var isAdminApproved: Boolean = true
+        var isAdminApproved: Boolean = true,
     ) : TestFixture<AdminFoodV1Request.Update> {
-        override fun create(): AdminFoodV1Request.Update {
-            return AdminFoodV1Request.Update(
+        override fun create(): AdminFoodV1Request.Update = AdminFoodV1Request.Update(
                 name = name,
                 servingSize = servingSize,
                 unit = unit,
@@ -22,12 +21,9 @@ class AdminFoodV1RequestFixture {
                 protein = protein,
                 fat = fat,
                 brand = brand,
-                isAdminApproved = isAdminApproved
+                isAdminApproved = isAdminApproved,
             )
-        }
     }
 }
 
-fun adminFoodUpdateV1RequestFixture(block: AdminFoodV1RequestFixture.Update.() -> Unit = {}): AdminFoodV1Request.Update {
-    return AdminFoodV1RequestFixture.Update().apply(block).create()
-}
+fun adminFoodUpdateV1RequestFixture(block: AdminFoodV1RequestFixture.Update.() -> Unit = {}): AdminFoodV1Request.Update = AdminFoodV1RequestFixture.Update().apply(block).create()

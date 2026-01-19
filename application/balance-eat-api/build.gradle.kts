@@ -1,13 +1,9 @@
-import groovy.lang.Closure
-import io.swagger.v3.oas.models.servers.Server
-import org.gradle.internal.declarativedsl.intrinsics.listOf
-
 plugins {
     kotlin("plugin.spring")
     kotlin("plugin.jpa")
     id("org.springframework.boot")
     id("io.spring.dependency-management")
-//    id("org.jlleitschuh.gradle.ktlint")
+    id("org.jlleitschuh.gradle.ktlint")
     id("java-test-fixtures")
     id("com.epages.restdocs-api-spec")
 }
@@ -47,19 +43,18 @@ val testForApiDocs by tasks.registering(Test::class) {
     }
 }
 
-//tasks.named("openapi3") {
+// tasks.named("openapi3") {
 //
-//}
-
+// }
 
 openapi3 {
     mkdir("src/main/resources/static/api-docs/balanceeat")
     val outputDir = "src/main/resources/static/api-docs/balanceeat"
 
-    title = "BalanceEat API 명세서"  // 문서 제목
-    description = "BalanceEat API 명세서입니다."  // 문서 설명
-    version = "1.0.0"                  // API 버전
-    format = "yaml"                    // 출력 포맷 (json 또는 yaml)
+    title = "BalanceEat API 명세서" // 문서 제목
+    description = "BalanceEat API 명세서입니다." // 문서 설명
+    version = "1.0.0" // API 버전
+    format = "yaml" // 출력 포맷 (json 또는 yaml)
     outputDirectory = outputDir // 명세 파일이 생성될 위치
-    outputFileNamePrefix = "main"     // 파일명 접두사
+    outputFileNamePrefix = "main" // 파일명 접두사
 }

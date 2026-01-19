@@ -6,17 +6,13 @@ import org.balanceeat.domain.config.NEW_ID
 class DietFoodFixture(
     var id: Long = NEW_ID,
     var foodId: Long = 1L,
-    var intake: Int = 1
+    var intake: Int = 1,
 ) : TestFixture<DietFood> {
-    override fun create(): DietFood {
-        return DietFood(
+    override fun create(): DietFood = DietFood(
             id = id,
             foodId = foodId,
-            intake = intake
+            intake = intake,
         )
-    }
 }
 
-fun dietFoodFixture(block: DietFoodFixture.() -> Unit = {}): DietFood {
-    return DietFoodFixture().apply(block).create()
-}
+fun dietFoodFixture(block: DietFoodFixture.() -> Unit = {}): DietFood = DietFoodFixture().apply(block).create()

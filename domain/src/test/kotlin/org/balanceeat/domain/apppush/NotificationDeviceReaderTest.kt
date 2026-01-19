@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
 class NotificationDeviceReaderTest : IntegrationTestContext() {
-
     @Autowired
     private lateinit var notificationDeviceReader: NotificationDeviceReader
 
@@ -18,7 +17,6 @@ class NotificationDeviceReaderTest : IntegrationTestContext() {
     @Nested
     @DisplayName("사용자별 조회 테스트")
     inner class FindByUserIdTest {
-
         @Test
         fun `사용자 ID로 알림 디바이스 목록을 조회할 수 있다`() {
             // given
@@ -38,7 +36,6 @@ class NotificationDeviceReaderTest : IntegrationTestContext() {
     @Nested
     @DisplayName("존재 여부 확인 테스트")
     inner class ExistsByAgentIdTest {
-
         @Test
         fun `agentId로 존재 여부를 확인할 수 있다`() {
             // given

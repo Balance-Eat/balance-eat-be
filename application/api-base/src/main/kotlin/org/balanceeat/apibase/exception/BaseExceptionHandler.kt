@@ -33,19 +33,25 @@ class BaseExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException::class)
-    fun handleBindException(ex: BindException, request: HttpServletRequest): ApiResponse<Any> {
+    fun handleBindException(
+        ex: BindException,
+        request: HttpServletRequest,
+    ): ApiResponse<Any> {
         logger.warn(ex) { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
 
         return ApiResponse.Companion.fail(
             ex.bindingResult.allErrors
                 .mapNotNull(ObjectError::getDefaultMessage)
-                .joinToString("\n")
+                .joinToString("\n"),
         )
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException::class)
-    fun handleConstraintViolationException(ex: ConstraintViolationException, request: HttpServletRequest): ApiResponse<Any> {
+    fun handleConstraintViolationException(
+        ex: ConstraintViolationException,
+        request: HttpServletRequest,
+    ): ApiResponse<Any> {
         logger.warn(ex) { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
         return ApiResponse.fail(ex.message ?: USER_4XX_MESSAGE)
     }
@@ -55,7 +61,10 @@ class BaseExceptionHandler {
         IllegalArgumentException::class,
         IllegalStateException::class,
     )
-    fun handleIllegalException(ex: Exception, request: HttpServletRequest): ApiResponse<Any> {
+    fun handleIllegalException(
+        ex: Exception,
+        request: HttpServletRequest,
+    ): ApiResponse<Any> {
         logger.warn(ex) { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
         return ApiResponse.fail(ex.message ?: USER_4XX_MESSAGE)
     }
@@ -69,48 +78,69 @@ class BaseExceptionHandler {
         MultipartException::class,
         DateTimeParseException::class,
     )
-    fun handle4xx(ex: Exception, request: HttpServletRequest): ApiResponse<Any> {
+    fun handle4xx(
+        ex: Exception,
+        request: HttpServletRequest,
+    ): ApiResponse<Any> {
         logger.warn(ex) { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
         return ApiResponse.fail(USER_4XX_MESSAGE)
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception::class)
-    fun handle5xx(ex: Exception, request: HttpServletRequest): ApiResponse<Any> {
+    fun handle5xx(
+        ex: Exception,
+        request: HttpServletRequest,
+    ): ApiResponse<Any> {
         logger.error(ex) { "[${request.requestURI}] 예상치 못한 오류가 발생하였습니다. message: ${ex.message}" }
         return ApiResponse.error(USER_5XX_MESSAGE)
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BadRequestException::class)
-    fun handleBadRequestException(ex: BadRequestException, request: HttpServletRequest): ApiResponse<Any> {
+    fun handleBadRequestException(
+        ex: BadRequestException,
+        request: HttpServletRequest,
+    ): ApiResponse<Any> {
         logger.warn(ex) { "[${request.requestURI}] 잘못된 요청이 발생하였습니다." }
         return ApiResponse.fail(ex.status, ex.message)
     }
+
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoResourceFoundException::class)
-    fun handleNoResourceFoundException(ex: NoResourceFoundException, request: HttpServletRequest): ApiResponse<Any> {
+    fun handleNoResourceFoundException(
+        ex: NoResourceFoundException,
+        request: HttpServletRequest,
+    ): ApiResponse<Any> {
         logger.warn { "[${request.requestURI}] 해당 리소스는 존재하지 않습니다." }
         return ApiResponse.notFound(message = "해당 리소스는 존재하지 않습니다.")
     }
 
-
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NotFoundException::class)
-    fun handleNoResourceFoundException(ex: NotFoundException, request: HttpServletRequest): ApiResponse<Any> {
+    fun handleNoResourceFoundException(
+        ex: NotFoundException,
+        request: HttpServletRequest,
+    ): ApiResponse<Any> {
         logger.warn { "[${request.requestURI}] ${ex.message}" }
         return ApiResponse.notFound(ex.status, ex.message)
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(InternalErrorException::class)
-    fun handleInternalErrorException(ex: InternalErrorException, request: HttpServletRequest): ApiResponse<Any> {
+    fun handleInternalErrorException(
+        ex: InternalErrorException,
+        request: HttpServletRequest,
+    ): ApiResponse<Any> {
         logger.error(ex) { "[${request.requestURI}] 서버 오류가 발생하였습니다. message: ${ex.message}" }
         return ApiResponse.error(ex.message ?: "서버 오류가 발생했습니다.")
     }
 
     @ExceptionHandler(DomainException::class)
-    fun handleDomainException(ex: DomainException, request: HttpServletRequest): ApiResponse<Any> {
+    fun handleDomainException(
+        ex: DomainException,
+        request: HttpServletRequest,
+    ): ApiResponse<Any> {
         if (ex.isCritical) {
             logger.error(ex) { "[${request.requestURI}] 도메인 오류가 발생하였습니다." }
         } else {
@@ -121,37 +151,46 @@ class BaseExceptionHandler {
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(UnauthorizedException::class)
-    fun handleUnauthorizedException(ex: UnauthorizedException, request: HttpServletRequest): ApiResponse<Any> {
+    fun handleUnauthorizedException(
+        ex: UnauthorizedException,
+        request: HttpServletRequest,
+    ): ApiResponse<Any> {
         logger.warn(ex) { "[${request.requestURI}] 인증 오류가 발생하였습니다." }
         return ApiResponse.unauthorized(ex.status, ex.message)
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleMethodArgumentNotValid(ex: MethodArgumentNotValidException, request: HttpServletRequest): ApiResponse<Any> {
+    fun handleMethodArgumentNotValid(
+        ex: MethodArgumentNotValidException,
+        request: HttpServletRequest,
+    ): ApiResponse<Any> {
         logger.warn(ex) { "[${request.requestURI}] 입력값 검증에 실패했습니다." }
-        
+
         return ApiResponse.fail(
             ex.bindingResult
                 .allErrors
                 .mapNotNull(ObjectError::getDefaultMessage)
-                .joinToString("\n")
+                .joinToString("\n"),
         )
     }
 
     @ExceptionHandler(InvalidDataAccessApiUsageException::class)
-    fun handleInvalidDataAccessApiUsageException(ex: InvalidDataAccessApiUsageException, request: HttpServletRequest): ResponseEntity<ApiResponse<Any>> {
+    fun handleInvalidDataAccessApiUsageException(
+        ex: InvalidDataAccessApiUsageException,
+        request: HttpServletRequest,
+    ): ResponseEntity<ApiResponse<Any>> {
         if (ex.cause is IllegalArgumentException || ex.cause is IllegalStateException) {
             logger.warn(ex.cause) { "도메인 검증 실패: 허용되지 않는 값이 입력되었습니다. URI: ${request.requestURI}, 에러: ${ex.cause?.message}" }
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                ApiResponse.fail(ex.message ?: USER_4XX_MESSAGE)
+                ApiResponse.fail(ex.message ?: USER_4XX_MESSAGE),
             )
         } else {
             logger.error(ex) { "[${request.requestURI}] 영속화 과정에서 오류가 발생하였습니다. message: ${ex.message}" }
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                ApiResponse.error(USER_5XX_MESSAGE)
+                ApiResponse.error(USER_5XX_MESSAGE),
             )
         }
     }

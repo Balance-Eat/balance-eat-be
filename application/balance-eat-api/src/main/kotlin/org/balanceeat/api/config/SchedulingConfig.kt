@@ -13,7 +13,6 @@ import org.springframework.util.ErrorHandler
 @EnableScheduling
 @Configuration
 class SchedulingConfig : SchedulingConfigurer {
-
     @Bean
     fun taskScheduler(): TaskScheduler {
         val scheduler = ThreadPoolTaskScheduler()
@@ -41,7 +40,7 @@ class SchedulingConfig : SchedulingConfigurer {
             log.error(
                 "Scheduled task execution error: {}",
                 ex.message,
-                ex
+                ex,
             )
         }
     }

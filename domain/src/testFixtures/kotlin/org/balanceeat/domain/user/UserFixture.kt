@@ -25,10 +25,9 @@ class UserFixture(
     var targetProtein: Double? = null,
     var targetFat: Double? = null,
     var providerId: String? = null,
-    var providerType: String? = null
+    var providerType: String? = null,
 ) : TestFixture<User> {
-    override fun create(): User {
-        return User(
+    override fun create(): User = User(
             id = id,
             name = name,
             uuid = uuid,
@@ -49,11 +48,8 @@ class UserFixture(
             targetProtein = targetProtein,
             targetFat = targetFat,
             providerId = providerId,
-            providerType = providerType
+            providerType = providerType,
         )
-    }
 }
 
-fun userFixture(block: UserFixture.() -> Unit = {}): User {
-    return UserFixture().apply(block).create()
-}
+fun userFixture(block: UserFixture.() -> Unit = {}): User = UserFixture().apply(block).create()

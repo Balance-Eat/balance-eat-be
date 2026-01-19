@@ -9,7 +9,6 @@ import java.time.LocalDate
 class StatsScheduleService(
     private val dietStatsWriter: DietStatsWriter,
 ) {
-
     @Transactional
     fun aggregateStats(statsDate: LocalDate) {
         dietStatsWriter.aggregateStats(statsDate)

@@ -17,35 +17,40 @@ import java.net.URI
 class FirebaseConfig {
     @Value("\${application.firebase.project-id}")
     lateinit var projectId: String
+
     @Value("\${application.firebase.private-key-id}")
     lateinit var privateKeyId: String
+
     @Value("\${application.firebase.private-key}")
     lateinit var privateKey: String
+
     @Value("\${application.firebase.client-email}")
     lateinit var clientEmail: String
+
     @Value("\${application.firebase.client-id}")
     lateinit var clientId: String
+
     @Value("\${application.firebase.token-uri}")
     lateinit var tokenUri: String
 
     @Bean
     fun firebaseApp(googleCredentials: GoogleCredentials): FirebaseApp {
-        val options = FirebaseOptions.builder()
-            .setCredentials(googleCredentials)
-            .build()
+        val options =
+            FirebaseOptions
+                .builder()
+                .setCredentials(googleCredentials)
+                .build()
 
         return FirebaseApp.initializeApp(options)
     }
 
     @Bean
     @DependsOn("firebaseApp")
-    fun firebaseMessaging(firebaseApp: FirebaseApp): FirebaseMessaging {
-        return FirebaseMessaging.getInstance(firebaseApp)
-    }
+    fun firebaseMessaging(firebaseApp: FirebaseApp): FirebaseMessaging = FirebaseMessaging.getInstance(firebaseApp)
 
     @Bean
-    fun googleCredentials(): GoogleCredentials {
-        return ServiceAccountCredentials.newBuilder()
+    fun googleCredentials(): GoogleCredentials = ServiceAccountCredentials
+        .newBuilder()
             .setProjectId(projectId)
             .setPrivateKeyId(privateKeyId)
             .setPrivateKeyString(privateKey.replace("\\n", "\n"))
@@ -53,5 +58,4 @@ class FirebaseConfig {
             .setClientId(clientId)
             .setTokenServerUri(URI.create(tokenUri))
             .build()
-    }
 }

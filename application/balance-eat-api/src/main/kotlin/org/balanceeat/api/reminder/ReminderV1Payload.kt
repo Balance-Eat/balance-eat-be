@@ -14,34 +14,28 @@ class ReminderV1Request {
         @field:NotBlank(message = "리마인더 내용은 필수입니다")
         @field:Size(max = 500, message = "리마인더 내용은 500자를 초과할 수 없습니다")
         val content: String,
-
         @field:NotNull(message = "발송 시각은 필수입니다")
         val sendTime: LocalTime,
-
         val isActive: Boolean = true,
-
         @field:NotEmpty(message = "알림 요일은 최소 1개 이상 선택해야 합니다")
-        val dayOfWeeks: List<DayOfWeek>
+        val dayOfWeeks: List<DayOfWeek>,
     )
 
     data class Update(
         @field:NotBlank(message = "리마인더 내용은 필수입니다")
         @field:Size(max = 500, message = "리마인더 내용은 500자를 초과할 수 없습니다")
         val content: String,
-
         @field:NotNull(message = "발송 시각은 필수입니다")
         val sendTime: LocalTime,
-
         @field:NotNull(message = "활성 상태는 필수입니다")
         val isActive: Boolean,
-
         @field:NotEmpty(message = "알림 요일은 최소 1개 이상 선택해야 합니다")
-        val dayOfWeeks: List<DayOfWeek>
+        val dayOfWeeks: List<DayOfWeek>,
     )
 
     data class UpdateActivation(
         @field:NotNull(message = "활성 상태는 필수입니다")
-        val isActive: Boolean
+        val isActive: Boolean,
     )
 }
 
@@ -54,19 +48,20 @@ class ReminderV1Response {
         val isActive: Boolean,
         val dayOfWeeks: List<DayOfWeek>,
         val createdAt: LocalDateTime,
-        val updatedAt: LocalDateTime
+        val updatedAt: LocalDateTime,
     ) {
         companion object {
-            fun from(result: ReminderResult) = Details(
-                id = result.id,
-                userId = result.userId,
-                content = result.content,
-                sendTime = result.sendTime,
-                isActive = result.isActive,
-                dayOfWeeks = result.dayOfWeeks,
-                createdAt = result.createdAt,
-                updatedAt = result.updatedAt
-            )
+            fun from(result: ReminderResult) =
+                Details(
+                    id = result.id,
+                    userId = result.userId,
+                    content = result.content,
+                    sendTime = result.sendTime,
+                    isActive = result.isActive,
+                    dayOfWeeks = result.dayOfWeeks,
+                    createdAt = result.createdAt,
+                    updatedAt = result.updatedAt,
+                )
         }
     }
 
@@ -75,16 +70,17 @@ class ReminderV1Response {
         val content: String,
         val sendTime: LocalTime,
         val isActive: Boolean,
-        val dayOfWeeks: List<DayOfWeek>
+        val dayOfWeeks: List<DayOfWeek>,
     ) {
         companion object {
-            fun from(result: ReminderResult) = Summary(
-                id = result.id,
-                content = result.content,
-                sendTime = result.sendTime,
-                isActive = result.isActive,
-                dayOfWeeks = result.dayOfWeeks
-            )
+            fun from(result: ReminderResult) =
+                Summary(
+                    id = result.id,
+                    content = result.content,
+                    sendTime = result.sendTime,
+                    isActive = result.isActive,
+                    dayOfWeeks = result.dayOfWeeks,
+                )
         }
     }
 }

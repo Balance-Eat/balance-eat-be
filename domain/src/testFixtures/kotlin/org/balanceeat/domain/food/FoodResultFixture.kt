@@ -17,10 +17,9 @@ class FoodResultFixture(
     var fat: Double = 3.0,
     var brand: String = "테스트 브랜드",
     var isAdminApproved: Boolean = false,
-    var createdAt: LocalDateTime = LocalDateTime.now()
+    var createdAt: LocalDateTime = LocalDateTime.now(),
 ) : TestFixture<FoodResult> {
-    override fun create(): FoodResult {
-        return FoodResult(
+    override fun create(): FoodResult = FoodResult(
             id = id,
             uuid = uuid,
             name = name,
@@ -33,9 +32,8 @@ class FoodResultFixture(
             fat = fat,
             brand = brand,
             isAdminApproved = isAdminApproved,
-            createdAt = createdAt
+            createdAt = createdAt,
         )
-    }
 }
 
 class FoodSearchResultFixture(
@@ -52,10 +50,9 @@ class FoodSearchResultFixture(
     var brand: String = "테스트 브랜드",
     var isAdminApproved: Boolean = false,
     var createdAt: LocalDateTime = LocalDateTime.now(),
-    var updatedAt: LocalDateTime = LocalDateTime.now()
+    var updatedAt: LocalDateTime = LocalDateTime.now(),
 ) : TestFixture<FoodSearchResult> {
-    override fun create(): FoodSearchResult {
-        return FoodSearchResult(
+    override fun create(): FoodSearchResult = FoodSearchResult(
             id = id,
             uuid = uuid,
             name = name,
@@ -69,15 +66,10 @@ class FoodSearchResultFixture(
             brand = brand,
             isAdminApproved = isAdminApproved,
             createdAt = createdAt,
-            updatedAt = updatedAt
+            updatedAt = updatedAt,
         )
-    }
 }
 
-fun foodResultFixture(block: FoodResultFixture.() -> Unit = {}): FoodResult {
-    return FoodResultFixture().apply(block).create()
-}
+fun foodResultFixture(block: FoodResultFixture.() -> Unit = {}): FoodResult = FoodResultFixture().apply(block).create()
 
-fun foodSearchResultFixture(block: FoodSearchResultFixture.() -> Unit = {}): FoodSearchResult {
-    return FoodSearchResultFixture().apply(block).create()
-}
+fun foodSearchResultFixture(block: FoodSearchResultFixture.() -> Unit = {}): FoodSearchResult = FoodSearchResultFixture().apply(block).create()

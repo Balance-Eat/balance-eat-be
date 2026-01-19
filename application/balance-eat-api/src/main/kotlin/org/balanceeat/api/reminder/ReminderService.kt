@@ -13,44 +13,60 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ReminderService(
     private val reminderWriter: ReminderWriter,
-    private val reminderReader: ReminderReader
+    private val reminderReader: ReminderReader,
 ) {
     @Transactional
-    fun create(request: ReminderV1Request.Create, userId: Long): ReminderV1Response.Details {
-        val result = reminderWriter.create(
-            command = ReminderCommand.Create(
-                userId = userId,
-                content = request.content,
-                sendTime = request.sendTime.withSecond(0).withNano(0),
-                isActive = request.isActive,
-                dayOfWeeks = request.dayOfWeeks
+    fun create(
+        request: ReminderV1Request.Create,
+        userId: Long,
+    ): ReminderV1Response.Details {
+        val result =
+            reminderWriter.create(
+                command =
+                    ReminderCommand.Create(
+                        userId = userId,
+                        content = request.content,
+                        sendTime = request.sendTime.withSecond(0).withNano(0),
+                        isActive = request.isActive,
+                        dayOfWeeks = request.dayOfWeeks,
+                    ),
             )
-        )
 
         return ReminderV1Response.Details.from(result)
     }
 
     @Transactional
-    fun update(request: ReminderV1Request.Update, reminderId: Long, userId: Long): ReminderV1Response.Details {
-        val reminder = reminderReader.findById(reminderId)
-            ?.takeIf { it.userId == userId }
-            ?: throw NotFoundException(REMINDER_NOT_FOUND)
+    fun update(
+        request: ReminderV1Request.Update,
+        reminderId: Long,
+        userId: Long,
+    ): ReminderV1Response.Details {
+        val reminder =
+            reminderReader
+                .findById(reminderId)
+                ?.takeIf { it.userId == userId }
+                ?: throw NotFoundException(REMINDER_NOT_FOUND)
 
-        val result = reminderWriter.update(
-            command = ReminderCommand.Update(
-                id = reminder.id,
-                content = request.content,
-                sendTime = request.sendTime,
-                isActive = request.isActive,
-                dayOfWeeks = request.dayOfWeeks
+        val result =
+            reminderWriter.update(
+                command =
+                    ReminderCommand.Update(
+                        id = reminder.id,
+                        content = request.content,
+                        sendTime = request.sendTime,
+                        isActive = request.isActive,
+                        dayOfWeeks = request.dayOfWeeks,
+                    ),
             )
-        )
 
         return ReminderV1Response.Details.from(result)
     }
 
     @Transactional
-    fun delete(reminderId: Long, userId: Long) {
+    fun delete(
+        reminderId: Long,
+        userId: Long,
+    ) {
         val reminder = reminderReader.findById(reminderId)
 
         if (reminder == null) return
@@ -63,33 +79,49 @@ class ReminderService(
     }
 
     @Transactional(readOnly = true)
-    fun getDetail(reminderId: Long, userId: Long): ReminderV1Response.Details {
-        val reminder = reminderReader.findById(reminderId)
-            ?.takeIf { it.userId == userId }
-            ?: throw NotFoundException(REMINDER_NOT_FOUND)
+    fun getDetail(
+        reminderId: Long,
+        userId: Long,
+    ): ReminderV1Response.Details {
+        val reminder =
+            reminderReader
+                .findById(reminderId)
+                ?.takeIf { it.userId == userId }
+                ?: throw NotFoundException(REMINDER_NOT_FOUND)
 
         return ReminderV1Response.Details.from(reminder)
     }
 
     @Transactional(readOnly = true)
-    fun getSummaries(userId: Long, pageable: Pageable): PageResponse<ReminderV1Response.Summary> {
+    fun getSummaries(
+        userId: Long,
+        pageable: Pageable,
+    ): PageResponse<ReminderV1Response.Summary> {
         val reminders = reminderReader.findAllByUserId(userId, pageable)
         val pageResult = reminders.map { ReminderV1Response.Summary.from(it) }
         return PageResponse.from(pageResult)
     }
 
     @Transactional
-    fun updateActivation(request: ReminderV1Request.UpdateActivation, reminderId: Long, userId: Long): ReminderV1Response.Details {
-        val reminder = reminderReader.findById(reminderId)
-            ?.takeIf { it.userId == userId }
-            ?: throw NotFoundException(REMINDER_NOT_FOUND)
+    fun updateActivation(
+        request: ReminderV1Request.UpdateActivation,
+        reminderId: Long,
+        userId: Long,
+    ): ReminderV1Response.Details {
+        val reminder =
+            reminderReader
+                .findById(reminderId)
+                ?.takeIf { it.userId == userId }
+                ?: throw NotFoundException(REMINDER_NOT_FOUND)
 
-        val result = reminderWriter.updateActivation(
-            command = ReminderCommand.UpdateActivation(
-                id = reminder.id,
-                isActive = request.isActive
+        val result =
+            reminderWriter.updateActivation(
+                command =
+                    ReminderCommand.UpdateActivation(
+                        id = reminder.id,
+                        isActive = request.isActive,
+                    ),
             )
-        )
 
         return ReminderV1Response.Details.from(result)
     }

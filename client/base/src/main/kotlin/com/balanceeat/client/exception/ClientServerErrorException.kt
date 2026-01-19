@@ -6,5 +6,5 @@ class ClientServerErrorException(
     status: Status,
     message: String = status.message,
     cause: Throwable? = null,
-    isCritical: Boolean = true
+    isCritical: Boolean = true,
 ) : ClientException(status, message, cause, isCritical)

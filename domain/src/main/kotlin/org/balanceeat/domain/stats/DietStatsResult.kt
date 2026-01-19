@@ -11,20 +11,18 @@ data class DietStatsResult(
     val totalCalories: Double,
     val totalCarbohydrates: Double,
     val totalProtein: Double,
-    val totalFat: Double
+    val totalFat: Double,
 ) {
-    companion object: EntityMapper<DietStats, DietStatsResult> {
-        override fun from(entity: DietStats): DietStatsResult {
-            return DietStatsResult(
+    companion object : EntityMapper<DietStats, DietStatsResult> {
+        override fun from(entity: DietStats): DietStatsResult = DietStatsResult(
                 id = entity.id,
                 userId = entity.userId,
                 statsDate = entity.statsDate,
                 totalCalories = entity.totalCalories,
                 totalCarbohydrates = entity.totalCarbohydrates,
                 totalProtein = entity.totalProtein,
-                totalFat = entity.totalFat
+                totalFat = entity.totalFat,
             )
-        }
     }
 }
 
@@ -35,5 +33,5 @@ data class DietStatsAggregateResult(
     val totalCalories: Double,
     val totalCarbohydrates: Double,
     val totalProtein: Double,
-    val totalFat: Double
+    val totalFat: Double,
 )

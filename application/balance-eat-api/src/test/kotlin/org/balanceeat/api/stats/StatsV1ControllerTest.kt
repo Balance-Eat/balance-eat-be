@@ -22,7 +22,6 @@ class StatsV1ControllerTest : ControllerTestContext() {
     @Nested
     @DisplayName("GET /v1/stats - 통계 조회")
     inner class GetStatisticsTest {
-
         @Test
         @DisplayName("통계 조회 성공")
         fun success() {
@@ -36,7 +35,8 @@ class StatsV1ControllerTest : ControllerTestContext() {
                 .params("limit", "5")
                 .get("/v1/stats")
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("GetStatisticsTest"),
@@ -47,7 +47,7 @@ class StatsV1ControllerTest : ControllerTestContext() {
                             "type" queryMeans "통계 유형" withEnum StatsType::class,
                             "from" queryMeans "조회 시작 날짜 (yyyy-MM-dd)" isOptional true,
                             "to" queryMeans "조회 종료 날짜 (yyyy-MM-dd)" isOptional true,
-                            "limit" queryMeans "조회 개수 (기본값: 5)" isOptional true
+                            "limit" queryMeans "조회 개수 (기본값: 5)" isOptional true,
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -57,23 +57,21 @@ class StatsV1ControllerTest : ControllerTestContext() {
                                 "data[].totalCalories" type NUMBER means "총 칼로리 (kcal)",
                                 "data[].totalCarbohydrates" type NUMBER means "총 탄수화물 (g)",
                                 "data[].totalProtein" type NUMBER means "총 단백질 (g)",
-                                "data[].totalFat" type NUMBER means "총 지방 (g)"
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK)
+                                "data[].totalFat" type NUMBER means "총 지방 (g)",
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
 
-        private fun mockResponse(): List<StatsV1Response.DietStats> {
-            return listOf(
+        private fun mockResponse(): List<StatsV1Response.DietStats> = listOf(
                 StatsV1Response.DietStats(
                     type = StatsType.DAILY,
                     date = java.time.LocalDate.of(2025, 6, 1),
                     totalCalories = 2000.0,
                     totalCarbohydrates = 250.0,
                     totalProtein = 150.0,
-                    totalFat = 70.0
+                    totalFat = 70.0,
                 ),
                 StatsV1Response.DietStats(
                     type = StatsType.DAILY,
@@ -81,9 +79,8 @@ class StatsV1ControllerTest : ControllerTestContext() {
                     totalCalories = 1800.0,
                     totalCarbohydrates = 220.0,
                     totalProtein = 130.0,
-                    totalFat = 60.0
-                )
+                    totalFat = 60.0,
+                ),
             )
-        }
     }
 }

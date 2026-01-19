@@ -8,19 +8,20 @@ import org.springframework.transaction.annotation.Transactional
 
 @Component
 class NotificationDeviceWriter(
-    private val notificationDeviceRepository: NotificationDeviceRepository
+    private val notificationDeviceRepository: NotificationDeviceRepository,
 ) {
     @Transactional
     fun create(command: NotificationDeviceCommand.Create): NotificationDeviceResult {
         validateCreation(command)
 
-        val device = NotificationDevice(
-            userId = command.userId,
-            agentId = command.agentId,
-            osType = command.osType,
-            deviceName = command.deviceName,
-            isActive = command.isActive
-        )
+        val device =
+            NotificationDevice(
+                userId = command.userId,
+                agentId = command.agentId,
+                osType = command.osType,
+                deviceName = command.deviceName,
+                isActive = command.isActive,
+            )
 
         val savedDevice = notificationDeviceRepository.save(device)
         return NotificationDeviceResult.from(savedDevice)
@@ -28,8 +29,10 @@ class NotificationDeviceWriter(
 
     @Transactional
     fun update(command: NotificationDeviceCommand.Update): NotificationDeviceResult {
-        val device = notificationDeviceRepository.findById(command.id)
-            .orElseThrow { EntityNotFoundException(DomainStatus.NOTIFICATION_DEVICE_NOT_FOUND) }
+        val device =
+            notificationDeviceRepository
+                .findById(command.id)
+                .orElseThrow { EntityNotFoundException(DomainStatus.NOTIFICATION_DEVICE_NOT_FOUND) }
 
         device.update(command.isActive)
 

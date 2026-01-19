@@ -7,17 +7,18 @@ import org.springframework.transaction.annotation.Transactional
 
 @Component
 class ReminderWriter(
-    private val reminderRepository: ReminderRepository
+    private val reminderRepository: ReminderRepository,
 ) {
     @Transactional
     fun create(command: ReminderCommand.Create): ReminderResult {
-        val reminder = Reminder(
-            userId = command.userId,
-            content = command.content,
-            sendTime = command.sendTime.withSecond(0).withNano(0),
-            isActive = command.isActive,
-            dayOfWeeks = command.dayOfWeeks
-        )
+        val reminder =
+            Reminder(
+                userId = command.userId,
+                content = command.content,
+                sendTime = command.sendTime.withSecond(0).withNano(0),
+                isActive = command.isActive,
+                dayOfWeeks = command.dayOfWeeks,
+            )
 
         val savedReminder = reminderRepository.save(reminder)
         return ReminderResult.from(savedReminder)
@@ -25,14 +26,16 @@ class ReminderWriter(
 
     @Transactional
     fun update(command: ReminderCommand.Update): ReminderResult {
-        val reminder = reminderRepository.findById(command.id)
-            .orElseThrow { EntityNotFoundException(REMINDER_NOT_FOUND) }
+        val reminder =
+            reminderRepository
+                .findById(command.id)
+                .orElseThrow { EntityNotFoundException(REMINDER_NOT_FOUND) }
 
         reminder.update(
             content = command.content,
             sendTime = command.sendTime,
             isActive = command.isActive,
-            dayOfWeeks = command.dayOfWeeks
+            dayOfWeeks = command.dayOfWeeks,
         )
 
         val savedReminder = reminderRepository.save(reminder)
@@ -41,14 +44,17 @@ class ReminderWriter(
 
     @Transactional
     fun delete(id: Long) {
-        reminderRepository.findById(id)
+        reminderRepository
+            .findById(id)
             .ifPresent { reminderRepository.delete(it) }
     }
 
     @Transactional
     fun updateActivation(command: ReminderCommand.UpdateActivation): ReminderResult {
-        val reminder = reminderRepository.findById(command.id)
-            .orElseThrow { EntityNotFoundException(REMINDER_NOT_FOUND) }
+        val reminder =
+            reminderRepository
+                .findById(command.id)
+                .orElseThrow { EntityNotFoundException(REMINDER_NOT_FOUND) }
 
         reminder.updateActivation(command.isActive)
 

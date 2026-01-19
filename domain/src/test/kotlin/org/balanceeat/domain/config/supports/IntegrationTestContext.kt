@@ -39,7 +39,10 @@ abstract class IntegrationTestContext {
         databaseCleanUp.all()
     }
 
-    protected fun runConcurrent(threadCount: Int, task: Runnable) {
+    protected fun runConcurrent(
+        threadCount: Int,
+        task: Runnable,
+    ) {
         val executor: ExecutorService = Executors.newFixedThreadPool(threadCount)
         val latch = CountDownLatch(threadCount)
 
@@ -57,7 +60,10 @@ abstract class IntegrationTestContext {
         executor.shutdown()
     }
 
-    protected fun runConcurrent(threadCount: Int, indexedTask: (Int) -> Unit) {
+    protected fun runConcurrent(
+        threadCount: Int,
+        indexedTask: (Int) -> Unit,
+    ) {
         val executor: ExecutorService = Executors.newFixedThreadPool(threadCount)
         val latch = CountDownLatch(threadCount)
 

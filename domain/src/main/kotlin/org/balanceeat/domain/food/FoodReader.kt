@@ -9,13 +9,9 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 @Transactional(readOnly = true)
 class FoodReader(
-    private val foodRepository: FoodRepository
-): BaseReader<Food, FoodResult>(foodRepository, FoodResult) {
-    fun search(query: FoodQuery.Search): Page<FoodSearchResult> {
-        return foodRepository.search(query)
-    }
+    private val foodRepository: FoodRepository,
+) : BaseReader<Food, FoodResult>(foodRepository, FoodResult) {
+    fun search(query: FoodQuery.Search): Page<FoodSearchResult> = foodRepository.search(query)
 
-    override fun findByIdOrThrow(id: Long): FoodResult {
-        return findByIdOrThrow(id, DomainStatus.FOOD_NOT_FOUND)
-    }
+    override fun findByIdOrThrow(id: Long): FoodResult = findByIdOrThrow(id, DomainStatus.FOOD_NOT_FOUND)
 }

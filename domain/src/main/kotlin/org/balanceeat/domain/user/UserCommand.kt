@@ -1,8 +1,6 @@
 package org.balanceeat.domain.user
 
-
 class UserCommand {
-
     data class Create(
         val uuid: String,
         val name: String,
@@ -23,7 +21,7 @@ class UserCommand {
         val targetProtein: Double? = null,
         val targetFat: Double? = null,
         val providerId: String? = null,
-        val providerType: String? = null
+        val providerType: String? = null,
     )
 
     data class Update(
@@ -44,6 +42,6 @@ class UserCommand {
         val targetFatPercentage: Double? = null,
         val targetCarbohydrates: Double? = null,
         val targetProtein: Double? = null,
-        val targetFat: Double? = null
+        val targetFat: Double? = null,
     )
 }

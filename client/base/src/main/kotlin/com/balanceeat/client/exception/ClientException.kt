@@ -7,5 +7,5 @@ abstract class ClientException(
     status: Status,
     message: String = status.message,
     cause: Throwable? = null,
-    val isCritical: Boolean = false
+    val isCritical: Boolean = false,
 ) : BaseException(status, message, cause)

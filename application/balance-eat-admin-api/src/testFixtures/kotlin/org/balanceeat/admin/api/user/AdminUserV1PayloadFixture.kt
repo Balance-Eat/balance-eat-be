@@ -22,10 +22,9 @@ class AdminUserV1RequestFixture {
         var targetFatPercentage: Double? = 15.0,
         var targetCarbohydrates: Double? = 250.0,
         var targetProtein: Double? = 100.0,
-        var targetFat: Double? = 60.0
+        var targetFat: Double? = 60.0,
     ) : TestFixture<AdminUserV1Request.Update> {
-        override fun create(): AdminUserV1Request.Update {
-            return AdminUserV1Request.Update(
+        override fun create(): AdminUserV1Request.Update = AdminUserV1Request.Update(
                 name = name,
                 gender = gender,
                 age = age,
@@ -42,9 +41,8 @@ class AdminUserV1RequestFixture {
                 targetFatPercentage = targetFatPercentage,
                 targetCarbohydrates = targetCarbohydrates,
                 targetProtein = targetProtein,
-                targetFat = targetFat
+                targetFat = targetFat,
             )
-        }
     }
 }
 
@@ -70,10 +68,9 @@ class AdminUserV1ResponseFixture {
         var targetProtein: Double? = 120.0,
         var targetFat: Double? = 80.0,
         var providerId: String? = "google123",
-        var providerType: String? = "GOOGLE"
+        var providerType: String? = "GOOGLE",
     ) : TestFixture<AdminUserV1Response.Details> {
-        override fun create(): AdminUserV1Response.Details {
-            return AdminUserV1Response.Details(
+        override fun create(): AdminUserV1Response.Details = AdminUserV1Response.Details(
                 id = id,
                 uuid = uuid,
                 name = name,
@@ -94,16 +91,11 @@ class AdminUserV1ResponseFixture {
                 targetProtein = targetProtein,
                 targetFat = targetFat,
                 providerId = providerId,
-                providerType = providerType
+                providerType = providerType,
             )
-        }
     }
 }
 
-fun adminUserUpdateV1RequestFixture(block: AdminUserV1RequestFixture.Update.() -> Unit = {}): AdminUserV1Request.Update {
-    return AdminUserV1RequestFixture.Update().apply(block).create()
-}
+fun adminUserUpdateV1RequestFixture(block: AdminUserV1RequestFixture.Update.() -> Unit = {}): AdminUserV1Request.Update = AdminUserV1RequestFixture.Update().apply(block).create()
 
-fun adminUserDetailsV1ResponseFixture(block: AdminUserV1ResponseFixture.Details.() -> Unit = {}): AdminUserV1Response.Details {
-    return AdminUserV1ResponseFixture.Details().apply(block).create()
-}
+fun adminUserDetailsV1ResponseFixture(block: AdminUserV1ResponseFixture.Details.() -> Unit = {}): AdminUserV1Response.Details = AdminUserV1ResponseFixture.Details().apply(block).create()

@@ -6,5 +6,5 @@ import org.balanceeat.common.exception.BaseException
 abstract class ApplicationException(
     status: Status,
     message: String = status.message,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : BaseException(status, message, cause)

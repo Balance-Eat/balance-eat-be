@@ -15,17 +15,24 @@ import java.time.LocalDateTime
 class DietStatsRepositoryCustomImpl(
     queryFactory: JPAQueryFactory,
     private val jdbcTemplate: NamedParameterJdbcTemplate,
-) : BaseQueryRepository(queryFactory), DietStatsRepositoryCustom {
-    private val batchInsert = SimpleJdbcInsert(jdbcTemplate.jdbcTemplate)
-        .withTableName("diet_stats")
-        .usingGeneratedKeyColumns("id")
+) : BaseQueryRepository(queryFactory),
+    DietStatsRepositoryCustom {
+    private val batchInsert =
+        SimpleJdbcInsert(jdbcTemplate.jdbcTemplate)
+            .withTableName("diet_stats")
+            .usingGeneratedKeyColumns("id")
 
-    override fun aggregate(statsDate: LocalDate, userId: Long): DietStats {
-        return aggregate(statsDate, listOf(userId)).first()
-    }
+    override fun aggregate(
+        statsDate: LocalDate,
+        userId: Long,
+    ): DietStats = aggregate(statsDate, listOf(userId)).first()
 
-    override fun aggregate(statsDate: LocalDate, userIds: List<Long>): List<DietStats> {
-        val sql = """
+    override fun aggregate(
+        statsDate: LocalDate,
+        userIds: List<Long>,
+    ): List<DietStats> {
+        val sql =
+            """
             SELECT
                 u.id AS user_id,
                 :statsDate AS stats_date,
@@ -39,11 +46,12 @@ class DietStatsRepositoryCustomImpl(
             LEFT JOIN food f ON df.food_id = f.id
             WHERE u.id IN (:userIds)
             GROUP BY u.id;
-        """.trimIndent()
+            """.trimIndent()
 
-        val params = MapSqlParameterSource()
-            .addValue("statsDate", statsDate)
-            .addValue("userIds", userIds)
+        val params =
+            MapSqlParameterSource()
+                .addValue("statsDate", statsDate)
+                .addValue("userIds", userIds)
 
         return jdbcTemplate.query(sql, params) { rs, _ ->
             DietStats(
@@ -52,7 +60,7 @@ class DietStatsRepositoryCustomImpl(
                 totalCalories = rs.getDouble("total_calories"),
                 totalCarbohydrates = rs.getDouble("total_carbohydrates"),
                 totalProtein = rs.getDouble("total_protein"),
-                totalFat = rs.getDouble("total_fat")
+                totalFat = rs.getDouble("total_fat"),
             )
         }
     }
@@ -69,9 +77,10 @@ class DietStatsRepositoryCustomImpl(
             dietStats.updatedAt = now
         }
 
-        val batch = dietStatsList
-            .map { BeanPropertySqlParameterSource(it) }
-            .toTypedArray()
+        val batch =
+            dietStatsList
+                .map { BeanPropertySqlParameterSource(it) }
+                .toTypedArray()
 
         batchInsert.executeBatch(*batch)
     }
@@ -80,15 +89,17 @@ class DietStatsRepositoryCustomImpl(
         userId: Long,
         type: StatsType,
         from: LocalDate,
-        to: LocalDate
+        to: LocalDate,
     ): List<DietStatsAggregateResult> {
-        val extractField = when (type) {
-            StatsType.DAILY -> "DAY"
-            StatsType.WEEKLY -> "WEEK"
-            StatsType.MONTHLY -> "MONTH"
-        }
+        val extractField =
+            when (type) {
+                StatsType.DAILY -> "DAY"
+                StatsType.WEEKLY -> "WEEK"
+                StatsType.MONTHLY -> "MONTH"
+            }
 
-        val sql = """
+        val sql =
+            """
             SELECT user_id,
                    EXTRACT($extractField FROM stats_date) as group_key,
                    MIN(stats_date) as stats_date,
@@ -101,17 +112,18 @@ class DietStatsRepositoryCustomImpl(
             AND stats_date BETWEEN :from AND :to
             GROUP BY user_id, group_key
             ORDER BY stats_date DESC
-        """.trimIndent()
+            """.trimIndent()
 
-        val params = MapSqlParameterSource()
-            .addValue("userId", userId)
-            .addValue("from", from)
-            .addValue("to", to)
+        val params =
+            MapSqlParameterSource()
+                .addValue("userId", userId)
+                .addValue("from", from)
+                .addValue("to", to)
 
         return jdbcTemplate.query(
             sql,
             params,
-            DataClassRowMapper.newInstance(DietStatsAggregateResult::class.java)
+            DataClassRowMapper.newInstance(DietStatsAggregateResult::class.java),
         )
     }
 }

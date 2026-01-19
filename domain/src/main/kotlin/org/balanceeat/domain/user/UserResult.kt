@@ -25,11 +25,10 @@ data class UserResult(
     val targetFat: Double?,
     val providerId: String?,
     val providerType: String?,
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime,
 ) {
-    companion object: EntityMapper<User, UserResult> {
-        override fun from(entity: User): UserResult {
-            return UserResult(
+    companion object : EntityMapper<User, UserResult> {
+        override fun from(entity: User): UserResult = UserResult(
                 id = entity.id,
                 uuid = entity.uuid,
                 name = entity.name,
@@ -51,8 +50,7 @@ data class UserResult(
                 targetFat = entity.targetFat,
                 providerId = entity.providerId,
                 providerType = entity.providerType,
-                createdAt = entity.createdAt
+                createdAt = entity.createdAt,
             )
-        }
     }
 }

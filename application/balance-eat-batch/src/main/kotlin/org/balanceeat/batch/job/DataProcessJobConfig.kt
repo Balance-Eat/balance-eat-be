@@ -21,8 +21,8 @@ import org.springframework.transaction.PlatformTransactionManager
 @Configuration
 class DataProcessJobConfig(
     private val jobRepository: JobRepository,
-private val transactionManager: PlatformTransactionManager,
-    private val entityManagerFactory: EntityManagerFactory
+    private val transactionManager: PlatformTransactionManager,
+    private val entityManagerFactory: EntityManagerFactory,
 ) {
     private val log = LoggerFactory.getLogger(DataProcessJobConfig::class.java)
 
@@ -31,32 +31,28 @@ private val transactionManager: PlatformTransactionManager,
     }
 
     @Bean
-    fun dataProcessJob(): Job {
-        return JobBuilder("dataProcessJob", jobRepository)
+    fun dataProcessJob(): Job = JobBuilder("dataProcessJob", jobRepository)
             .incrementer(RunIdIncrementer())
             .start(chunkProcessStep(null))
             .build()
-    }
 
     @Bean
     @JobScope
     fun chunkProcessStep(
-        @Value("#{jobParameters['targetDate']}") targetDate: String?
-    ): Step {
-        return StepBuilder("chunkProcessStep", jobRepository)
+        @Value("#{jobParameters['targetDate']}") targetDate: String?,
+    ): Step = StepBuilder("chunkProcessStep", jobRepository)
             .chunk<ProcessData, ProcessResult>(CHUNK_SIZE, transactionManager)
             .reader(dataReader())
             .processor(dataProcessor(targetDate))
             .writer(dataWriter())
             .build()
-    }
 
     @Bean
-    fun dataReader(): JpaPagingItemReader<ProcessData> {
-        return JpaPagingItemReaderBuilder<ProcessData>()
+    fun dataReader(): JpaPagingItemReader<ProcessData> = JpaPagingItemReaderBuilder<ProcessData>()
             .name("dataReader")
             .entityManagerFactory(entityManagerFactory)
-            .queryString("""
+            .queryString(
+                """
                 SELECT new org.balanceeat.batch.job.ProcessData(
                     1L,
                     'Sample Data',
@@ -64,31 +60,27 @@ private val transactionManager: PlatformTransactionManager,
                 )
                 FROM User u
                 WHERE u.id > 0
-            """.trimIndent())
-            .pageSize(CHUNK_SIZE)
+                """.trimIndent(),
+            ).pageSize(CHUNK_SIZE)
             .build()
-    }
 
     @Bean
     @JobScope
     fun dataProcessor(
-        @Value("#{jobParameters['targetDate']}") targetDate: String?
-    ): ItemProcessor<ProcessData, ProcessResult> {
-        return ItemProcessor { item ->
+        @Value("#{jobParameters['targetDate']}") targetDate: String?,
+    ): ItemProcessor<ProcessData, ProcessResult> = ItemProcessor { item ->
             log.debug("Processing item: ${item.id}, name: ${item.name}")
 
             ProcessResult(
                 id = item.id,
                 processedName = "${item.name} (처리완료)",
                 targetDate = targetDate ?: "미지정",
-                status = "SUCCESS"
+                status = "SUCCESS",
             )
         }
-    }
 
     @Bean
-    fun dataWriter(): ItemWriter<ProcessResult> {
-        return ItemWriter { items ->
+    fun dataWriter(): ItemWriter<ProcessResult> = ItemWriter { items ->
             items.forEach { item ->
                 log.info("=== 처리 결과 ===")
                 log.info("ID: ${item.id}")
@@ -99,18 +91,17 @@ private val transactionManager: PlatformTransactionManager,
 
             log.info("총 ${items.size()}개 항목 처리 완료")
         }
-    }
 }
 
 data class ProcessData(
     val id: Long,
     val name: String,
-    val createdAt: java.time.LocalDateTime
+    val createdAt: java.time.LocalDateTime,
 )
 
 data class ProcessResult(
     val id: Long,
     val processedName: String,
     val targetDate: String,
-    val status: String
+    val status: String,
 )

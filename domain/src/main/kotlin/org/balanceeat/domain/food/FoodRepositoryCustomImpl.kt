@@ -8,21 +8,24 @@ import org.balanceeat.domain.food.QFood.Companion.food
 import org.springframework.data.domain.Page
 
 class FoodRepositoryCustomImpl(
-    queryFactory: JPAQueryFactory
-): BaseQueryRepository(queryFactory), FoodRepositoryCustom {
+    queryFactory: JPAQueryFactory,
+) : BaseQueryRepository(queryFactory),
+    FoodRepositoryCustom {
     override fun search(query: FoodQuery.Search): Page<FoodSearchResult> {
         val where = mutableListOf<BooleanExpression>()
 
         query.foodName?.let { where.add(food.name.containsIgnoreCase(it)) }
         query.userId?.let { where.add(food.userId.eq(it)) }
 
-        val baseQuery = queryFactory
-            .from(food)
-            .where(*where.toTypedArray())
+        val baseQuery =
+            queryFactory
+                .from(food)
+                .where(*where.toTypedArray())
 
-        val totalCount = baseQuery
-            .select(Wildcard.count)
-            .fetchOne() ?: 0L
+        val totalCount =
+            baseQuery
+                .select(Wildcard.count)
+                .fetchOne() ?: 0L
 
         if (totalCount == 0L) {
             return Page.empty()
@@ -44,10 +47,9 @@ class FoodRepositoryCustomImpl(
                     food.brand,
                     food.isAdminApproved,
                     food.createdAt,
-                    food.updatedAt
-                )
-            )
-            .orderBy(food.createdAt.desc())
+                    food.updatedAt,
+                ),
+            ).orderBy(food.createdAt.desc())
             .toPage(query.pageable, totalCount)
     }
 }

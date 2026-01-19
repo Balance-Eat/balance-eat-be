@@ -9,20 +9,16 @@ class DietStatsFixture(
     var totalCalories: Double = 2000.0,
     var totalCarbohydrates: Double = 250.0,
     var totalProtein: Double = 100.0,
-    var totalFat: Double = 60.0
+    var totalFat: Double = 60.0,
 ) : TestFixture<DietStats> {
-    override fun create(): DietStats {
-        return DietStats(
+    override fun create(): DietStats = DietStats(
             userId = userId,
             statsDate = statsDate,
             totalCalories = totalCalories,
             totalCarbohydrates = totalCarbohydrates,
             totalProtein = totalProtein,
-            totalFat = totalFat
+            totalFat = totalFat,
         )
-    }
 }
 
-fun dietStatsFixture(block: DietStatsFixture.() -> Unit = {}): DietStats {
-    return DietStatsFixture().apply(block).create()
-}
+fun dietStatsFixture(block: DietStatsFixture.() -> Unit = {}): DietStats = DietStatsFixture().apply(block).create()

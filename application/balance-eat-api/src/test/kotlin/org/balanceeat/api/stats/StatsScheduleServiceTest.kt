@@ -18,6 +18,7 @@ import java.time.LocalDate
 class StatsScheduleServiceTest : IntegrationTestContext() {
     @Autowired
     private lateinit var statsScheduleService: StatsScheduleService
+
     @Autowired
     private lateinit var dietRepository: DietRepository
 
@@ -30,33 +31,37 @@ class StatsScheduleServiceTest : IntegrationTestContext() {
             val user = createEntity(UserFixture().create())
             val food = createEntity(FoodFixture().create())
 
-            val diet1 = dietRepository.save(
-                DietFixture(
-                    userId = user.id,
-                    mealType = Diet.MealType.BREAKFAST,
-                    consumedAt = statsDate.atStartOfDay(),
-                    dietFoods = mutableListOf(
-                        DietFoodFixture(
-                            foodId = food.id,
-                            intake = 100
-                        ).create()
-                    )
-                ).create()
-            )
+            val diet1 =
+                dietRepository.save(
+                    DietFixture(
+                        userId = user.id,
+                        mealType = Diet.MealType.BREAKFAST,
+                        consumedAt = statsDate.atStartOfDay(),
+                        dietFoods =
+                            mutableListOf(
+                                DietFoodFixture(
+                                    foodId = food.id,
+                                    intake = 100,
+                                ).create(),
+                            ),
+                    ).create(),
+                )
 
-            val diet2 = dietRepository.save(
-                DietFixture(
-                    userId = user.id,
-                    mealType = Diet.MealType.LUNCH,
-                    consumedAt = statsDate.atStartOfDay().plusHours(5),
-                    dietFoods = mutableListOf(
-                        DietFoodFixture(
-                            foodId = food.id,
-                            intake = 80
-                        ).create()
-                    )
-                ).create()
-            )
+            val diet2 =
+                dietRepository.save(
+                    DietFixture(
+                        userId = user.id,
+                        mealType = Diet.MealType.LUNCH,
+                        consumedAt = statsDate.atStartOfDay().plusHours(5),
+                        dietFoods =
+                            mutableListOf(
+                                DietFoodFixture(
+                                    foodId = food.id,
+                                    intake = 80,
+                                ).create(),
+                            ),
+                    ).create(),
+                )
             val expectedTotalCalories = food.perServingCalories * (100 + 80) / food.servingSize
             val expectedTotalCarbohydrates = food.carbohydrates * (100 + 80) / food.servingSize
             val expectedTotalProtein = food.protein * (100 + 80) / food.servingSize
@@ -72,11 +77,11 @@ class StatsScheduleServiceTest : IntegrationTestContext() {
                 .hasSize(1)
                 .allMatch { stat ->
                     stat.userId == user.id &&
-                    stat.statsDate == statsDate &&
-                    stat.totalCalories == expectedTotalCalories &&
-                    stat.totalCarbohydrates == expectedTotalCarbohydrates &&
-                    stat.totalProtein == expectedTotalProtein &&
-                    stat.totalFat == expectedTotalFat
+                        stat.statsDate == statsDate &&
+                        stat.totalCalories == expectedTotalCalories &&
+                        stat.totalCarbohydrates == expectedTotalCarbohydrates &&
+                        stat.totalProtein == expectedTotalProtein &&
+                        stat.totalFat == expectedTotalFat
                 }
         }
 
@@ -87,24 +92,29 @@ class StatsScheduleServiceTest : IntegrationTestContext() {
             val user = createEntity(UserFixture().create())
             val food = createEntity(FoodFixture().create())
 
-            val alreadyExistStats = createEntity(DietStatsFixture(
-                userId = user.id,
-                statsDate = statsDate
-            ).create())
+            val alreadyExistStats =
+                createEntity(
+                    DietStatsFixture(
+                        userId = user.id,
+                        statsDate = statsDate,
+                    ).create(),
+                )
 
-            val diet = dietRepository.save(
-                DietFixture(
-                    userId = user.id,
-                    mealType = Diet.MealType.SNACK,
-                    consumedAt = statsDate.atStartOfDay(),
-                    dietFoods = mutableListOf(
-                        DietFoodFixture(
-                            foodId = food.id,
-                            intake = 100
-                        ).create()
-                    )
-                ).create()
-            )
+            val diet =
+                dietRepository.save(
+                    DietFixture(
+                        userId = user.id,
+                        mealType = Diet.MealType.SNACK,
+                        consumedAt = statsDate.atStartOfDay(),
+                        dietFoods =
+                            mutableListOf(
+                                DietFoodFixture(
+                                    foodId = food.id,
+                                    intake = 100,
+                                ).create(),
+                            ),
+                    ).create(),
+                )
             val expectedTotalCalories = food.perServingCalories * 100 / food.servingSize
             val expectedTotalCarbohydrates = food.carbohydrates * 100 / food.servingSize
             val expectedTotalProtein = food.protein * 100 / food.servingSize
@@ -120,11 +130,11 @@ class StatsScheduleServiceTest : IntegrationTestContext() {
                 .hasSize(1)
                 .allMatch { stat ->
                     stat.userId == user.id &&
-                    stat.statsDate == statsDate &&
-                    stat.totalCalories == expectedTotalCalories &&
-                    stat.totalCarbohydrates == expectedTotalCarbohydrates &&
-                    stat.totalProtein == expectedTotalProtein &&
-                    stat.totalFat == expectedTotalFat
+                        stat.statsDate == statsDate &&
+                        stat.totalCalories == expectedTotalCalories &&
+                        stat.totalCarbohydrates == expectedTotalCarbohydrates &&
+                        stat.totalProtein == expectedTotalProtein &&
+                        stat.totalFat == expectedTotalFat
                 }
         }
 
@@ -145,11 +155,11 @@ class StatsScheduleServiceTest : IntegrationTestContext() {
                 .hasSize(2)
                 .allMatch { stat ->
                     stat.userId != 0L &&
-                    stat.statsDate == statsDate &&
-                    stat.totalCalories == 0.0 &&
-                    stat.totalCarbohydrates == 0.0 &&
-                    stat.totalProtein == 0.0 &&
-                    stat.totalFat == 0.0
+                        stat.statsDate == statsDate &&
+                        stat.totalCalories == 0.0 &&
+                        stat.totalCarbohydrates == 0.0 &&
+                        stat.totalProtein == 0.0 &&
+                        stat.totalFat == 0.0
                 }
         }
     }

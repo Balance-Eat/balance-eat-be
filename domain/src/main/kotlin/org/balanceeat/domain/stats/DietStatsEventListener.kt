@@ -9,7 +9,7 @@ import org.springframework.transaction.event.TransactionalEventListener
 
 @Component
 class DietStatsEventListener(
-    private val dietStatsWriter: DietStatsWriter
+    private val dietStatsWriter: DietStatsWriter,
 ) {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)

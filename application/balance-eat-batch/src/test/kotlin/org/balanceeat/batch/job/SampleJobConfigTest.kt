@@ -20,7 +20,6 @@ import java.time.LocalDateTime
 @SpringBootTest
 @ActiveProfiles("test")
 class SampleJobConfigTest {
-
     @Autowired
     private lateinit var sampleJob: Job
 
@@ -32,10 +31,11 @@ class SampleJobConfigTest {
     fun testSampleJobExecution() {
         jobLauncherTestUtils.job = sampleJob
 
-        val jobParameters = JobParametersBuilder()
-            .addString("message", "테스트 실행 메시지")
-            .addLocalDateTime("requestTime", LocalDateTime.now())
-            .toJobParameters()
+        val jobParameters =
+            JobParametersBuilder()
+                .addString("message", "테스트 실행 메시지")
+                .addLocalDateTime("requestTime", LocalDateTime.now())
+                .toJobParameters()
 
         val jobExecution = jobLauncherTestUtils.launchJob(jobParameters)
 
@@ -48,10 +48,11 @@ class SampleJobConfigTest {
     fun testTaskletStepExecution() {
         jobLauncherTestUtils.job = sampleJob
 
-        val jobParameters = JobParametersBuilder()
-            .addString("message", "Step 테스트")
-            .addLocalDateTime("requestTime", LocalDateTime.now())
-            .toJobParameters()
+        val jobParameters =
+            JobParametersBuilder()
+                .addString("message", "Step 테스트")
+                .addLocalDateTime("requestTime", LocalDateTime.now())
+                .toJobParameters()
 
         val jobExecution = jobLauncherTestUtils.launchStep("taskletStep", jobParameters)
         val stepExecution = jobExecution.stepExecutions.first()

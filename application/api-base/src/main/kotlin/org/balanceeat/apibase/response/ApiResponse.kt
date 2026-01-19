@@ -10,85 +10,88 @@ data class ApiResponse<T>(
     val serverDatetime: LocalDateTime = LocalDateTime.now(),
 ) {
     companion object {
-        fun <T> success(data: T? = null): ApiResponse<T> {
-            return ApiResponse(
+        fun <T> success(data: T? = null): ApiResponse<T> = ApiResponse(
                 status = ApiResponseStatus.SUCCESS.name,
                 message = ApiResponseStatus.SUCCESS.message,
-                data = data
+                data = data,
             )
-        }
 
-        fun <T> success(data: T, message: String): ApiResponse<T> {
-            return ApiResponse(
+        fun <T> success(
+            data: T,
+            message: String,
+        ): ApiResponse<T> = ApiResponse(
                 status = ApiResponseStatus.SUCCESS.name,
                 message = message,
-                data = data
+                data = data,
             )
-        }
 
-        fun <T> fail(status: Status, message: String?, data: T? = null): ApiResponse<T> {
-            return ApiResponse(
+        fun <T> fail(
+            status: Status,
+            message: String?,
+            data: T? = null,
+        ): ApiResponse<T> = ApiResponse(
                 status = status.name,
                 message = message ?: status.message,
-                data = data
+                data = data,
             )
-        }
 
-        fun <T> fail(message: String): ApiResponse<T> {
-            return ApiResponse(
+        fun <T> fail(message: String): ApiResponse<T> = ApiResponse(
                 status = ApiResponseStatus.FAILURE.name,
                 message = message,
-                data = null
+                data = null,
             )
-        }
 
-        fun <T> error(message: String, data: T? = null): ApiResponse<T> {
-            return ApiResponse(
+        fun <T> error(
+            message: String,
+            data: T? = null,
+        ): ApiResponse<T> = ApiResponse(
                 status = ApiResponseStatus.ERROR.name,
                 message = message,
-                data = data
+                data = data,
             )
-        }
 
-        fun <T> error(status: Status, message: String): ApiResponse<T> {
-            return ApiResponse(
+        fun <T> error(
+            status: Status,
+            message: String,
+        ): ApiResponse<T> = ApiResponse(
                 status = status.name,
                 message = message,
-                data = null
+                data = null,
             )
-        }
 
-        fun <T> unauthorized(status: Status = ApiResponseStatus.UNAUTHORIZED, message: String? = null): ApiResponse<T> {
-            return ApiResponse(
+        fun <T> unauthorized(
+            status: Status = ApiResponseStatus.UNAUTHORIZED,
+            message: String? = null,
+        ): ApiResponse<T> = ApiResponse(
                 status = status.name,
                 message = message ?: status.message,
-                data = null
+                data = null,
             )
-        }
 
-        fun <T> notFound(status: Status = ApiResponseStatus.RESOURCE_NOT_FOUND, message: String? = null): ApiResponse<T> {
-            return ApiResponse(
+        fun <T> notFound(
+            status: Status = ApiResponseStatus.RESOURCE_NOT_FOUND,
+            message: String? = null,
+        ): ApiResponse<T> = ApiResponse(
                 status = status.name,
                 message = message ?: status.message,
-                data = null
+                data = null,
             )
-        }
 
-        fun <T> forbidden(): ApiResponse<T> {
-            return ApiResponse(
+        fun <T> forbidden(): ApiResponse<T> = ApiResponse(
                 status = ApiResponseStatus.FORBIDDEN.name,
                 message = ApiResponseStatus.FORBIDDEN.message,
-                data = null
+                data = null,
             )
-        }
     }
-    
-    enum class ApiResponseStatus(override val message: String) : Status {
+
+    enum class ApiResponseStatus(
+        override val message: String
+    ) : Status {
         SUCCESS("성공"),
         FAILURE("요청에 실패하였습니다."),
         ERROR("에러가 발생하였습니다."),
         UNAUTHORIZED("토큰이 유효하지 않습니다."),
         FORBIDDEN("권한이 없습니다."),
-        RESOURCE_NOT_FOUND("해당 리소스는 존재하지 않습니다.");
+        RESOURCE_NOT_FOUND("해당 리소스는 존재하지 않습니다."),
     }
 }

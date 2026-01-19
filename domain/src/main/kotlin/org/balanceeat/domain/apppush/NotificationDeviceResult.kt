@@ -11,11 +11,10 @@ data class NotificationDeviceResult(
     val deviceName: String,
     val isActive: Boolean,
     val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
+    val updatedAt: LocalDateTime,
 ) {
     companion object : EntityMapper<NotificationDevice, NotificationDeviceResult> {
-        override fun from(entity: NotificationDevice): NotificationDeviceResult {
-            return NotificationDeviceResult(
+        override fun from(entity: NotificationDevice): NotificationDeviceResult = NotificationDeviceResult(
                 id = entity.id,
                 userId = entity.userId,
                 agentId = entity.agentId,
@@ -23,8 +22,7 @@ data class NotificationDeviceResult(
                 deviceName = entity.deviceName,
                 isActive = entity.isActive,
                 createdAt = entity.createdAt,
-                updatedAt = entity.updatedAt
+                updatedAt = entity.updatedAt,
             )
-        }
     }
 }

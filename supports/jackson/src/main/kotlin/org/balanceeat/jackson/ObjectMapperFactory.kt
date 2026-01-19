@@ -13,11 +13,10 @@ import java.time.ZoneId
 import java.util.TimeZone
 
 object ObjectMapperFactory {
-    
     private val globalObjectMapper: ObjectMapper = createObjectMapper()
-    
+
     fun getGlobalObjectMapper(): ObjectMapper = globalObjectMapper
-    
+
     private fun createObjectMapper(): ObjectMapper {
         return ObjectMapper()
             .registerModule(JavaTimeModule())

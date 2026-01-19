@@ -11,5 +11,8 @@ interface NotificationDeviceRepository : JpaRepository<NotificationDevice, Long>
     @Query("SELECT nd FROM NotificationDevice nd WHERE nd.userId IN :userIds AND nd.isActive = true")
     fun findAllActiveByUserIdIn(userIds: List<Long>): List<NotificationDevice>
 
-    fun findByUserIdAndAgentId(userId: Long, agentId: String): NotificationDevice?
+    fun findByUserIdAndAgentId(
+        userId: Long,
+        agentId: String,
+    ): NotificationDevice?
 }

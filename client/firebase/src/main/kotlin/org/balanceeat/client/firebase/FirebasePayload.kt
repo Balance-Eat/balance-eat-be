@@ -9,39 +9,37 @@ class FirebaseRequest {
         val deviceToken: String,
         val title: String,
         val content: String,
-        val deepLink: String? = null
+        val deepLink: String? = null,
     ) {
-        fun toFirebaseMessage(): Message {
-            return Message.builder()
+        fun toFirebaseMessage(): Message = Message
+            .builder()
                 .setNotification(
-                    Notification.builder()
+                    Notification
+                        .builder()
                         .setTitle(title)
                         .setBody(content)
-                        .build()
-                )
-                .setToken(deviceToken)
+                        .build(),
+                ).setToken(deviceToken)
                 .putData("deepLink", deepLink ?: "")
                 .build()
-        }
     }
 
     data class SendBatchMessages(
         val deviceTokens: List<String>,
         val title: String,
         val content: String,
-        val deepLink: String? = null
+        val deepLink: String? = null,
     ) {
-        fun toFirebaseMessage(): MulticastMessage {
-            return MulticastMessage.builder()
+        fun toFirebaseMessage(): MulticastMessage = MulticastMessage
+            .builder()
                 .setNotification(
-                    com.google.firebase.messaging.Notification.builder()
+                    com.google.firebase.messaging.Notification
+                        .builder()
                         .setTitle(title)
                         .setBody(content)
-                        .build()
-                )
-                .addAllTokens(deviceTokens)
+                        .build(),
+                ).addAllTokens(deviceTokens)
                 .putData("deepLink", deepLink ?: "")
                 .build()
-        }
     }
 }

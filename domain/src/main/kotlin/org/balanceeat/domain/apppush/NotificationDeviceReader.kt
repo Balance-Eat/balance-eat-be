@@ -8,29 +8,24 @@ import org.springframework.transaction.annotation.Transactional
 @Component
 @Transactional(readOnly = true)
 class NotificationDeviceReader(
-    private val notificationDeviceRepository: NotificationDeviceRepository
+    private val notificationDeviceRepository: NotificationDeviceRepository,
 ) : BaseReader<NotificationDevice, NotificationDeviceResult>(notificationDeviceRepository, NotificationDeviceResult) {
+    override fun findByIdOrThrow(id: Long): NotificationDeviceResult = findByIdOrThrow(id, DomainStatus.NOTIFICATION_DEVICE_NOT_FOUND)
 
-    override fun findByIdOrThrow(id: Long): NotificationDeviceResult {
-        return findByIdOrThrow(id, DomainStatus.NOTIFICATION_DEVICE_NOT_FOUND)
-    }
-
-    fun findAllByUserId(userId: Long): List<NotificationDeviceResult> {
-        return notificationDeviceRepository.findAllByUserId(userId)
+    fun findAllByUserId(userId: Long): List<NotificationDeviceResult> = notificationDeviceRepository
+        .findAllByUserId(userId)
             .map { NotificationDeviceResult.from(it) }
-    }
 
-    fun findAllActiveByUserIds(userIds: List<Long>): List<NotificationDeviceResult> {
-        return notificationDeviceRepository.findAllActiveByUserIdIn(userIds)
+    fun findAllActiveByUserIds(userIds: List<Long>): List<NotificationDeviceResult> = notificationDeviceRepository
+        .findAllActiveByUserIdIn(userIds)
             .map { NotificationDeviceResult.from(it) }
-    }
 
-    fun existsByAgentId(agentId: String): Boolean {
-        return notificationDeviceRepository.existsByAgentId(agentId)
-    }
+    fun existsByAgentId(agentId: String): Boolean = notificationDeviceRepository.existsByAgentId(agentId)
 
-    fun findByUserIdAndAgentId(userId: Long, agentId: String): NotificationDeviceResult? {
-        return notificationDeviceRepository.findByUserIdAndAgentId(userId, agentId)
+    fun findByUserIdAndAgentId(
+        userId: Long,
+        agentId: String,
+    ): NotificationDeviceResult? = notificationDeviceRepository
+        .findByUserIdAndAgentId(userId, agentId)
             ?.let { NotificationDeviceResult.from(it) }
-    }
 }

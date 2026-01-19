@@ -16,12 +16,13 @@ class FirebaseClientTest {
     @Test
     fun manualTest() {
         // NOTE: 변수 변경해서 테스트 필요
-        val request = FirebaseRequest.SendMessage(
-            title = "테스트 제목",
-            content = "테스트 내용",
-            deviceToken = "테스트 토큰", // NOTE: 실제 디바이스 토큰으로 변경
-            deepLink = "balanceeat://reminder"
-        )
+        val request =
+            FirebaseRequest.SendMessage(
+                title = "테스트 제목",
+                content = "테스트 내용",
+                deviceToken = "테스트 토큰", // NOTE: 실제 디바이스 토큰으로 변경
+                deepLink = "balanceeat://reminder",
+            )
 
         firebaseClient.sendMessage(request)
     }

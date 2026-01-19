@@ -10,18 +10,15 @@ class CurationFood(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = NEW_ID,
-
     @Column(name = "food_id", nullable = false)
     val foodId: Long,
-
     @Column(name = "weight", nullable = false)
-    var weight: Int
+    var weight: Int,
 ) : BaseEntity() {
-    
     override fun guard() {
         require(weight > 0) { "가중치는 0보다 큰 값이어야 합니다" }
     }
-    
+
     fun updateWeight(weight: Int) {
         this.weight = weight
     }

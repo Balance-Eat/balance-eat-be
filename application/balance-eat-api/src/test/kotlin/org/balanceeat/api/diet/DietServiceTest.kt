@@ -25,6 +25,7 @@ import java.time.YearMonth
 class DietServiceTest : IntegrationTestContext() {
     @Autowired
     private lateinit var dietService: DietService
+
     @Autowired
     private lateinit var dietRepository: DietRepository
 
@@ -35,49 +36,61 @@ class DietServiceTest : IntegrationTestContext() {
         fun `식단을 성공적으로 생성할 수 있다`() {
             // given
             val user = createEntity(UserFixture().create())
-            val food1 = createEntity(FoodFixture(
-                name = "토스트",
-                servingSize = 30.0,
-                unit = "g",
-                carbohydrates = 15.0,
-                protein = 2.5,
-                fat = 1.5
-            ).create())
-            
-            val food2 = createEntity(FoodFixture(
-                name = "우유",
-                servingSize = 200.0,
-                unit = "ml",
-                carbohydrates = 9.0,
-                protein = 6.6,
-                fat = 3.2
-            ).create())
-            
-            val food3 = createEntity(FoodFixture(
-                name = "바나나",
-                servingSize = 100.0,
-                unit = "g",
-                carbohydrates = 27.0,
-                protein = 1.3,
-                fat = 0.2
-            ).create())
-            
-            val request = DietV1RequestFixture.Create(
-                dietFoods = listOf(
-                    DietV1Request.Create.DietFood(
-                        foodId = food1.id,
-                        intake = 2
-                    ),
-                    DietV1Request.Create.DietFood(
-                        foodId = food2.id,
-                        intake = 1
-                    ),
-                    DietV1Request.Create.DietFood(
-                        foodId = food3.id,
-                        intake = 1
-                    )
+            val food1 =
+                createEntity(
+                    FoodFixture(
+                        name = "토스트",
+                        servingSize = 30.0,
+                        unit = "g",
+                        carbohydrates = 15.0,
+                        protein = 2.5,
+                        fat = 1.5,
+                    ).create(),
                 )
-            ).create()
+
+            val food2 =
+                createEntity(
+                    FoodFixture(
+                        name = "우유",
+                        servingSize = 200.0,
+                        unit = "ml",
+                        carbohydrates = 9.0,
+                        protein = 6.6,
+                        fat = 3.2,
+                    ).create(),
+                )
+
+            val food3 =
+                createEntity(
+                    FoodFixture(
+                        name = "바나나",
+                        servingSize = 100.0,
+                        unit = "g",
+                        carbohydrates = 27.0,
+                        protein = 1.3,
+                        fat = 0.2,
+                    ).create(),
+                )
+
+            val request =
+                DietV1RequestFixture
+                    .Create(
+                    dietFoods =
+                        listOf(
+                            DietV1Request.Create.DietFood(
+                                foodId = food1.id,
+                                intake = 2,
+                            ),
+                            DietV1Request.Create.DietFood(
+                                foodId = food2.id,
+                                intake = 1,
+                            ),
+                            DietV1Request.Create.DietFood(
+                                foodId = food3.id,
+                                intake = 1,
+                            ),
+                        ),
+                ).create()
 
             // when
             val result = dietService.create(request, user.id)
@@ -99,7 +112,7 @@ class DietServiceTest : IntegrationTestContext() {
             val bananaFood = result.dietFoods.find { it.foodId == food3.id }!!
             assertThat(bananaFood.intake).isEqualTo(1)
             assertThat(bananaFood.foodName).isEqualTo("바나나")
-            
+
             // 총 영양성분이 합산되었는지 검증
             val expectedCalories = toastFood.nutrition.calories + milkFood.nutrition.calories + bananaFood.nutrition.calories
             assertThat(result.totalNutrition.calories).isEqualTo(expectedCalories)
@@ -116,16 +129,18 @@ class DietServiceTest : IntegrationTestContext() {
             val userId = 1L
             val targetDateTime = LocalDateTime.now()
             val food = createEntity(FoodFixture(name = "김치찌개").create(), withTransaction = true)
-            val dietFoods = mutableListOf(
-                DietFoodFixture(foodId = food.id).create()
-            )
-            val diet = dietRepository.save(
-                DietFixture(
-                    userId = userId,
-                    consumedAt = targetDateTime,
-                    dietFoods = dietFoods
-                ).create()
-            )
+            val dietFoods =
+                mutableListOf(
+                    DietFoodFixture(foodId = food.id).create(),
+                )
+            val diet =
+                dietRepository.save(
+                    DietFixture(
+                        userId = userId,
+                        consumedAt = targetDateTime,
+                        dietFoods = dietFoods,
+                    ).create(),
+                )
 
             // when
             val result = dietService.getDailyDiets(userId, targetDateTime.toLocalDate())
@@ -153,20 +168,22 @@ class DietServiceTest : IntegrationTestContext() {
             val targetDateTime = LocalDateTime.now()
             val food1 = createEntity(FoodFixture(name = "김치찌개").create(), withTransaction = true)
             val food2 = createEntity(FoodFixture(name = "된장찌개").create(), withTransaction = true)
-            val diet1 = dietRepository.save(
-                DietFixture(
-                    userId = userId,
-                    consumedAt = targetDateTime.withHour(20),
-                    dietFoods = mutableListOf(DietFoodFixture(foodId = food1.id).create())
-                ).create()
-            )
-            val diet2 = dietRepository.save(
-                DietFixture(
-                    userId = userId,
-                    consumedAt = targetDateTime.withHour(8),
-                    dietFoods = mutableListOf(DietFoodFixture(foodId = food2.id).create())
-                ).create()
-            )
+            val diet1 =
+                dietRepository.save(
+                    DietFixture(
+                        userId = userId,
+                        consumedAt = targetDateTime.withHour(20),
+                        dietFoods = mutableListOf(DietFoodFixture(foodId = food1.id).create()),
+                    ).create(),
+                )
+            val diet2 =
+                dietRepository.save(
+                    DietFixture(
+                        userId = userId,
+                        consumedAt = targetDateTime.withHour(8),
+                        dietFoods = mutableListOf(DietFoodFixture(foodId = food2.id).create()),
+                    ).create(),
+                )
 
             // when
             val result = dietService.getDailyDiets(userId, targetDate)
@@ -189,16 +206,18 @@ class DietServiceTest : IntegrationTestContext() {
             val targetYearMonth = YearMonth.of(2024, 3)
             val targetDateTime = targetYearMonth.atDay(15).atTime(12, 0)
             val food = createEntity(FoodFixture(name = "김치찌개").create(), withTransaction = true)
-            val dietFoods = mutableListOf(
-                DietFoodFixture(foodId = food.id).create()
-            )
-            val diet = dietRepository.save(
-                DietFixture(
-                    userId = userId,
-                    consumedAt = targetDateTime,
-                    dietFoods = dietFoods
-                ).create()
-            )
+            val dietFoods =
+                mutableListOf(
+                    DietFoodFixture(foodId = food.id).create(),
+                )
+            val diet =
+                dietRepository.save(
+                    DietFixture(
+                        userId = userId,
+                        consumedAt = targetDateTime,
+                        dietFoods = dietFoods,
+                    ).create(),
+                )
 
             // when
             val result = dietService.getMonthlyDiets(userId, targetYearMonth)
@@ -225,20 +244,22 @@ class DietServiceTest : IntegrationTestContext() {
             val targetYearMonth = YearMonth.of(2024, 3)
             val food1 = createEntity(FoodFixture(name = "김치찌개").create(), withTransaction = true)
             val food2 = createEntity(FoodFixture(name = "된장찌개").create(), withTransaction = true)
-            val diet1 = dietRepository.save(
-                DietFixture(
-                    userId = userId,
-                    consumedAt = targetYearMonth.atDay(20).atTime(20, 0),
-                    dietFoods = mutableListOf(DietFoodFixture(foodId = food1.id).create())
-                ).create()
-            )
-            val diet2 = dietRepository.save(
-                DietFixture(
-                    userId = userId,
-                    consumedAt = targetYearMonth.atDay(10).atTime(8, 0),
-                    dietFoods = mutableListOf(DietFoodFixture(foodId = food2.id).create())
-                ).create()
-            )
+            val diet1 =
+                dietRepository.save(
+                    DietFixture(
+                        userId = userId,
+                        consumedAt = targetYearMonth.atDay(20).atTime(20, 0),
+                        dietFoods = mutableListOf(DietFoodFixture(foodId = food1.id).create()),
+                    ).create(),
+                )
+            val diet2 =
+                dietRepository.save(
+                    DietFixture(
+                        userId = userId,
+                        consumedAt = targetYearMonth.atDay(10).atTime(8, 0),
+                        dietFoods = mutableListOf(DietFoodFixture(foodId = food2.id).create()),
+                    ).create(),
+                )
 
             // when
             val result = dietService.getMonthlyDiets(userId, targetYearMonth)
@@ -261,8 +282,8 @@ class DietServiceTest : IntegrationTestContext() {
                 DietFixture(
                     userId = userId,
                     consumedAt = YearMonth.of(2024, 2).atDay(15).atTime(12, 0),
-                    dietFoods = mutableListOf(DietFoodFixture(foodId = food.id).create())
-                ).create()
+                    dietFoods = mutableListOf(DietFoodFixture(foodId = food.id).create()),
+                ).create(),
             )
 
             // 4월 데이터 생성
@@ -270,18 +291,19 @@ class DietServiceTest : IntegrationTestContext() {
                 DietFixture(
                     userId = userId,
                     consumedAt = YearMonth.of(2024, 4).atDay(15).atTime(12, 0),
-                    dietFoods = mutableListOf(DietFoodFixture(foodId = food.id).create())
-                ).create()
+                    dietFoods = mutableListOf(DietFoodFixture(foodId = food.id).create()),
+                ).create(),
             )
 
             // 3월 데이터 생성
-            val targetDiet = dietRepository.save(
-                DietFixture(
-                    userId = userId,
-                    consumedAt = targetYearMonth.atDay(15).atTime(12, 0),
-                    dietFoods = mutableListOf(DietFoodFixture(foodId = food.id).create())
-                ).create()
-            )
+            val targetDiet =
+                dietRepository.save(
+                    DietFixture(
+                        userId = userId,
+                        consumedAt = targetYearMonth.atDay(15).atTime(12, 0),
+                        dietFoods = mutableListOf(DietFoodFixture(foodId = food.id).create()),
+                    ).create(),
+                )
 
             // when
             val result = dietService.getMonthlyDiets(userId, targetYearMonth)
@@ -304,18 +326,19 @@ class DietServiceTest : IntegrationTestContext() {
                 DietFixture(
                     userId = otherUserId,
                     consumedAt = targetYearMonth.atDay(15).atTime(12, 0),
-                    dietFoods = mutableListOf(DietFoodFixture(foodId = food.id).create())
-                ).create()
+                    dietFoods = mutableListOf(DietFoodFixture(foodId = food.id).create()),
+                ).create(),
             )
 
             // 해당 사용자의 데이터 생성
-            val targetDiet = dietRepository.save(
-                DietFixture(
-                    userId = userId,
-                    consumedAt = targetYearMonth.atDay(15).atTime(12, 0),
-                    dietFoods = mutableListOf(DietFoodFixture(foodId = food.id).create())
-                ).create()
-            )
+            val targetDiet =
+                dietRepository.save(
+                    DietFixture(
+                        userId = userId,
+                        consumedAt = targetYearMonth.atDay(15).atTime(12, 0),
+                        dietFoods = mutableListOf(DietFoodFixture(foodId = food.id).create()),
+                    ).create(),
+                )
 
             // when
             val result = dietService.getMonthlyDiets(userId, targetYearMonth)
@@ -337,29 +360,34 @@ class DietServiceTest : IntegrationTestContext() {
             val food2 = createEntity(FoodFixture(name = "치킨").create())
             val food3 = createEntity(FoodFixture(name = "피자").create())
 
-            val existingDiet = dietRepository.save(
-                DietFixture(
-                    userId = user.id,
-                    mealType = Diet.MealType.BREAKFAST,
-                    dietFoods = mutableListOf(
-                        DietFoodFixture(foodId = food1.id, intake = 1).create(),
-                        DietFoodFixture(foodId = food2.id, intake = 2).create(),
-                        DietFoodFixture(foodId = food3.id, intake = 3).create()
-                    )
-                ).create()
-            )
-
-            val request = DietV1RequestFixture.Update(
-                mealType = Diet.MealType.DINNER,
-                consumedAt = LocalDateTime.now(),
-                dietFoods = listOf(
-                    DietV1Request.Update.DietFood(foodId = food1.id, intake = 4),
-                    DietV1Request.Update.DietFood(foodId = food2.id, intake = 5)
+            val existingDiet =
+                dietRepository.save(
+                    DietFixture(
+                        userId = user.id,
+                        mealType = Diet.MealType.BREAKFAST,
+                        dietFoods =
+                            mutableListOf(
+                                DietFoodFixture(foodId = food1.id, intake = 1).create(),
+                                DietFoodFixture(foodId = food2.id, intake = 2).create(),
+                                DietFoodFixture(foodId = food3.id, intake = 3).create(),
+                            ),
+                    ).create(),
                 )
-            ).create()
+
+            val request =
+                DietV1RequestFixture
+                    .Update(
+                    mealType = Diet.MealType.DINNER,
+                    consumedAt = LocalDateTime.now(),
+                    dietFoods =
+                        listOf(
+                            DietV1Request.Update.DietFood(foodId = food1.id, intake = 4),
+                            DietV1Request.Update.DietFood(foodId = food2.id, intake = 5),
+                        ),
+                ).create()
 
             // when
-            val result = dietService.update(request,existingDiet.id, user.id)
+            val result = dietService.update(request, existingDiet.id, user.id)
 
             // then
             assertThat(request)
@@ -373,9 +401,10 @@ class DietServiceTest : IntegrationTestContext() {
         // given
         val user = createEntity(UserFixture().create())
         val otherUser = createEntity(UserFixture(name = "otherUser").create())
-        val existingDiet = dietRepository.save(
-            DietFixture(userId = user.id).create()
-        )
+        val existingDiet =
+            dietRepository.save(
+                DietFixture(userId = user.id).create(),
+            )
 
         val request = DietV1RequestFixture.Update().create()
 
@@ -383,7 +412,8 @@ class DietServiceTest : IntegrationTestContext() {
         val throwable = catchThrowable { dietService.update(request, existingDiet.id, otherUser.id) }
 
         // then
-        assertThat(throwable).isInstanceOf(BadRequestException::class.java)
+        assertThat(throwable)
+            .isInstanceOf(BadRequestException::class.java)
             .hasFieldOrPropertyWithValue("status", CANNOT_MODIFY_FOOD)
             .hasMessage(CANNOT_MODIFY_FOOD.message)
     }
@@ -395,9 +425,10 @@ class DietServiceTest : IntegrationTestContext() {
         fun `식단을 성공적으로 삭제할 수 있다`() {
             // given
             val user = createEntity(UserFixture().create())
-            val existingDiet = dietRepository.save(
-                DietFixture(userId = user.id).create()
-            )
+            val existingDiet =
+                dietRepository.save(
+                    DietFixture(userId = user.id).create(),
+                )
 
             // when
             dietService.delete(existingDiet.id, user.id)
@@ -424,15 +455,17 @@ class DietServiceTest : IntegrationTestContext() {
             // given
             val user = createEntity(UserFixture().create())
             val otherUser = createEntity(UserFixture(name = "otherUser").create())
-            val existingDiet = dietRepository.save(
-                DietFixture(userId = user.id).create()
-            )
+            val existingDiet =
+                dietRepository.save(
+                    DietFixture(userId = user.id).create(),
+                )
 
             // when
             val throwable = catchThrowable { dietService.delete(existingDiet.id, otherUser.id) }
 
             // then
-            assertThat(throwable).isInstanceOf(BadRequestException::class.java)
+            assertThat(throwable)
+                .isInstanceOf(BadRequestException::class.java)
                 .hasFieldOrPropertyWithValue("status", CANNOT_MODIFY_DIET)
                 .hasMessage(CANNOT_MODIFY_DIET.message)
         }
@@ -450,16 +483,18 @@ class DietServiceTest : IntegrationTestContext() {
             val food2 = createEntity(FoodFixture(name = "바나나").create())
             val food3 = createEntity(FoodFixture(name = "포도").create())
 
-            val savedDiet = dietRepository.save(
-                DietFixture(
-                    userId = user.id,
-                    dietFoods = mutableListOf(
-                        DietFoodFixture(foodId = food1.id, intake = 2).create(),
-                        DietFoodFixture(foodId = food2.id, intake = 3).create(),
-                        DietFoodFixture(foodId = food3.id, intake = 1).create()
-                    )
-                ).create()
-            )
+            val savedDiet =
+                dietRepository.save(
+                    DietFixture(
+                        userId = user.id,
+                        dietFoods =
+                            mutableListOf(
+                                DietFoodFixture(foodId = food1.id, intake = 2).create(),
+                                DietFoodFixture(foodId = food2.id, intake = 3).create(),
+                                DietFoodFixture(foodId = food3.id, intake = 1).create(),
+                            ),
+                    ).create(),
+                )
 
             // dietFoods를 미리 로드하여 ID 저장
             val dietFoodIds = savedDiet.dietFoods.map { it.id }
@@ -482,24 +517,28 @@ class DietServiceTest : IntegrationTestContext() {
             val otherUser = createEntity(UserFixture(name = "otherUser").create())
             val food = createEntity(FoodFixture(name = "사과").create())
 
-            val existingDiet = dietRepository.save(
-                DietFixture(
-                    userId = user.id,
-                    dietFoods = mutableListOf(
-                        DietFoodFixture(foodId = food.id, intake = 2).create()
-                    )
-                ).create()
-            )
+            val existingDiet =
+                dietRepository.save(
+                    DietFixture(
+                        userId = user.id,
+                        dietFoods =
+                            mutableListOf(
+                                DietFoodFixture(foodId = food.id, intake = 2).create(),
+                            ),
+                    ).create(),
+                )
 
             val dietFoodId = existingDiet.dietFoods[0].id
 
             // when
-            val throwable = catchThrowable {
-                dietService.deleteDietFood(existingDiet.id, dietFoodId, otherUser.id)
-            }
+            val throwable =
+                catchThrowable {
+                    dietService.deleteDietFood(existingDiet.id, dietFoodId, otherUser.id)
+                }
 
             // then
-            assertThat(throwable).isInstanceOf(BadRequestException::class.java)
+            assertThat(throwable)
+                .isInstanceOf(BadRequestException::class.java)
                 .hasFieldOrPropertyWithValue("status", CANNOT_MODIFY_DIET)
                 .hasMessage(CANNOT_MODIFY_DIET.message)
         }
@@ -512,12 +551,14 @@ class DietServiceTest : IntegrationTestContext() {
             val dietFoodId = 1L
 
             // when
-            val throwable = catchThrowable {
-                dietService.deleteDietFood(nonExistentDietId, dietFoodId, user.id)
-            }
+            val throwable =
+                catchThrowable {
+                    dietService.deleteDietFood(nonExistentDietId, dietFoodId, user.id)
+                }
 
             // then
-            assertThat(throwable).isInstanceOf(org.balanceeat.apibase.exception.NotFoundException::class.java)
+            assertThat(throwable)
+                .isInstanceOf(org.balanceeat.apibase.exception.NotFoundException::class.java)
                 .hasFieldOrPropertyWithValue("status", ApplicationStatus.DIET_NOT_FOUND)
                 .hasMessage(ApplicationStatus.DIET_NOT_FOUND.message)
         }
@@ -533,14 +574,16 @@ class DietServiceTest : IntegrationTestContext() {
             val user = createEntity(UserFixture().create())
             val food = createEntity(FoodFixture(name = "사과", servingSize = 100.0, unit = "g").create())
 
-            val savedDiet = dietRepository.save(
-                DietFixture(
-                    userId = user.id,
-                    dietFoods = mutableListOf(
-                        DietFoodFixture(foodId = food.id, intake = 100).create()
-                    )
-                ).create()
-            )
+            val savedDiet =
+                dietRepository.save(
+                    DietFixture(
+                        userId = user.id,
+                        dietFoods =
+                            mutableListOf(
+                                DietFoodFixture(foodId = food.id, intake = 100).create(),
+                            ),
+                    ).create(),
+                )
 
             val dietFoodId = savedDiet.dietFoods.first().id
             val request = DietV1Request.UpdateDietFood(intake = 150)
@@ -563,25 +606,29 @@ class DietServiceTest : IntegrationTestContext() {
             val otherUser = createEntity(UserFixture(name = "otherUser").create())
             val food = createEntity(FoodFixture(name = "사과").create())
 
-            val existingDiet = dietRepository.save(
-                DietFixture(
-                    userId = user.id,
-                    dietFoods = mutableListOf(
-                        DietFoodFixture(foodId = food.id, intake = 100).create()
-                    )
-                ).create()
-            )
+            val existingDiet =
+                dietRepository.save(
+                    DietFixture(
+                        userId = user.id,
+                        dietFoods =
+                            mutableListOf(
+                                DietFoodFixture(foodId = food.id, intake = 100).create(),
+                            ),
+                    ).create(),
+                )
 
             val dietFoodId = existingDiet.dietFoods[0].id
             val request = DietV1Request.UpdateDietFood(intake = 150)
 
             // when
-            val throwable = catchThrowable {
-                dietService.updateDietFood(existingDiet.id, dietFoodId, request, otherUser.id)
-            }
+            val throwable =
+                catchThrowable {
+                    dietService.updateDietFood(existingDiet.id, dietFoodId, request, otherUser.id)
+                }
 
             // then
-            assertThat(throwable).isInstanceOf(BadRequestException::class.java)
+            assertThat(throwable)
+                .isInstanceOf(BadRequestException::class.java)
                 .hasFieldOrPropertyWithValue("status", CANNOT_MODIFY_DIET)
                 .hasMessage(CANNOT_MODIFY_DIET.message)
         }
@@ -595,12 +642,14 @@ class DietServiceTest : IntegrationTestContext() {
             val request = DietV1Request.UpdateDietFood(intake = 150)
 
             // when
-            val throwable = catchThrowable {
-                dietService.updateDietFood(nonExistentDietId, dietFoodId, request, user.id)
-            }
+            val throwable =
+                catchThrowable {
+                    dietService.updateDietFood(nonExistentDietId, dietFoodId, request, user.id)
+                }
 
             // then
-            assertThat(throwable).isInstanceOf(org.balanceeat.apibase.exception.NotFoundException::class.java)
+            assertThat(throwable)
+                .isInstanceOf(org.balanceeat.apibase.exception.NotFoundException::class.java)
                 .hasFieldOrPropertyWithValue("status", ApplicationStatus.DIET_NOT_FOUND)
                 .hasMessage(ApplicationStatus.DIET_NOT_FOUND.message)
         }

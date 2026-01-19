@@ -11,21 +11,17 @@ class AppPushHistoryFixture(
     var agentId: String = UUID.randomUUID().toString(),
     var title: String = "테스트 푸시 제목",
     var content: String = "테스트 푸시 내용입니다.",
-    var deepLink: String? = null
+    var deepLink: String? = null,
 ) : TestFixture<AppPushHistory> {
-    override fun create(): AppPushHistory {
-        return AppPushHistory(
+    override fun create(): AppPushHistory = AppPushHistory(
             id = id,
             deviceId = deviceId,
             userId = userId,
             agentId = agentId,
             title = title,
             content = content,
-            deepLink = deepLink
+            deepLink = deepLink,
         )
-    }
 }
 
-fun appPushHistoryFixture(block: AppPushHistoryFixture.() -> Unit = {}): AppPushHistory {
-    return AppPushHistoryFixture().apply(block).create()
-}
+fun appPushHistoryFixture(block: AppPushHistoryFixture.() -> Unit = {}): AppPushHistory = AppPushHistoryFixture().apply(block).create()

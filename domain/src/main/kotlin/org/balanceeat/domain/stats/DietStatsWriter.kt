@@ -14,21 +14,26 @@ import java.time.LocalDate
 class DietStatsWriter(
     private val dietRepository: DietRepository,
     private val dietStatsRepository: DietStatsRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) {
     companion object {
         private const val BATCH_SIZE = 1000
     }
+
     @Transactional
     fun upsert(dietId: Long) {
-        val diet = dietRepository.findByIdOrNull(dietId)
-            ?: throw EntityNotFoundException(DIET_NOT_FOUND)
+        val diet =
+            dietRepository.findByIdOrNull(dietId)
+                ?: throw EntityNotFoundException(DIET_NOT_FOUND)
         val statsDate = diet.consumedAt.toLocalDate()
         upsert(diet.userId, statsDate)
     }
 
     @Transactional
-    fun upsert(userId: Long, statsDate: LocalDate) {
+    fun upsert(
+        userId: Long,
+        statsDate: LocalDate,
+    ) {
         val existingStats = dietStatsRepository.findByUserIdAndStatsDate(userId, statsDate)
         val newDietStats = dietStatsRepository.aggregate(statsDate, userId)
 
@@ -48,9 +53,11 @@ class DietStatsWriter(
 
         for (offset in 0 until totalUserCount step BATCH_SIZE.toLong()) {
             val pageRequest = PageRequest.of(offset.toInt() / BATCH_SIZE, BATCH_SIZE)
-            val userIds = userRepository.findAll(pageRequest)
-                .map { it.id }
-                .toList()
+            val userIds =
+                userRepository
+                    .findAll(pageRequest)
+                    .map { it.id }
+                    .toList()
 
             val aggregatedStats = dietStatsRepository.aggregate(statsDate, userIds)
             dietStatsRepository.createAll(aggregatedStats)

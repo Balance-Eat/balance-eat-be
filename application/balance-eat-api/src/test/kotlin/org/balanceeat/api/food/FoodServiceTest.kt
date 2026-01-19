@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.transaction.annotation.Transactional
 
-class FoodServiceTest: IntegrationTestContext() {
+class FoodServiceTest : IntegrationTestContext() {
     @Autowired
     private lateinit var foodService: FoodService
 
@@ -40,10 +40,12 @@ class FoodServiceTest: IntegrationTestContext() {
         fun `음식을 성공적으로 생성할 수 있다`() {
             // given
             val creatorId = 100L
-            val request = FoodV1RequestFixture.Create(
-                name = "닭가슴살",
-                brand = "CJ 제일제당"
-            ).create()
+            val request =
+                FoodV1RequestFixture
+                    .Create(
+                    name = "닭가슴살",
+                    brand = "CJ 제일제당",
+                ).create()
 
             // when
             val result = foodService.create(request, creatorId)
@@ -67,16 +69,18 @@ class FoodServiceTest: IntegrationTestContext() {
             val request = FoodV1RequestFixture.Update().create()
 
             // when
-            val throwable = catchThrowable {
-                foodService.update(
-                    request = request,
-                    id = food.id,
-                    modifierId = modifierId
-                )
-            }
+            val throwable =
+                catchThrowable {
+                    foodService.update(
+                        request = request,
+                        id = food.id,
+                        modifierId = modifierId,
+                    )
+                }
 
             // then
-            assertThat(throwable).isInstanceOf(BadRequestException::class.java)
+            assertThat(throwable)
+                .isInstanceOf(BadRequestException::class.java)
                 .hasFieldOrPropertyWithValue("status", ApplicationStatus.CANNOT_MODIFY_FOOD)
         }
 
@@ -85,17 +89,20 @@ class FoodServiceTest: IntegrationTestContext() {
             // given
             val userId = 1L
             val food = createEntity(FoodFixture(userId = userId, name = "기존 음식").create())
-            val request = FoodV1RequestFixture.Update(
-                name = "수정된 음식",
-                brand = "수정된 브랜드"
-            ).create()
+            val request =
+                FoodV1RequestFixture
+                    .Update(
+                    name = "수정된 음식",
+                    brand = "수정된 브랜드",
+                ).create()
 
             // when
-            val result = foodService.update(
-                request = request,
-                id = food.id,
-                modifierId = userId
-            )
+            val result =
+                foodService.update(
+                    request = request,
+                    id = food.id,
+                    modifierId = userId,
+                )
 
             // then
             assertThat(result.id).isEqualTo(food.id)
@@ -136,7 +143,6 @@ class FoodServiceTest: IntegrationTestContext() {
     @Nested
     @Transactional
     inner class SearchTest {
-
         @Test
         fun `음식 이름으로 필터링이 정상 동작한다`() {
             // given
@@ -152,9 +158,11 @@ class FoodServiceTest: IntegrationTestContext() {
 
             // then
             assertThat(result.items).hasSize(2)
-            assertThat(result.items[0]).usingRecursiveComparison()
+            assertThat(result.items[0])
+                .usingRecursiveComparison()
                 .isEqualTo(appleJuice)
-            assertThat(result.items[1]).usingRecursiveComparison()
+            assertThat(result.items[1])
+                .usingRecursiveComparison()
                 .isEqualTo(apple)
         }
 
@@ -175,9 +183,11 @@ class FoodServiceTest: IntegrationTestContext() {
 
             // then
             assertThat(result.items).hasSize(2)
-            assertThat(result.items[0]).usingRecursiveComparison()
+            assertThat(result.items[0])
+                .usingRecursiveComparison()
                 .isEqualTo(user1Food2)
-            assertThat(result.items[1]).usingRecursiveComparison()
+            assertThat(result.items[1])
+                .usingRecursiveComparison()
                 .isEqualTo(user1Food1)
         }
 
@@ -197,9 +207,11 @@ class FoodServiceTest: IntegrationTestContext() {
             assertThat(result.items).hasSize(2)
             // 첫 번째 결과가 더 높은 ID(최신)여야 함
             assertThat(result.items[0].id).isGreaterThan(result.items[1].id)
-            assertThat(result.items[0]).usingRecursiveComparison()
+            assertThat(result.items[0])
+                .usingRecursiveComparison()
                 .isEqualTo(newFood)
-            assertThat(result.items[1]).usingRecursiveComparison()
+            assertThat(result.items[1])
+                .usingRecursiveComparison()
                 .isEqualTo(oldFood)
         }
 
@@ -235,7 +247,8 @@ class FoodServiceTest: IntegrationTestContext() {
 
             // then
             assertThat(result.items).hasSize(1)
-            assertThat(result.items[0]).usingRecursiveComparison()
+            assertThat(result.items[0])
+                .usingRecursiveComparison()
                 .isEqualTo(apple)
         }
     }

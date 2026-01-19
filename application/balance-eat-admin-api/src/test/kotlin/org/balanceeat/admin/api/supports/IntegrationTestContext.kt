@@ -1,14 +1,13 @@
 package org.balanceeat.admin.api.supports
 
 import jakarta.persistence.EntityManager
+import org.balanceeat.domain.config.BaseEntity
 import org.balanceeat.domain.config.DatabaseCleanUp
 import org.balanceeat.domain.config.PostgreSQLTestContainerConfig
 import org.hibernate.Session
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Tag
 import org.springframework.beans.factory.annotation.Autowired
-import org.balanceeat.domain.config.BaseEntity
-import java.time.LocalDateTime
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
@@ -16,9 +15,9 @@ import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 import org.testcontainers.junit.jupiter.Testcontainers
+import java.time.LocalDateTime
 
 @Tag("integration")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -28,8 +27,10 @@ import org.testcontainers.junit.jupiter.Testcontainers
 abstract class IntegrationTestContext {
     @Autowired
     private lateinit var databaseCleanUp: DatabaseCleanUp
+
     @Autowired
-     protected lateinit var mockMvc: MockMvc
+    protected lateinit var mockMvc: MockMvc
+
     @Autowired
     protected lateinit var entityManager: EntityManager
 
@@ -61,8 +62,7 @@ abstract class IntegrationTestContext {
 @TestConfiguration
 class MockMvcConfig {
     @Bean
-    fun customMockMvc(webApplicationContext: WebApplicationContext): MockMvc {
-        return MockMvcBuilders.webAppContextSetup(webApplicationContext)
+    fun customMockMvc(webApplicationContext: WebApplicationContext): MockMvc = MockMvcBuilders
+        .webAppContextSetup(webApplicationContext)
             .build()
-    }
 }

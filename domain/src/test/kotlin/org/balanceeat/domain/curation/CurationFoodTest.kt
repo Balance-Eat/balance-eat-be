@@ -9,13 +9,13 @@ class CurationFoodTest {
     @Nested
     @DisplayName("CurationFood 엔티티 업데이트 테스트")
     inner class UpdateTest {
-        
         @Test
         fun `가중치를 업데이트할 수 있다`() {
             // given
-            val curationFood = curationFoodFixture {
-                weight = 50
-            }
+            val curationFood =
+                curationFoodFixture {
+                    weight = 50
+                }
 
             val newWeight = 200
 

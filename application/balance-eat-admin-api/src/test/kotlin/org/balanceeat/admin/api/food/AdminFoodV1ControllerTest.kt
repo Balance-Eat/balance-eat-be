@@ -18,10 +18,10 @@ import org.springframework.restdocs.request.RequestDocumentation.pathParameters
 import java.time.LocalDateTime
 
 @WebMvcTest(AdminFoodV1Controller::class)
-class AdminFoodV1ControllerTest: ControllerTestContext() {
+class AdminFoodV1ControllerTest : ControllerTestContext() {
     @Autowired
     private lateinit var objectMapper: ObjectMapper
-    
+
     @MockkBean(relaxed = true)
     private lateinit var adminFoodService: AdminFoodService
 
@@ -37,7 +37,8 @@ class AdminFoodV1ControllerTest: ControllerTestContext() {
                 .body(request)
                 .put("/admin/v1/foods/{id}", 1)
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("UpdateTest"),
@@ -45,7 +46,7 @@ class AdminFoodV1ControllerTest: ControllerTestContext() {
                             .tag(Tags.ADMIN_FOOD.tagName)
                             .description(Tags.ADMIN_FOOD.descriptionWith("수정")),
                         pathParameters(
-                            "id" pathMeans "음식 ID"
+                            "id" pathMeans "음식 ID",
                         ),
                         requestFields(
                             "name" type STRING means "음식명",
@@ -55,7 +56,7 @@ class AdminFoodV1ControllerTest: ControllerTestContext() {
                             "protein" type NUMBER means "단백질 함량 (g)",
                             "fat" type NUMBER means "지방 함량 (g)",
                             "brand" type STRING means "브랜드명",
-                            "isAdminApproved" type BOOLEAN means "관리자 승인 여부"
+                            "isAdminApproved" type BOOLEAN means "관리자 승인 여부",
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -71,16 +72,14 @@ class AdminFoodV1ControllerTest: ControllerTestContext() {
                                 "data.fat" type NUMBER means "지방 함량 (g)",
                                 "data.brand" type STRING means "브랜드명",
                                 "data.isAdminApproved" type BOOLEAN means "관리자 승인 여부",
-                                "data.createdAt" type STRING means "음식 등록일시"
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK)
+                                "data.createdAt" type STRING means "음식 등록일시",
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
 
-        private fun mockUpdateRequest(): AdminFoodV1Request.Update {
-            return AdminFoodV1Request.Update(
+        private fun mockUpdateRequest(): AdminFoodV1Request.Update = AdminFoodV1Request.Update(
                 name = "수정된 음식",
                 servingSize = 200.0,
                 unit = "g",
@@ -88,9 +87,8 @@ class AdminFoodV1ControllerTest: ControllerTestContext() {
                 protein = 15.0,
                 fat = 8.0,
                 brand = "수정된 브랜드",
-                isAdminApproved = true
+                isAdminApproved = true,
             )
-        }
     }
 
     @Nested
@@ -103,7 +101,8 @@ class AdminFoodV1ControllerTest: ControllerTestContext() {
             given()
                 .get("/admin/v1/foods/{id}", 1)
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("GetDetailsTest"),
@@ -111,7 +110,7 @@ class AdminFoodV1ControllerTest: ControllerTestContext() {
                             .tag(Tags.ADMIN_FOOD.tagName)
                             .description(Tags.ADMIN_FOOD.descriptionWith("상세 조회")),
                         pathParameters(
-                            "id" pathMeans "음식 ID"
+                            "id" pathMeans "음식 ID",
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -127,17 +126,15 @@ class AdminFoodV1ControllerTest: ControllerTestContext() {
                                 "data.fat" type NUMBER means "지방 함량 (g)",
                                 "data.brand" type STRING means "브랜드명",
                                 "data.isAdminApproved" type BOOLEAN means "관리자 승인 여부",
-                                "data.createdAt" type STRING means "음식 등록일시"
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK)
+                                "data.createdAt" type STRING means "음식 등록일시",
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
     }
 
-    private fun mockFoodDetailsResponse(): AdminFoodV1Response.Details {
-        return AdminFoodV1Response.Details(
+    private fun mockFoodDetailsResponse(): AdminFoodV1Response.Details = AdminFoodV1Response.Details(
             id = 1L,
             uuid = "test-uuid-123",
             name = "테스트 음식",
@@ -150,7 +147,6 @@ class AdminFoodV1ControllerTest: ControllerTestContext() {
             fat = 3.0,
             brand = "테스트 브랜드",
             isAdminApproved = true,
-            createdAt = LocalDateTime.now()
+            createdAt = LocalDateTime.now(),
         )
-    }
 }

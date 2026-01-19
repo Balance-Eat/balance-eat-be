@@ -11,36 +11,31 @@ class DietStats(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = NEW_ID,
-
     @Column(name = "user_id", nullable = false)
     val userId: Long,
-
     @Column(name = "stats_date", nullable = false)
     val statsDate: LocalDate,
-
     @Column(name = "total_calories", nullable = false)
     var totalCalories: Double,
-
     @Column(name = "total_carbohydrates", nullable = false)
     var totalCarbohydrates: Double,
-
     @Column(name = "total_protein", nullable = false)
     var totalProtein: Double,
-
     @Column(name = "total_fat", nullable = false)
-    var totalFat: Double
+    var totalFat: Double,
 ) : BaseEntity() {
     companion object {
-        fun empty(userId: Long, statsDate: LocalDate): DietStats {
-            return DietStats(
+        fun empty(
+            userId: Long,
+            statsDate: LocalDate,
+        ): DietStats = DietStats(
                 userId = userId,
                 statsDate = statsDate,
                 totalCalories = 0.0,
                 totalCarbohydrates = 0.0,
                 totalProtein = 0.0,
-                totalFat = 0.0
+                totalFat = 0.0,
             )
-        }
     }
 
     override fun guard() {

@@ -18,25 +18,22 @@ import java.time.LocalDateTime
 @Configuration
 class SampleJobConfig(
     private val jobRepository: JobRepository,
-    private val transactionManager: PlatformTransactionManager
+    private val transactionManager: PlatformTransactionManager,
 ) {
     private val log = LoggerFactory.getLogger(SampleJobConfig::class.java)
 
     @Bean
-    fun sampleJob(): Job {
-        return JobBuilder("sampleJob", jobRepository)
+    fun sampleJob(): Job = JobBuilder("sampleJob", jobRepository)
             .incrementer(RunIdIncrementer())
             .start(taskletStep(null))
             .next(loggingStep())
             .build()
-    }
 
     @Bean
     @JobScope
     fun taskletStep(
-        @Value("#{jobParameters['message']}") message: String?
-    ): Step {
-        return StepBuilder("taskletStep", jobRepository)
+        @Value("#{jobParameters['message']}") message: String?,
+    ): Step = StepBuilder("taskletStep", jobRepository)
             .tasklet({ contribution, chunkContext ->
                 val executionMessage = message ?: "기본 메시지"
                 val currentTime = LocalDateTime.now()
@@ -53,11 +50,9 @@ class SampleJobConfig(
                 RepeatStatus.FINISHED
             }, transactionManager)
             .build()
-    }
 
     @Bean
-    fun loggingStep(): Step {
-        return StepBuilder("loggingStep", jobRepository)
+    fun loggingStep(): Step = StepBuilder("loggingStep", jobRepository)
             .tasklet({ contribution, chunkContext ->
                 log.info("=== Logging Step 실행 ===")
                 log.info("이전 Step 실행 결과: SUCCESS")
@@ -66,5 +61,4 @@ class SampleJobConfig(
                 RepeatStatus.FINISHED
             }, transactionManager)
             .build()
-    }
 }

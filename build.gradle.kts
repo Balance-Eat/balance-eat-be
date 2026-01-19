@@ -1,4 +1,7 @@
 import org.gradle.api.Project.DEFAULT_VERSION
+import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
+import org.gradle.testing.jacoco.tasks.JacocoReport
+import org.gradle.testing.jacoco.tasks.JacocoCoverageVerification
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 import java.time.Duration
 
@@ -58,9 +61,64 @@ subprojects {
         plugin("org.jetbrains.kotlin.plugin.spring")
         plugin("kotlin")
         plugin("kotlin-spring")
-//        plugin("org.jlleitschuh.gradle.ktlint")
+        plugin("org.jlleitschuh.gradle.ktlint")
         plugin("java-test-fixtures")
         plugin("com.google.devtools.ksp")
+    }
+
+    apply { plugin("jacoco") }
+
+    configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+        version.set("1.8.0")
+        filter {
+            exclude("**/generated/**")
+        }
+    }
+
+    configure<JacocoPluginExtension> { toolVersion = "0.8.12" }
+
+    val jacocoExcludes = listOf(
+        "**/config/**",
+        "**/BalanceEatApplication*",
+        "**/*Result*",
+        "**/*Command*",
+        "**/*Query*",
+        "**/*Payload*",
+        "**/*Request*",
+        "**/*Response*",
+    )
+
+    tasks.withType<JacocoReport> {
+        dependsOn(tasks.withType<Test>())
+        reports {
+            xml.required = true
+            html.required = true
+        }
+        afterEvaluate {
+            classDirectories.setFrom(
+                files(classDirectories.files.map {
+                    fileTree(it) { exclude(jacocoExcludes) }
+                })
+            )
+        }
+    }
+
+    tasks.withType<JacocoCoverageVerification> {
+        dependsOn(tasks.withType<JacocoReport>())
+        afterEvaluate {
+            classDirectories.setFrom(
+                files(classDirectories.files.map {
+                    fileTree(it) { exclude(jacocoExcludes) }
+                })
+            )
+        }
+        violationRules {
+            rule {
+                limit {
+                    minimum = "0.80".toBigDecimal()
+                }
+            }
+        }
     }
 
     dependencies {

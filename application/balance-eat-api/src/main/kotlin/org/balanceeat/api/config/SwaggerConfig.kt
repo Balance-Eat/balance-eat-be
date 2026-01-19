@@ -11,17 +11,11 @@ import org.springframework.context.annotation.Primary
 class SwaggerConfig {
     @Primary
     @Bean
-    fun springDocConfiguration(): SpringDocConfiguration {
-        return SpringDocConfiguration()
-    }
+    fun springDocConfiguration(): SpringDocConfiguration = SpringDocConfiguration()
 
     @Bean
-    fun springDocConfigProperties(): SpringDocConfigProperties {
-        return SpringDocConfigProperties()
-    }
+    fun springDocConfigProperties(): SpringDocConfigProperties = SpringDocConfigProperties()
 
     @Bean
-    fun objectMapperProvider(springDocConfigProperties: SpringDocConfigProperties): ObjectMapperProvider {
-        return ObjectMapperProvider(springDocConfigProperties)
-    }
+    fun objectMapperProvider(springDocConfigProperties: SpringDocConfigProperties): ObjectMapperProvider = ObjectMapperProvider(springDocConfigProperties)
 }

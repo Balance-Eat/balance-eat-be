@@ -6,6 +6,6 @@ class FoodQuery {
     data class Search(
         val foodName: String?,
         val userId: Long?,
-        val pageable: Pageable
+        val pageable: Pageable,
     )
 }

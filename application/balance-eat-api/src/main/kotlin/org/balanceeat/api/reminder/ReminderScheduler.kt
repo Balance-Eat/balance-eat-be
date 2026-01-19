@@ -7,9 +7,9 @@ import java.time.LocalDateTime
 
 @Component
 class ReminderScheduler(
-    private val reminderScheduleService: ReminderScheduleService
+    private val reminderScheduleService: ReminderScheduleService,
 ) {
-    private val log = KotlinLogging.logger{}
+    private val log = KotlinLogging.logger {}
 
     @Scheduled(cron = "40 */5 * * * *", zone = "Asia/Seoul")
     fun sendAll() {

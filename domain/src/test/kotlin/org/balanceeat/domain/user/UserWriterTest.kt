@@ -14,7 +14,6 @@ import org.springframework.data.repository.findByIdOrNull
 import java.util.*
 
 class UserWriterTest : IntegrationTestContext() {
-
     @Autowired
     private lateinit var userWriter: UserWriter
 
@@ -24,7 +23,6 @@ class UserWriterTest : IntegrationTestContext() {
     @Nested
     @DisplayName("생성 테스트")
     inner class CreateTest {
-
         @Test
         fun `사용자를 생성할 수 있다`() {
             // given
@@ -40,7 +38,6 @@ class UserWriterTest : IntegrationTestContext() {
                 .usingRecursiveComparison()
                 .ignoringFields("id")
                 .isEqualTo(savedUser)
-
         }
 
         @Test
@@ -49,11 +46,12 @@ class UserWriterTest : IntegrationTestContext() {
             val testUuid = UUID.randomUUID().toString()
             val alreadySavedUser = userRepository.save(userFixture { uuid = testUuid })
 
-            val duplicateCommand = userCreateCommandFixture {
-                uuid = testUuid
-                name = "중복 사용자"
-                email = "duplicate@example.com"
-            }
+            val duplicateCommand =
+                userCreateCommandFixture {
+                    uuid = testUuid
+                    name = "중복 사용자"
+                    email = "duplicate@example.com"
+                }
 
             // when & then
             assertThatThrownBy { userWriter.create(duplicateCommand) }
@@ -89,14 +87,14 @@ class UserWriterTest : IntegrationTestContext() {
     @Nested
     @DisplayName("수정 테스트")
     inner class UpdateTest {
-
         @Test
         fun `사용자 정보를 수정할 수 있다`() {
             // given
             val user = userRepository.save(userFixture())
-            val command = userUpdateCommandFixture {
-                id = user.id
-            }
+            val command =
+                userUpdateCommandFixture {
+                    id = user.id
+                }
 
             // when
             val result = userWriter.update(command)

@@ -9,23 +9,18 @@ import org.springframework.web.bind.annotation.*
 class AdminUserV1Controller(
     private val adminUserService: AdminUserService,
 ) {
-
     @PutMapping("/{id}")
     fun update(
         @PathVariable id: Long,
-        @RequestBody @Valid request: AdminUserV1Request.Update
-    ): ApiResponse<AdminUserV1Response.Details> {
-        return ApiResponse.success(
-            adminUserService.update(request, id)
+        @RequestBody @Valid request: AdminUserV1Request.Update,
+    ): ApiResponse<AdminUserV1Response.Details> = ApiResponse.success(
+            adminUserService.update(request, id),
         )
-    }
 
     @GetMapping("/{id}")
     fun getDetails(
-        @PathVariable id: Long
-    ): ApiResponse<AdminUserV1Response.Details> {
-        return ApiResponse.success(
-            adminUserService.getDetails(id)
+        @PathVariable id: Long,
+    ): ApiResponse<AdminUserV1Response.Details> = ApiResponse.success(
+            adminUserService.getDetails(id),
         )
-    }
 }

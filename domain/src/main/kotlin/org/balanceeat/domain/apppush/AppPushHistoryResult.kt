@@ -11,11 +11,10 @@ data class AppPushHistoryResult(
     val title: String,
     val content: String,
     val deepLink: String?,
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime,
 ) {
     companion object : EntityMapper<AppPushHistory, AppPushHistoryResult> {
-        override fun from(entity: AppPushHistory): AppPushHistoryResult {
-            return AppPushHistoryResult(
+        override fun from(entity: AppPushHistory): AppPushHistoryResult = AppPushHistoryResult(
                 id = entity.id,
                 deviceId = entity.deviceId,
                 userId = entity.userId,
@@ -23,8 +22,7 @@ data class AppPushHistoryResult(
                 title = entity.title,
                 content = entity.content,
                 deepLink = entity.deepLink,
-                createdAt = entity.createdAt
+                createdAt = entity.createdAt,
             )
-        }
     }
 }

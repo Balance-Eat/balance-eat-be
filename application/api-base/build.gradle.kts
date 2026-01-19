@@ -7,7 +7,7 @@ dependencies {
     // Spring Boot - API로 노출하여 사용하는 모듈에서 활용
     api("org.springframework.boot:spring-boot-starter-web")
     api("org.springframework.boot:spring-boot-starter-aop")
-    
+
     // Logging
     api("io.github.microutils:kotlin-logging-jvm:3.0.5")
 

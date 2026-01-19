@@ -12,14 +12,13 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/v1/reminders")
 class ReminderV1Controller(
-    private val reminderService: ReminderService
+    private val reminderService: ReminderService,
 ) {
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(
         @RequestHeader("X-USER-ID") userId: Long,
-        @RequestBody @Valid request: ReminderV1Request.Create
+        @RequestBody @Valid request: ReminderV1Request.Create,
     ): ApiResponse<ReminderV1Response.Details> {
         val result = reminderService.create(request, userId)
         return ApiResponse.success(result)
@@ -28,7 +27,7 @@ class ReminderV1Controller(
     @GetMapping
     fun getSummaries(
         @RequestHeader("X-USER-ID") userId: Long,
-        @PageableDefault(sort = ["sendTime"], direction = Sort.Direction.ASC) pageable: Pageable
+        @PageableDefault(sort = ["sendTime"], direction = Sort.Direction.ASC) pageable: Pageable,
     ): ApiResponse<PageResponse<ReminderV1Response.Summary>> {
         val result = reminderService.getSummaries(userId, pageable)
         return ApiResponse.success(result)
@@ -37,7 +36,7 @@ class ReminderV1Controller(
     @GetMapping("/{reminderId}")
     fun getDetail(
         @RequestHeader("X-USER-ID") userId: Long,
-        @PathVariable reminderId: Long
+        @PathVariable reminderId: Long,
     ): ApiResponse<ReminderV1Response.Details> {
         val result = reminderService.getDetail(reminderId, userId)
         return ApiResponse.success(result)
@@ -47,7 +46,7 @@ class ReminderV1Controller(
     fun update(
         @RequestHeader("X-USER-ID") userId: Long,
         @PathVariable reminderId: Long,
-        @RequestBody @Valid request: ReminderV1Request.Update
+        @RequestBody @Valid request: ReminderV1Request.Update,
     ): ApiResponse<ReminderV1Response.Details> {
         val result = reminderService.update(request, reminderId, userId)
         return ApiResponse.success(result)
@@ -56,7 +55,7 @@ class ReminderV1Controller(
     @DeleteMapping("/{reminderId}")
     fun delete(
         @RequestHeader("X-USER-ID") userId: Long,
-        @PathVariable reminderId: Long
+        @PathVariable reminderId: Long,
     ): ApiResponse<Void> {
         reminderService.delete(reminderId, userId)
         return ApiResponse.success()
@@ -66,7 +65,7 @@ class ReminderV1Controller(
     fun updateActivation(
         @RequestHeader("X-USER-ID") userId: Long,
         @PathVariable reminderId: Long,
-        @RequestBody @Valid request: ReminderV1Request.UpdateActivation
+        @RequestBody @Valid request: ReminderV1Request.UpdateActivation,
     ): ApiResponse<ReminderV1Response.Details> {
         val result = reminderService.updateActivation(request, reminderId, userId)
         return ApiResponse.success(result)

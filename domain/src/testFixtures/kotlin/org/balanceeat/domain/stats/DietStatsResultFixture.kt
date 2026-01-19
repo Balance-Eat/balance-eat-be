@@ -10,24 +10,20 @@ class DietStatsResultFixture(
     var totalCalories: Double = 2000.0,
     var totalCarbohydrates: Double = 250.0,
     var totalProtein: Double = 100.0,
-    var totalFat: Double = 70.0
+    var totalFat: Double = 70.0,
 ) : TestFixture<DietStatsResult> {
-    override fun create(): DietStatsResult {
-        return DietStatsResult(
+    override fun create(): DietStatsResult = DietStatsResult(
             id = id,
             userId = userId,
             statsDate = statsDate,
             totalCalories = totalCalories,
             totalCarbohydrates = totalCarbohydrates,
             totalProtein = totalProtein,
-            totalFat = totalFat
+            totalFat = totalFat,
         )
-    }
 }
 
-fun dietStatsResultFixture(block: DietStatsResultFixture.() -> Unit = {}): DietStatsResult {
-    return DietStatsResultFixture().apply(block).create()
-}
+fun dietStatsResultFixture(block: DietStatsResultFixture.() -> Unit = {}): DietStatsResult = DietStatsResultFixture().apply(block).create()
 
 class DietStatsAggregateResultFixture(
     var userId: Long = 1L,
@@ -35,20 +31,16 @@ class DietStatsAggregateResultFixture(
     var totalCalories: Double = 2000.0,
     var totalCarbohydrates: Double = 250.0,
     var totalProtein: Double = 100.0,
-    var totalFat: Double = 70.0
+    var totalFat: Double = 70.0,
 ) : TestFixture<DietStatsAggregateResult> {
-    override fun create(): DietStatsAggregateResult {
-        return DietStatsAggregateResult(
+    override fun create(): DietStatsAggregateResult = DietStatsAggregateResult(
             userId = userId,
             statsDate = statsDate,
             totalCalories = totalCalories,
             totalCarbohydrates = totalCarbohydrates,
             totalProtein = totalProtein,
-            totalFat = totalFat
+            totalFat = totalFat,
         )
-    }
 }
 
-fun dietStatsAggregateResultFixture(block: DietStatsAggregateResultFixture.() -> Unit = {}): DietStatsAggregateResult {
-    return DietStatsAggregateResultFixture().apply(block).create()
-}
+fun dietStatsAggregateResultFixture(block: DietStatsAggregateResultFixture.() -> Unit = {}): DietStatsAggregateResult = DietStatsAggregateResultFixture().apply(block).create()

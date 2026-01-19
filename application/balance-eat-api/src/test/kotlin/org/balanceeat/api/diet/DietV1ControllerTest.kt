@@ -20,7 +20,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @WebMvcTest(DietV1Controller::class)
-class DietV1ControllerTest: ControllerTestContext() {
+class DietV1ControllerTest : ControllerTestContext() {
     @MockkBean(relaxed = true)
     private lateinit var dietService: DietService
 
@@ -37,7 +37,8 @@ class DietV1ControllerTest: ControllerTestContext() {
                 .params("date", "2025-08-04")
                 .get("/v1/diets/daily")
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("GetDietsByDateTest"),
@@ -45,7 +46,7 @@ class DietV1ControllerTest: ControllerTestContext() {
                             .tag(Tags.DIET.tagName)
                             .description(Tags.DIET.descriptionWith("일별 식단 조회")),
                         queryParameters(
-                            "date" queryMeans "조회할 날짜 (yyyy-MM-dd)"
+                            "date" queryMeans "조회할 날짜 (yyyy-MM-dd)",
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -63,12 +64,11 @@ class DietV1ControllerTest: ControllerTestContext() {
                                 "data[].items[].calories" type NUMBER means "해당 섭취량의 칼로리 (계산된 값)",
                                 "data[].items[].carbohydrates" type NUMBER means "해당 섭취량의 탄수화물 (계산된 값)",
                                 "data[].items[].protein" type NUMBER means "해당 섭취량의 단백질 (계산된 값)",
-                                "data[].items[].fat" type NUMBER means "해당 섭취량의 지방 (계산된 값)"
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK)
+                                "data[].items[].fat" type NUMBER means "해당 섭취량의 지방 (계산된 값)",
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
     }
 
@@ -85,7 +85,8 @@ class DietV1ControllerTest: ControllerTestContext() {
                 .params("yearMonth", "2024-03")
                 .get("/v1/diets/monthly")
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("GetDietsByMonthTest"),
@@ -93,7 +94,7 @@ class DietV1ControllerTest: ControllerTestContext() {
                             .tag(Tags.DIET.tagName)
                             .description(Tags.DIET.descriptionWith("월별 식단 조회")),
                         queryParameters(
-                            "yearMonth" queryMeans "조회할 연월 (yyyy-MM)"
+                            "yearMonth" queryMeans "조회할 연월 (yyyy-MM)",
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -111,12 +112,11 @@ class DietV1ControllerTest: ControllerTestContext() {
                                 "data[].items[].calories" type NUMBER means "해당 섭취량의 칼로리 (계산된 값)",
                                 "data[].items[].carbohydrates" type NUMBER means "해당 섭취량의 탄수화물 (계산된 값)",
                                 "data[].items[].protein" type NUMBER means "해당 섭취량의 단백질 (계산된 값)",
-                                "data[].items[].fat" type NUMBER means "해당 섭취량의 지방 (계산된 값)"
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK)
+                                "data[].items[].fat" type NUMBER means "해당 섭취량의 지방 (계산된 값)",
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
     }
 
@@ -128,13 +128,14 @@ class DietV1ControllerTest: ControllerTestContext() {
             // given
             val request = mockCreateDietRequest()
             every { dietService.create(any(), any()) } returns mockDetailsResponse()
-            
+
             given()
                 .header("X-USER-ID", "1")
                 .body(JsonUtils.stringify(request))
                 .post("/v1/diets")
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("CreateDietTest"),
@@ -146,7 +147,7 @@ class DietV1ControllerTest: ControllerTestContext() {
                             "consumedAt" type STRING means "섭취 시간",
                             "dietFoods" type ARRAY means "섭취한 음식 목록",
                             "dietFoods[].foodId" type NUMBER means "음식 ID",
-                            "dietFoods[].intake" type NUMBER means "섭취량"
+                            "dietFoods[].intake" type NUMBER means "섭취량",
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -170,17 +171,14 @@ class DietV1ControllerTest: ControllerTestContext() {
                                 "data.dietFoods[].nutrition.calories" type NUMBER means "칼로리 (kcal)",
                                 "data.dietFoods[].nutrition.carbohydrates" type NUMBER means "탄수화물 (g)",
                                 "data.dietFoods[].nutrition.protein" type NUMBER means "단백질 (g)",
-                                "data.dietFoods[].nutrition.fat" type NUMBER means "지방 (g)"
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.CREATED)
+                                "data.dietFoods[].nutrition.fat" type NUMBER means "지방 (g)",
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.CREATED)
         }
-        
-        private fun mockCreateDietRequest(): DietV1Request.Create {
-            return DietV1RequestFixture.Create().create()
-        }
+
+        private fun mockCreateDietRequest(): DietV1Request.Create = DietV1RequestFixture.Create().create()
     }
 
     @Nested
@@ -197,7 +195,8 @@ class DietV1ControllerTest: ControllerTestContext() {
                 .body(JsonUtils.stringify(request))
                 .put("/v1/diets/{dietId}", 1L)
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("UpdateTest"),
@@ -209,7 +208,7 @@ class DietV1ControllerTest: ControllerTestContext() {
                             "consumedAt" type STRING means "섭취 시간",
                             "dietFoods" type ARRAY means "섭취한 음식 목록",
                             "dietFoods[].foodId" type NUMBER means "음식 ID",
-                            "dietFoods[].intake" type NUMBER means "섭취량"
+                            "dietFoods[].intake" type NUMBER means "섭취량",
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -233,12 +232,11 @@ class DietV1ControllerTest: ControllerTestContext() {
                                 "data.dietFoods[].nutrition.calories" type NUMBER means "칼로리 (kcal)",
                                 "data.dietFoods[].nutrition.carbohydrates" type NUMBER means "탄수화물 (g)",
                                 "data.dietFoods[].nutrition.protein" type NUMBER means "단백질 (g)",
-                                "data.dietFoods[].nutrition.fat" type NUMBER means "지방 (g)"
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK)
+                                "data.dietFoods[].nutrition.fat" type NUMBER means "지방 (g)",
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
     }
 
@@ -254,7 +252,8 @@ class DietV1ControllerTest: ControllerTestContext() {
                 .header("X-USER-ID", "1")
                 .delete("/v1/diets/{dietId}", 1L)
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("DeleteDietTest"),
@@ -263,12 +262,11 @@ class DietV1ControllerTest: ControllerTestContext() {
                             .description(Tags.DIET.descriptionWith("삭제")),
                         responseFields(
                             fieldsWithBasic(
-                                "data" type NULL means "결과 데이터"
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK)
+                                "data" type NULL means "결과 데이터",
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
     }
 
@@ -284,7 +282,8 @@ class DietV1ControllerTest: ControllerTestContext() {
                 .header("X-USER-ID", "1")
                 .delete("/v1/diets/{dietId}/diet-foods/{dietFoodId}", 1L, 1L)
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("DeleteDietFoodTest"),
@@ -293,12 +292,11 @@ class DietV1ControllerTest: ControllerTestContext() {
                             .description(Tags.DIET.descriptionWith("식단 음식 삭제")),
                         responseFields(
                             fieldsWithBasic(
-                                "data" type NULL means "결과 데이터"
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK)
+                                "data" type NULL means "결과 데이터",
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
     }
 
@@ -316,7 +314,8 @@ class DietV1ControllerTest: ControllerTestContext() {
                 .body(JsonUtils.stringify(request))
                 .put("/v1/diets/{dietId}/diet-foods/{dietFoodId}", 1L, 1L)
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("UpdateDietFoodTest"),
@@ -324,7 +323,7 @@ class DietV1ControllerTest: ControllerTestContext() {
                             .tag(Tags.DIET.tagName)
                             .description(Tags.DIET.descriptionWith("식단 음식 수정")),
                         requestFields(
-                            "intake" type NUMBER means "섭취량"
+                            "intake" type NUMBER means "섭취량",
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -348,121 +347,122 @@ class DietV1ControllerTest: ControllerTestContext() {
                                 "data.dietFoods[].nutrition.calories" type NUMBER means "칼로리 (kcal)",
                                 "data.dietFoods[].nutrition.carbohydrates" type NUMBER means "탄수화물 (g)",
                                 "data.dietFoods[].nutrition.protein" type NUMBER means "단백질 (g)",
-                                "data.dietFoods[].nutrition.fat" type NUMBER means "지방 (g)"
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK)
+                                "data.dietFoods[].nutrition.fat" type NUMBER means "지방 (g)",
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
     }
 
-    private fun mockDetailsResponse(): DietV1Response.Details {
-        return DietV1Response.Details(
+    private fun mockDetailsResponse(): DietV1Response.Details = DietV1Response.Details(
             dietId = 1L,
             userId = 1L,
             mealType = Diet.MealType.DINNER,
             consumeDate = LocalDate.of(2025, 1, 15),
             consumedAt = LocalDateTime.of(2025, 1, 15, 19, 30),
-            totalNutrition = NutritionInfo(
-                calories = 245.0,
-                carbohydrates = 15.0,
-                protein = 25.0,
-                fat = 8.0
-            ),
-            dietFoods = listOf(
-                DietV1Response.Details.DietFood(
-                    id = 1L,
-                    foodId = 1L,
-                    foodName = "닭가슴살",
-                    intake = 1,
-                    servingSize = 100.0,
-                    nutrition = NutritionInfo(
-                        calories = 120.0,
-                        carbohydrates = 0.0,
-                        protein = 23.0,
-                        fat = 1.2
-                    )
+            totalNutrition =
+                NutritionInfo(
+                    calories = 245.0,
+                    carbohydrates = 15.0,
+                    protein = 25.0,
+                    fat = 8.0,
                 ),
-                DietV1Response.Details.DietFood(
-                    id = 2L,
-                    foodId = 2L,
-                    foodName = "현미밥",
-                    intake = 2,
-                    servingSize = 200.0,
-                    nutrition = NutritionInfo(
-                        calories = 125.0,
-                        carbohydrates = 15.0,
-                        protein = 2.0,
-                        fat = 6.8
-                    )
-                )
-            )
+            dietFoods =
+                listOf(
+                    DietV1Response.Details.DietFood(
+                        id = 1L,
+                        foodId = 1L,
+                        foodName = "닭가슴살",
+                        intake = 1,
+                        servingSize = 100.0,
+                        nutrition =
+                            NutritionInfo(
+                                calories = 120.0,
+                                carbohydrates = 0.0,
+                                protein = 23.0,
+                                fat = 1.2,
+                            ),
+                    ),
+                    DietV1Response.Details.DietFood(
+                        id = 2L,
+                        foodId = 2L,
+                        foodName = "현미밥",
+                        intake = 2,
+                        servingSize = 200.0,
+                        nutrition =
+                            NutritionInfo(
+                                calories = 125.0,
+                                carbohydrates = 15.0,
+                                protein = 2.0,
+                                fat = 6.8,
+                            ),
+                    ),
+                ),
         )
-    }
 
-    private fun mockSummaryResponse(): List<DietV1Response.Summary> {
-        return listOf(
+    private fun mockSummaryResponse(): List<DietV1Response.Summary> = listOf(
             DietV1Response.Summary(
                 dietId = 1L,
                 mealType = Diet.MealType.BREAKFAST,
                 consumeDate = LocalDate.now(),
                 consumedAt = LocalDateTime.now(),
-                items = listOf(
-                    DietV1Response.DietFoodResponse(
-                        foodId = 1L,
-                        foodName = "오트밀",
-                        intake = 1,
-                        servingSize = 40.0,
-                        unit = "컵",
-                        calories = 150.0,
-                        carbohydrates = 30.0,
-                        protein = 5.0,
-                        fat = 3.0
+                items =
+                    listOf(
+                        DietV1Response.DietFoodResponse(
+                            foodId = 1L,
+                            foodName = "오트밀",
+                            intake = 1,
+                            servingSize = 40.0,
+                            unit = "컵",
+                            calories = 150.0,
+                            carbohydrates = 30.0,
+                            protein = 5.0,
+                            fat = 3.0,
+                        ),
+                        DietV1Response.DietFoodResponse(
+                            foodId = 2L,
+                            foodName = "바나나",
+                            intake = 1,
+                            servingSize = 100.0,
+                            unit = "개",
+                            calories = 100.0,
+                            carbohydrates = 25.0,
+                            protein = 1.0,
+                            fat = 0.3,
+                        ),
                     ),
-                    DietV1Response.DietFoodResponse(
-                        foodId = 2L,
-                        foodName = "바나나",
-                        intake = 1,
-                        servingSize = 100.0,
-                        unit = "개",
-                        calories = 100.0,
-                        carbohydrates = 25.0,
-                        protein = 1.0,
-                        fat = 0.3
-                    )
-                )
             ),
             DietV1Response.Summary(
                 dietId = 2L,
                 mealType = Diet.MealType.LUNCH,
                 consumeDate = LocalDate.now(),
                 consumedAt = LocalDateTime.now(),
-                items = listOf(
-                    DietV1Response.DietFoodResponse(
-                        foodId = 3L,
-                        foodName = "닭가슴살",
-                        intake = 100,
-                        servingSize = 100.0,
-                        unit = "g",
-                        calories = 165.0,
-                        carbohydrates = 0.0,
-                        protein = 31.0,
-                        fat = 3.6
+                items =
+                    listOf(
+                        DietV1Response.DietFoodResponse(
+                            foodId = 3L,
+                            foodName = "닭가슴살",
+                            intake = 100,
+                            servingSize = 100.0,
+                            unit = "g",
+                            calories = 165.0,
+                            carbohydrates = 0.0,
+                            protein = 31.0,
+                            fat = 3.6,
+                        ),
+                        DietV1Response.DietFoodResponse(
+                            foodId = 4L,
+                            foodName = "현미밥",
+                            intake = 1,
+                            servingSize = 200.0,
+                            unit = "공기",
+                            calories = 218.0,
+                            carbohydrates = 45.0,
+                            protein = 4.5,
+                            fat = 1.8,
+                        ),
                     ),
-                    DietV1Response.DietFoodResponse(
-                        foodId = 4L,
-                        foodName = "현미밥",
-                        intake = 1,
-                        servingSize = 200.0,
-                        unit = "공기",
-                        calories = 218.0,
-                        carbohydrates = 45.0,
-                        protein = 4.5,
-                        fat = 1.8
-                    )
-                )
-            )
+            ),
         )
-    }
 }

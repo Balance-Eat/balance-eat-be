@@ -17,11 +17,10 @@ data class FoodResult(
     val fat: Double,
     val brand: String,
     val isAdminApproved: Boolean,
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime,
 ) {
-    companion object: EntityMapper<Food, FoodResult> {
-        override fun from(entity: Food): FoodResult {
-            return FoodResult(
+    companion object : EntityMapper<Food, FoodResult> {
+        override fun from(entity: Food): FoodResult = FoodResult(
                 id = entity.id,
                 uuid = entity.uuid,
                 name = entity.name,
@@ -34,9 +33,8 @@ data class FoodResult(
                 fat = entity.fat,
                 brand = entity.brand,
                 isAdminApproved = entity.isAdminApproved,
-                createdAt = entity.createdAt
+                createdAt = entity.createdAt,
             )
-        }
     }
 }
 
@@ -55,5 +53,5 @@ data class FoodSearchResult(
     val brand: String,
     val isAdminApproved: Boolean,
     val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
+    val updatedAt: LocalDateTime,
 )

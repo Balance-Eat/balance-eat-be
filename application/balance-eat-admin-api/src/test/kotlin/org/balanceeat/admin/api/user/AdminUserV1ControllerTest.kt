@@ -16,13 +16,12 @@ import org.springframework.restdocs.payload.JsonFieldType.*
 import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.pathParameters
-import java.time.LocalDateTime
 
 @WebMvcTest(AdminUserV1Controller::class)
-class AdminUserV1ControllerTest: ControllerTestContext() {
+class AdminUserV1ControllerTest : ControllerTestContext() {
     @Autowired
     private lateinit var objectMapper: ObjectMapper
-    
+
     @MockkBean(relaxed = true)
     private lateinit var adminUserService: AdminUserService
 
@@ -38,7 +37,8 @@ class AdminUserV1ControllerTest: ControllerTestContext() {
                 .body(request)
                 .put("/admin/v1/users/{id}", 1)
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("UpdateTest"),
@@ -46,7 +46,7 @@ class AdminUserV1ControllerTest: ControllerTestContext() {
                             .tag(Tags.ADMIN_USER.tagName)
                             .description(Tags.ADMIN_USER.descriptionWith("수정")),
                         pathParameters(
-                            "id" pathMeans "유저 ID"
+                            "id" pathMeans "유저 ID",
                         ),
                         requestFields(
                             "name" type STRING means "이름",
@@ -65,7 +65,7 @@ class AdminUserV1ControllerTest: ControllerTestContext() {
                             "targetFatPercentage" type NUMBER means "목표 체지방률 (%) (선택)" isOptional true,
                             "targetCarbohydrates" type NUMBER means "목표 탄수화물 (g) (선택)" isOptional true,
                             "targetProtein" type NUMBER means "목표 단백질 (g) (선택)" isOptional true,
-                            "targetFat" type NUMBER means "목표 지방 (g) (선택)" isOptional true
+                            "targetFat" type NUMBER means "목표 지방 (g) (선택)" isOptional true,
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -89,17 +89,14 @@ class AdminUserV1ControllerTest: ControllerTestContext() {
                                 "data.targetProtein" type NUMBER means "목표 단백질 (g)",
                                 "data.targetFat" type NUMBER means "목표 지방 (g)",
                                 "data.providerId" type STRING means "Provider ID",
-                                "data.providerType" type STRING means "Provider Type"
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK)
+                                "data.providerType" type STRING means "Provider Type",
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
 
-        private fun mockUpdateRequest(): AdminUserV1Request.Update {
-            return AdminUserV1RequestFixture.Update().create()
-        }
+        private fun mockUpdateRequest(): AdminUserV1Request.Update = AdminUserV1RequestFixture.Update().create()
     }
 
     @Nested
@@ -112,7 +109,8 @@ class AdminUserV1ControllerTest: ControllerTestContext() {
             given()
                 .get("/admin/v1/users/{id}", 1)
                 .then()
-                .log().all()
+                .log()
+                .all()
                 .apply(
                     document(
                         identifier("GetDetailsTest"),
@@ -120,7 +118,7 @@ class AdminUserV1ControllerTest: ControllerTestContext() {
                             .tag(Tags.ADMIN_USER.tagName)
                             .description(Tags.ADMIN_USER.descriptionWith("상세 조회")),
                         pathParameters(
-                            "id" pathMeans "유저 ID"
+                            "id" pathMeans "유저 ID",
                         ),
                         responseFields(
                             fieldsWithBasic(
@@ -144,16 +142,13 @@ class AdminUserV1ControllerTest: ControllerTestContext() {
                                 "data.targetProtein" type NUMBER means "목표 단백질 (g)",
                                 "data.targetFat" type NUMBER means "목표 지방 (g)",
                                 "data.providerId" type STRING means "Provider ID",
-                                "data.providerType" type STRING means "Provider Type"
-                            )
-                        )
-                    )
-                )
-                .status(HttpStatus.OK)
+                                "data.providerType" type STRING means "Provider Type",
+                            ),
+                        ),
+                    ),
+                ).status(HttpStatus.OK)
         }
     }
 
-    private fun mockUserDetails(): AdminUserV1Response.Details {
-        return AdminUserV1ResponseFixture.Details().create()
-    }
+    private fun mockUserDetails(): AdminUserV1Response.Details = AdminUserV1ResponseFixture.Details().create()
 }

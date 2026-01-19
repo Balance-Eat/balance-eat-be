@@ -14,10 +14,9 @@ class FoodCommandFixture {
         var protein: Double = 5.0,
         var fat: Double = 2.0,
         var brand: String = "테스트 브랜드",
-        var isAdminApproved: Boolean = false
+        var isAdminApproved: Boolean = false,
     ) : TestFixture<FoodCommand.Create> {
-        override fun create(): FoodCommand.Create {
-            return FoodCommand.Create(
+        override fun create(): FoodCommand.Create = FoodCommand.Create(
                 uuid = uuid,
                 name = name,
                 userId = userId,
@@ -27,11 +26,10 @@ class FoodCommandFixture {
                 protein = protein,
                 fat = fat,
                 brand = brand,
-                isAdminApproved = isAdminApproved
+                isAdminApproved = isAdminApproved,
             )
-        }
     }
-    
+
     class Update(
         var foodId: Long = 1L,
         var name: String = "테스트 음식",
@@ -41,10 +39,9 @@ class FoodCommandFixture {
         var protein: Double = 5.0,
         var fat: Double = 2.0,
         var brand: String = "테스트 브랜드",
-        var isAdminApproved: Boolean = false
+        var isAdminApproved: Boolean = false,
     ) : TestFixture<FoodCommand.Update> {
-        override fun create(): FoodCommand.Update {
-            return FoodCommand.Update(
+        override fun create(): FoodCommand.Update = FoodCommand.Update(
                 id = foodId,
                 name = name,
                 servingSize = servingSize,
@@ -53,16 +50,11 @@ class FoodCommandFixture {
                 protein = protein,
                 fat = fat,
                 brand = brand,
-                isAdminApproved = isAdminApproved
+                isAdminApproved = isAdminApproved,
             )
-        }
     }
 }
 
-fun foodCreateCommandFixture(block: FoodCommandFixture.Create.() -> Unit = {}): FoodCommand.Create {
-    return FoodCommandFixture.Create().apply(block).create()
-}
+fun foodCreateCommandFixture(block: FoodCommandFixture.Create.() -> Unit = {}): FoodCommand.Create = FoodCommandFixture.Create().apply(block).create()
 
-fun foodUpdateCommandFixture(block: FoodCommandFixture.Update.() -> Unit = {}): FoodCommand.Update {
-    return FoodCommandFixture.Update().apply(block).create()
-}
+fun foodUpdateCommandFixture(block: FoodCommandFixture.Update.() -> Unit = {}): FoodCommand.Update = FoodCommandFixture.Update().apply(block).create()

@@ -11,19 +11,22 @@ import org.springframework.stereotype.Component
 @Component
 @ConditionalOnBean(ErrorNotificationSender::class)
 class ErrorNotificationAspect(
-    private val errorNotificationSender: ErrorNotificationSender
+    private val errorNotificationSender: ErrorNotificationSender,
 ) {
     private val log = LoggerFactory.getLogger(ErrorNotificationAspect::class.java)
 
     @AfterThrowing(
         pointcut = "within(@org.springframework.web.bind.annotation.RestController *)",
-        throwing = "exception"
+        throwing = "exception",
     )
-    fun writeFailLog(joinPoint: JoinPoint, exception: Exception) {
+    fun writeFailLog(
+        joinPoint: JoinPoint,
+        exception: Exception,
+    ) {
         val className = joinPoint.target.javaClass.simpleName
         val methodName = joinPoint.signature.name
         val argsString = joinPoint.args.contentToString()
-        val errorMessage = "${className}.${methodName} Failure - Args: $argsString"
+        val errorMessage = "$className.$methodName Failure - Args: $argsString"
 
         errorNotificationSender.send(errorMessage, exception)
         log.warn(errorMessage)

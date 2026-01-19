@@ -11,51 +11,42 @@ import java.time.YearMonth
 @RestController
 @RequestMapping("/v1/diets")
 class DietV1Controller(
-    private val dietService: DietService
+    private val dietService: DietService,
 ) {
-
     @GetMapping("/daily")
     fun getDailyDiets(
         @RequestHeader(USER_ID_HEADER) userId: Long,
         @RequestParam date: LocalDate,
-    ): ApiResponse<List<DietV1Response.Summary>> {
-        return ApiResponse.success(
-            dietService.getDailyDiets(userId, date)
+    ): ApiResponse<List<DietV1Response.Summary>> = ApiResponse.success(
+            dietService.getDailyDiets(userId, date),
         )
-    }
 
     @GetMapping("/monthly")
     fun getMonthlyDiets(
         @RequestHeader(USER_ID_HEADER) userId: Long,
         @RequestParam yearMonth: YearMonth,
-    ): ApiResponse<List<DietV1Response.Summary>> {
-        return ApiResponse.success(
-            dietService.getMonthlyDiets(userId, yearMonth)
+    ): ApiResponse<List<DietV1Response.Summary>> = ApiResponse.success(
+            dietService.getMonthlyDiets(userId, yearMonth),
         )
-    }
 
     @PostMapping
     @ResponseStatus(CREATED)
     fun create(
         @RequestHeader(USER_ID_HEADER) userId: Long,
-        @RequestBody @Valid request: DietV1Request.Create
-    ): ApiResponse<DietV1Response.Details> {
-        return ApiResponse.success(dietService.create(request, userId))
-    }
+        @RequestBody @Valid request: DietV1Request.Create,
+    ): ApiResponse<DietV1Response.Details> = ApiResponse.success(dietService.create(request, userId))
 
     @PutMapping("/{dietId}")
     fun update(
         @RequestHeader(USER_ID_HEADER) userId: Long,
         @PathVariable dietId: Long,
-        @RequestBody @Valid request: DietV1Request.Update
-    ): ApiResponse<DietV1Response.Details> {
-        return ApiResponse.success(dietService.update(request, dietId, userId))
-    }
+        @RequestBody @Valid request: DietV1Request.Update,
+    ): ApiResponse<DietV1Response.Details> = ApiResponse.success(dietService.update(request, dietId, userId))
 
     @DeleteMapping("/{dietId}")
     fun delete(
         @RequestHeader(USER_ID_HEADER) userId: Long,
-        @PathVariable dietId: Long
+        @PathVariable dietId: Long,
     ): ApiResponse<Void> {
         dietService.delete(dietId, userId)
         return ApiResponse.success()
@@ -65,7 +56,7 @@ class DietV1Controller(
     fun deleteDietFood(
         @RequestHeader(USER_ID_HEADER) userId: Long,
         @PathVariable dietId: Long,
-        @PathVariable dietFoodId: Long
+        @PathVariable dietFoodId: Long,
     ): ApiResponse<Void> {
         dietService.deleteDietFood(dietId, dietFoodId, userId)
         return ApiResponse.success()
@@ -76,7 +67,7 @@ class DietV1Controller(
         @RequestHeader(USER_ID_HEADER) userId: Long,
         @PathVariable dietId: Long,
         @PathVariable dietFoodId: Long,
-        @RequestBody @Valid request: DietV1Request.UpdateDietFood
+        @RequestBody @Valid request: DietV1Request.UpdateDietFood,
     ): ApiResponse<DietV1Response.Details> {
         val result = dietService.updateDietFood(dietId, dietFoodId, request, userId)
         return ApiResponse.success(result)

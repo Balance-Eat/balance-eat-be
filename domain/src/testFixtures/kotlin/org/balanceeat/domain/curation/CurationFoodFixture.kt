@@ -6,17 +6,13 @@ import org.balanceeat.domain.config.NEW_ID
 class CurationFoodFixture(
     var id: Long = NEW_ID,
     var foodId: Long = 1L,
-    var weight: Int = 100
+    var weight: Int = 100,
 ) : TestFixture<CurationFood> {
-    override fun create(): CurationFood {
-        return CurationFood(
+    override fun create(): CurationFood = CurationFood(
             id = id,
             foodId = foodId,
-            weight = weight
+            weight = weight,
         )
-    }
 }
 
-fun curationFoodFixture(block: CurationFoodFixture.() -> Unit = {}): CurationFood {
-    return CurationFoodFixture().apply(block).create()
-}
+fun curationFoodFixture(block: CurationFoodFixture.() -> Unit = {}): CurationFood = CurationFoodFixture().apply(block).create()

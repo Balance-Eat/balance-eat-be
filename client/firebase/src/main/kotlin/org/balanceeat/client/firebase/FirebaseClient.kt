@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class FirebaseClient(
-    private val firebaseMessaging: FirebaseMessaging
+    private val firebaseMessaging: FirebaseMessaging,
 ) {
     private val log = LoggerFactory.getLogger(FirebaseClient::class.java)
 
@@ -21,10 +21,16 @@ class FirebaseClient(
             firebaseMessaging.send(request.toFirebaseMessage())
         } catch (fme: FirebaseMessagingException) {
             if (fme.httpResponse.statusCode in 400..499) {
-                log.warn("Firebase client error: ${fme.messagingErrorCode}, ${fme.errorCode}, ${fme.httpResponse.statusCode}, ${fme.message}", fme)
+                log.warn(
+                    "Firebase client error: ${fme.messagingErrorCode}, ${fme.errorCode}, ${fme.httpResponse.statusCode}, ${fme.message}",
+                    fme,
+                )
                 throw ClientBadRequestException(FirebaseClientStatus.FIREBASE_ERROR, cause = fme)
             } else {
-                log.error("Firebase server error: ${fme.messagingErrorCode}, ${fme.errorCode}, ${fme.httpResponse.statusCode}, ${fme.message}", fme)
+                log.error(
+                    "Firebase server error: ${fme.messagingErrorCode}, ${fme.errorCode}, ${fme.httpResponse.statusCode}, ${fme.message}",
+                    fme,
+                )
                 throw ClientServerErrorException(FirebaseClientStatus.FIREBASE_ERROR, cause = fme)
             }
         } catch (e: Exception) {
@@ -38,10 +44,16 @@ class FirebaseClient(
             firebaseMessaging.sendEachForMulticast(request.toFirebaseMessage())
         } catch (fme: FirebaseMessagingException) {
             if (fme.httpResponse.statusCode in 400..499) {
-                log.warn("Firebase batch message client error: ${fme.messagingErrorCode}, ${fme.errorCode}, ${fme.httpResponse.statusCode}, ${fme.message}", fme)
+                log.warn(
+                    "Firebase batch message client error: ${fme.messagingErrorCode}, ${fme.errorCode}, ${fme.httpResponse.statusCode}, ${fme.message}",
+                    fme,
+                )
                 throw ClientBadRequestException(FirebaseClientStatus.FIREBASE_ERROR, cause = fme)
             } else {
-                log.error("Firebase batch message server error: ${fme.messagingErrorCode}, ${fme.errorCode}, ${fme.httpResponse.statusCode}, ${fme.message}", fme)
+                log.error(
+                    "Firebase batch message server error: ${fme.messagingErrorCode}, ${fme.errorCode}, ${fme.httpResponse.statusCode}, ${fme.message}",
+                    fme,
+                )
                 throw ClientServerErrorException(FirebaseClientStatus.FIREBASE_ERROR, cause = fme)
             }
         } catch (e: Exception) {
@@ -51,12 +63,15 @@ class FirebaseClient(
     }
 
     fun createMessage(request: FirebaseRequest.SendMessage): Message {
-        val notification = Notification.builder()
-            .setTitle(request.title)
-            .setBody(request.content)
-            .build()
+        val notification =
+            Notification
+                .builder()
+                .setTitle(request.title)
+                .setBody(request.content)
+                .build()
 
-        return Message.builder()
+        return Message
+            .builder()
             .setNotification(notification)
             .setToken(request.deviceToken)
             .putData("deepLink", request.deepLink)
@@ -64,12 +79,15 @@ class FirebaseClient(
     }
 
     fun createBatchMessage(request: FirebaseRequest.SendBatchMessages): MulticastMessage {
-        val notification = Notification.builder()
-            .setTitle(request.title)
-            .setBody(request.content)
-            .build()
+        val notification =
+            Notification
+                .builder()
+                .setTitle(request.title)
+                .setBody(request.content)
+                .build()
 
-        return MulticastMessage.builder()
+        return MulticastMessage
+            .builder()
             .setNotification(notification)
             .addAllTokens(request.deviceTokens)
             .putData("deepLink", request.deepLink ?: "")

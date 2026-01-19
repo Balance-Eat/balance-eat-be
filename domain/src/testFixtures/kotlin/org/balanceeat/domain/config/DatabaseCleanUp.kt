@@ -12,16 +12,17 @@ class DatabaseCleanUp(
     private val jdbcTemplate: JdbcTemplate,
     private val entityManager: EntityManager,
 ) {
-
     fun all() {
-        val dataSource: DataSource = jdbcTemplate.dataSource
-            ?: throw IllegalStateException("No DataSource available for cleanup")
+        val dataSource: DataSource =
+            jdbcTemplate.dataSource
+                ?: throw IllegalStateException("No DataSource available for cleanup")
 
         val productName = dataSource.connection.use { it.metaData.databaseProductName }
 
-        val tables = entityManager.metamodel.entities
-            .map { it.javaType }
-            .mapNotNull { it.kotlin.findAnnotation<Table>()?.name }
+        val tables =
+            entityManager.metamodel.entities
+                .map { it.javaType }
+                .mapNotNull { it.kotlin.findAnnotation<Table>()?.name }
 
         when {
             productName.contains("PostgreSQL", ignoreCase = true) -> {
@@ -29,6 +30,7 @@ class DatabaseCleanUp(
                     jdbcTemplate.execute("TRUNCATE TABLE $table RESTART IDENTITY CASCADE")
                 }
             }
+
             productName.contains("MySQL", ignoreCase = true) -> {
                 jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0")
                 tables.forEach { table ->
@@ -36,6 +38,7 @@ class DatabaseCleanUp(
                 }
                 jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 1")
             }
+
             else -> {
                 tables.forEach { table ->
                     jdbcTemplate.execute("TRUNCATE TABLE $table")

@@ -8,22 +8,22 @@ data class PageResponse<T>(
     val totalItems: Long,
     val currentPage: Int,
     val itemsPerPage: Int,
-    val items: List<T>
+    val items: List<T>,
 ) {
     companion object {
-        fun <T> from(page: Page<T>): PageResponse<T> {
-            return PageResponse(
+        fun <T> from(page: Page<T>): PageResponse<T> = PageResponse(
                 page.totalElements,
                 page.number + 1,
                 page.size,
-                page.getContent()
+                page.getContent(),
             )
-        }
     }
 
     @JsonProperty
-    fun totalPages(): Int {
-        return if (this.totalItems < this.itemsPerPage.toLong()) 1 else ceil(this.totalItems.toDouble() / this.itemsPerPage.toDouble())
-            .toInt()
-    }
+    fun totalPages(): Int = if (this.totalItems < this.itemsPerPage.toLong()) {
+            1
+        } else {
+            ceil(this.totalItems.toDouble() / this.itemsPerPage.toDouble())
+                .toInt()
+        }
 }

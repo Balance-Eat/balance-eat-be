@@ -10,21 +10,18 @@ class DietFixture(
     var userId: Long = 1L,
     var mealType: Diet.MealType = Diet.MealType.BREAKFAST,
     var consumedAt: LocalDateTime = LocalDate.now().atStartOfDay(),
-    var dietFoods: MutableList<DietFood> = mutableListOf(
-        dietFoodFixture()
-    )
+    var dietFoods: MutableList<DietFood> =
+        mutableListOf(
+            dietFoodFixture(),
+        ),
 ) : TestFixture<Diet> {
-    override fun create(): Diet {
-        return Diet(
+    override fun create(): Diet = Diet(
             id = id,
             userId = userId,
             mealType = mealType,
             consumedAt = consumedAt,
-            dietFoods = dietFoods
+            dietFoods = dietFoods,
         )
-    }
 }
 
-fun dietFixture(block: DietFixture.() -> Unit = {}): Diet {
-    return DietFixture().apply(block).create()
-}
+fun dietFixture(block: DietFixture.() -> Unit = {}): Diet = DietFixture().apply(block).create()

@@ -10,24 +10,18 @@ class AppPushHistory(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = NEW_ID,
-
     @Column(name = "device_id", nullable = false)
     val deviceId: Long,
-
     @Column(name = "user_id", nullable = false)
     val userId: Long,
-
     @Column(name = "agent_id", nullable = false, length = 255)
     val agentId: String,
-
     @Column(name = "title", nullable = false, length = 255)
     val title: String,
-
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     val content: String,
-
     @Column(name = "deep_link", nullable = true, length = 100)
-    val deepLink: String? = null
+    val deepLink: String? = null,
 ) : BaseEntity() {
     companion object {
         const val MAX_AGENT_ID_LENGTH = 255

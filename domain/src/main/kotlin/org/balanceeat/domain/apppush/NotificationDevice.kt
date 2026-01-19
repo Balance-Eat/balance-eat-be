@@ -10,24 +10,18 @@ class NotificationDevice(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = NEW_ID,
-
     @Column(name = "user_id", nullable = false)
     val userId: Long,
-
     @Column(name = "agent_id", nullable = false, length = 255)
     val agentId: String,
-
     @Enumerated(EnumType.STRING)
     @Column(name = "os_type", nullable = false, length = 20)
     val osType: OsType,
-
     @Column(name = "device_name", nullable = false, length = 60)
     val deviceName: String,
-
     @Column(name = "is_active", nullable = false)
-    var isActive: Boolean = false
+    var isActive: Boolean = false,
 ) : BaseEntity() {
-
     companion object {
         const val MAX_AGENT_ID_LENGTH = 255
         const val MAX_DEVICE_NAME_LENGTH = 60
@@ -47,6 +41,6 @@ class NotificationDevice(
 
     enum class OsType {
         AOS,
-        IOS
+        IOS,
     }
 }

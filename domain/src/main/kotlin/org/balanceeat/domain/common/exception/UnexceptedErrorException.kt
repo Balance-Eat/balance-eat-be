@@ -6,5 +6,5 @@ class UnexceptedErrorException(
     status: Status,
     message: String = status.message,
     isCritical: Boolean = true,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : DomainException(status, message, isCritical, cause)

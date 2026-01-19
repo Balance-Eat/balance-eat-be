@@ -10,20 +10,21 @@ import java.time.LocalDate
 @Component
 @Transactional(readOnly = true)
 class DietStatsReader(
-    private val dietStatsRepository: DietStatsRepository
-): BaseReader<DietStats, DietStatsResult>(dietStatsRepository, DietStatsResult) {
+    private val dietStatsRepository: DietStatsRepository,
+) : BaseReader<DietStats, DietStatsResult>(dietStatsRepository, DietStatsResult) {
+    override fun findByIdOrThrow(id: Long): DietStatsResult = findByIdOrThrow(id, DomainStatus.DIET_STATS_NOT_FOUND)
 
-    override fun findByIdOrThrow(id: Long): DietStatsResult {
-        return findByIdOrThrow(id, DomainStatus.DIET_STATS_NOT_FOUND)
-    }
-
-    fun findByUserIdAndStatsDate(userId: Long, statsDate: LocalDate): DietStatsResult? {
-        return dietStatsRepository.findByUserIdAndStatsDate(userId, statsDate)
+    fun findByUserIdAndStatsDate(
+        userId: Long,
+        statsDate: LocalDate,
+    ): DietStatsResult? = dietStatsRepository
+        .findByUserIdAndStatsDate(userId, statsDate)
             ?.let { DietStatsResult.from(it) }
-    }
 
-    fun getStats(userId: Long, type: StatsType, from: LocalDate, to: LocalDate): List<DietStatsAggregateResult> {
-        return dietStatsRepository.getStats(userId, type, from, to)
-    }
-
+    fun getStats(
+        userId: Long,
+        type: StatsType,
+        from: LocalDate,
+        to: LocalDate,
+    ): List<DietStatsAggregateResult> = dietStatsRepository.getStats(userId, type, from, to)
 }

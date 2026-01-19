@@ -7,5 +7,5 @@ open class DomainException(
     status: Status,
     message: String = status.message,
     val isCritical: Boolean = false,
-    cause: Throwable? = null
+    cause: Throwable? = null,
 ) : BaseException(status, message, cause)
