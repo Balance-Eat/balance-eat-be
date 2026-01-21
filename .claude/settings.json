@@ -12,7 +12,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$PROJECT_DIR\" && make coverage 2>&1 | tail -5"
+            "command": "make coverage 2>&1 | tail -5"
           }
         ]
       }
@@ -22,7 +22,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$PROJECT_DIR\" && make lint 2>&1 | tail -5"
+            "command": "make lint 2>&1 | tail -5"
           }
         ]
       }

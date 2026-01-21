@@ -1,6 +1,5 @@
 ---
 paths:
-  - "application/src/main/**/*Service.kt"
   - "application/**/src/main/**/*Service.kt"
 ---
 # Service Rules
@@ -11,5 +10,5 @@ paths:
 - **자체 비즈니스 로직 최소화**: 로직은 도메인 엔티티나 전용 컴포넌트에 위임
 - Request → Command 변환 담당
 - 권한 검증 담당 (인증된 사용자 확인)
-- `@Transactional` 선언하지 않음 (각 컴포넌트가 자체 관리)
+- 메서드별 `@Transactional` / `@Transactional(readOnly = true)` 선언
 - 다른 도메인의 Service 직접 주입 금지 → 해당 도메인의 Reader/Writer/Component 사용

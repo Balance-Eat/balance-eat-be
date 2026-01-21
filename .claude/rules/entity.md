@@ -5,7 +5,7 @@ paths:
 # Entity Rules
 
 - `BaseEntity` 상속 필수
-- `guard()`: `open fun` (abstract 아님), 기본 Unit 반환
+- `guard()`: `fun` (kotlin-spring 플러그인에 의해 자동 open, abstract 아님), 기본 Unit 반환
 - `@PrePersist`/`@PreUpdate`에서 자동 호출
 - `require()`로 검증, **한국어 에러 메시지**
 - `@Enumerated(EnumType.STRING)`

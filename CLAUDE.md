@@ -26,7 +26,7 @@ balance-eat-be/
 ### 핵심 패턴
 1. **Reader/Writer 패턴** — DomainService 대신. Reader(조회), Writer(CUD 원자적 단위)
 2. **Result + EntityMapper 패턴** — DTO 대신. `companion object : EntityMapper<E, R>` 구현
-3. **guard() 패턴** — 엔티티 유효성 검증. `open fun`, @PrePersist/@PreUpdate 자동 호출
+3. **guard() 패턴** — 엔티티 유효성 검증. `fun` (kotlin-spring 플러그인에 의해 자동 open), @PrePersist/@PreUpdate 자동 호출
 4. **Query 패턴** — 검색 조건 분리. Command(CUD), Query(조회)
 5. **Service = 유스케이스 오케스트레이터** — 다양한 컴포넌트(Reader, Writer, Sender, Client 등) 조율. 자체 로직 최소화
 
@@ -68,10 +68,15 @@ Controller → AppService(유스케이스) → Reader/Writer/Component → Repos
 | API 명세 | `{Domain}V1ApiSpec.kt` |
 | 컨트롤러 | `{Domain}V1Controller.kt` |
 | 페이로드 | `{Domain}V1Payload.kt` |
+| 스케줄 서비스 | `{Domain}ScheduleService.kt` |
+| 스케줄러 | `{Domain}Scheduler.kt` |
+| 이벤트 | `{Entity}Event.kt` |
+| 이벤트 리스너 | `{Entity}EventListener.kt` |
+| 상세/요약 | `{Entity}Details.kt` / `{Entity}Summary.kt` |
 
 ### 주의사항 (Gotchas)
 - 테이블명 예약어는 쌍따옴표 (`@Table(name = "\"user\"")`)
-- `guard()`는 `open fun` (abstract 아님), 기본 Unit 반환
+- `guard()`는 `fun` (kotlin-spring 플러그인에 의해 자동 open), 기본 Unit 반환
 - 에러 메시지는 반드시 **한국어**
 - TestFixture 위치: `src/testFixtures/kotlin`
 - Result `companion object`는 `EntityMapper` 구현

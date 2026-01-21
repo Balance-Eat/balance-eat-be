@@ -1,7 +1,6 @@
 ---
 paths:
   - "application/**/api/**/*.kt"
-  - "application/**/controller/**/*.kt"
 ---
 # API Controller Rules
 

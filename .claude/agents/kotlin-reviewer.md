@@ -22,14 +22,14 @@ Read, Grep, Glob, Bash 도구만 사용하세요. 코드를 수정하지 마세�
 
 ### Entity + guard() 패턴
 - `BaseEntity` 상속 여부
-- `guard()` 가 `open fun` 인지 확인
+- `guard()` 가 `fun` 으로 선언되어 있는지 확인 (kotlin-spring 플러그인에 의해 자동 open)
 - `require()` 한국어 에러 메시지 여부
 - `@Enumerated(EnumType.STRING)` 사용 여부
 
 ### Service 패턴
 - 유스케이스 오케스트레이터 역할 준수 여부
 - 자체 비즈니스 로직 최소화 여부
-- `@Transactional` 미사용 여부
+- 메서드별 `@Transactional` / `@Transactional(readOnly = true)` 적절성 확인
 
 ### 네이밍 규칙
 - 파일명/클래스명 컨벤션 준수 여부

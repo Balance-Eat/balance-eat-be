@@ -11,6 +11,8 @@ paths:
 - Command Fixture: `{Entity}CommandFixture.kt` — nested class 패턴
 - Payload Fixture: `{Entity}V1PayloadFixture.kt` — Request/Response 통합
 - 위치: `src/testFixtures/kotlin/org/balanceeat/domain/{domain}/`
+- Result Fixture: `{Entity}ResultFixture.kt` — Result 객체 생성용
+- Top-level builder: `fun {entity}Fixture(block: {Entity}Fixture.() -> Unit = {}): {Entity}`
 - 기본값: 현실적인 한국어 데이터
 - 컬렉션 필드: `MutableList` 사용
 
