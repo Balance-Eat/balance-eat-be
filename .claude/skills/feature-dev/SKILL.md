@@ -21,7 +21,7 @@ disable-model-invocation: true
 
 ### 2단계: 구현
 - domain 모듈: Entity, Result, Command, Query, Repository, Reader, Writer
-- application 모듈: Service, V1ApiSpec, V1Controller, V1Payload
+- application 모듈: Service, V1Controller, V1Payload
 - 새 도메인이면 `/new-domain` Skill 또는 `domain-builder` Agent 활용
 
 ### 3단계: 테스트 작성

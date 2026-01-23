@@ -11,8 +11,7 @@
 - 다른 도메인의 Service 직접 주입 금지 → 해당 도메인의 Reader/Writer/Component 사용
 
 ## API 계층 구조
-- `{Domain}V1ApiSpec.kt`: API 명세 인터페이스 (OpenAPI 어노테이션)
-- `{Domain}V1Controller.kt`: `@RestController`, V1ApiSpec 구현
+- `{Domain}V1Controller.kt`: `@RestController`
 - `{Domain}V1Payload.kt`: Request/Response nested data class
 
 ## 표준 응답

@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 도메인명: **$ARGUMENTS**
 
-## 13단계 생성 순서
+## 12단계 생성 순서
 
 ### Domain 모듈 (`domain/src/main/kotlin/org/balanceeat/domain/$ARGUMENTS/`)
 
@@ -24,12 +24,11 @@ disable-model-invocation: true
 
 9. **{Entity}Service.kt** — `@Service`, Reader/Writer/Component 오케스트레이션
 10. **{Domain}V1Payload.kt** — Request/Response nested data class
-11. **{Domain}V1ApiSpec.kt** — OpenAPI 인터페이스
-12. **{Domain}V1Controller.kt** — `@RestController`, V1ApiSpec 구현
+11. **{Domain}V1Controller.kt** — `@RestController`
 
 ### Test (`domain/src/testFixtures/`, `application/balance-eat-api/src/test/`)
 
-13. **Fixtures + Tests**
+12. **Fixtures + Tests**
     - `{Entity}Fixture.kt` — var 필드, 현실적 한국어 기본값
     - `{Entity}CommandFixture.kt` — nested class
     - `{Entity}V1PayloadFixture.kt` — Request/Response

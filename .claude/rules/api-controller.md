@@ -5,8 +5,7 @@ paths:
 # API Controller Rules
 
 ## 구조
-- `{Domain}V1ApiSpec.kt`: API 명세 인터페이스 (OpenAPI 어노테이션)
-- `{Domain}V1Controller.kt`: `@RestController`, V1ApiSpec 구현
+- `{Domain}V1Controller.kt`: `@RestController`
 - `{Domain}V1Payload.kt`: Request/Response nested data class
 
 ## 테스트

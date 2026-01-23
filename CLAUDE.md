@@ -65,7 +65,6 @@ Controller → AppService(유스케이스) → Reader/Writer/Component → Repos
 | 조회기 | `{Entity}Reader.kt` |
 | 기록기 | `{Entity}Writer.kt` |
 | 서비스 | `{Entity}Service.kt` |
-| API 명세 | `{Domain}V1ApiSpec.kt` |
 | 컨트롤러 | `{Domain}V1Controller.kt` |
 | 페이로드 | `{Domain}V1Payload.kt` |
 | 스케줄 서비스 | `{Domain}ScheduleService.kt` |

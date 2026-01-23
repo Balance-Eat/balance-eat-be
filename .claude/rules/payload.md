@@ -10,4 +10,4 @@ paths:
 - Request → Command 변환은 Service에서 담당
 - Result → Response 변환은 Payload 내 companion/확장 함수로
 - validation 어노테이션 (`@NotBlank`, `@Size` 등)은 Request에 선언
-- OpenAPI 어노테이션 (`@Schema`)은 V1ApiSpec 인터페이스에 선언
+- OpenAPI 어노테이션 (`@Schema`)은 Controller 또는 Payload에 선언
