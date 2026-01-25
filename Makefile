@@ -1,4 +1,4 @@
-.PHONY: help test docker build coverage lint lint-fix
+.PHONY: help init test docker build coverage lint lint-fix
 
 GRADLEW = ./gradlew
 
@@ -6,6 +6,11 @@ help: ## 사용 가능한 명령을 보여줍니다.
 	@echo "Available targets:" && \
 	egrep -h '^[a-zA-Z_-]+:.*?##' $(MAKEFILE_LIST) | \
 	awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
+
+init: ## 프로젝트 초기 세팅 (git hooks 등).
+	@echo "⚙️ Setting up git hooks..."
+	@git config core.hooksPath .githooks
+	@echo "✅ Project initialized."
 
 clean: ## Gradle 빌드 파일을 정리합니다.
 	@echo "🧹 Cleaning Gradle build files..."
